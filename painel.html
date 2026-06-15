@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Painel — Zamio Guias</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: { primary: "#4A6741", "primary-light": "#6B8E61" },
+      fontFamily: { serif: ["'DM Serif Display'","serif"], sans: ["'Nunito Sans'","sans-serif"] }
+    }
+  }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { font-family: 'Nunito Sans', sans-serif; box-sizing: border-box; }
+.section-panel { display: none; }
+.section-panel.active { display: block; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; font-size:13px; font-weight:700; color:#6b7280; cursor:pointer; transition:all .15s; width:100%; text-align:left; border:none; background:none; }
+.nav-item:hover { background:#f3f4f6; color:#374151; }
+.nav-item.active { background:#f0f4ef; color:#4A6741; }
+.nav-item .material-icons-outlined { font-size:18px; }
+.field-label { display:block; font-size:11px; font-weight:800; color:#9ca3af; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+.field-input { width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid #e5e7eb; font-size:14px; outline:none; transition:all .2s; background:#f9fafb; }
+.field-input:focus { border-color:#4A6741; background:#fff; box-shadow:0 0 0 3px rgba(74,103,65,.08); }
+.field-textarea { resize:vertical; min-height:80px; }
+.save-btn { background:#4A6741; color:#fff; font-weight:800; font-size:13px; padding:11px 22px; border-radius:12px; border:none; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all .15s; }
+.save-btn:hover { background:#6B8E61; }
+.save-btn:disabled { opacity:.5; cursor:not-allowed; }
+.item-card { display:flex; align-items:flex-start; gap:12px; padding:12px 14px; background:#f9fafb; border:1.5px solid #e5e7eb; border-radius:12px; margin-bottom:8px; }
+.item-card-body { flex:1; min-width:0; }
+.item-card-name { font-weight:800; font-size:13px; color:#111827; }
+.item-card-sub { font-size:12px; color:#9ca3af; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.item-btn { border:none; background:none; padding:4px; border-radius:8px; cursor:pointer; color:#9ca3af; line-height:1; transition:color .15s; }
+.item-btn:hover { color:#4A6741; }
+.item-btn.del:hover { color:#ef4444; }
+.add-form { background:#f0f4ef; border:1.5px solid #c8d9c0; border-radius:14px; padding:18px; margin-top:12px; }
+.add-form .field-input { background:#fff; }
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:#111827; color:#fff; font-size:13px; font-weight:700; padding:10px 20px; border-radius:100px; z-index:9999; transition:transform .3s; pointer-events:none; }
+.toast.show { transform:translateX(-50%) translateY(0); }
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+.spin { animation:spin .7s linear infinite; display:inline-block; }
+</style>
+</head>
+<body class="min-h-screen bg-gray-50">
+
+<!-- Top bar -->
+<header class="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+  <div class="flex items-center gap-2.5">
+    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+      <span class="material-icons-outlined text-white" style="font-size:18px">cottage</span>
+    </div>
+    <span class="font-bold text-gray-900 text-sm hidden sm:block">Zamio Guias</span>
+    <span class="text-gray-300 hidden sm:block">·</span>
+    <span id="header-prop" class="text-sm font-semibold text-gray-500 hidden sm:block">Carregando...</span>
+  </div>
+  <div class="flex items-center gap-4">
+    <a id="preview-link" href="#" target="_blank"
+      class="hidden text-xs font-bold text-primary flex items-center gap-1 hover:underline">
+      <span class="material-icons-outlined" style="font-size:15px">open_in_new</span>
+      <span class="hidden sm:inline">Ver Guia</span>
+    </a>
+    <button onclick="doLogout()"
+      class="text-xs text-gray-400 hover:text-red-500 flex items-center gap-1 font-bold transition-colors">
+      <span class="material-icons-outlined" style="font-size:16px">logout</span>
+      <span class="hidden sm:inline">Sair</span>
+    </button>
+  </div>
+</header>
+
+<div class="flex" style="min-height:calc(100vh - 57px)">
+  <!-- Sidebar (desktop) -->
+  <aside class="w-52 hidden md:flex flex-col bg-white border-r border-gray-100 py-3 px-2 sticky top-[57px] self-start h-[calc(100vh-57px)] overflow-y-auto flex-shrink-0">
+    <div class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 px-3 mb-1 mt-1">Configurações</div>
+    <button class="nav-item" onclick="showSection('geral')">
+      <span class="material-icons-outlined">tune</span>Geral
+    </button>
+    <button class="nav-item" onclick="showSection('propriedade')">
+      <span class="material-icons-outlined">home</span>Propriedade
+    </button>
+    <button class="nav-item" onclick="showSection('hero')">
+      <span class="material-icons-outlined">image</span>Apresentação
+    </button>
+    <button class="nav-item" onclick="showSection('wifi')">
+      <span class="material-icons-outlined">wifi</span>Wi-Fi
+    </button>
+    <div class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 px-3 mb-1 mt-4">Indicações</div>
+    <button class="nav-item" onclick="showSection('restaurantes')">
+      <span class="material-icons-outlined">restaurant</span>Restaurantes
+    </button>
+    <button class="nav-item" onclick="showSection('mercados')">
+      <span class="material-icons-outlined">shopping_cart</span>Mercados
+    </button>
+    <button class="nav-item" onclick="showSection('farmacias')">
+      <span class="material-icons-outlined">local_pharmacy</span>Farmácias
+    </button>
+    <button class="nav-item" onclick="showSection('atividades')">
+      <span class="material-icons-outlined">beach_access</span>O que Fazer
+    </button>
+    <button class="nav-item" onclick="showSection('academias')">
+      <span class="material-icons-outlined">fitness_center</span>Academias
+    </button>
+    <button class="nav-item" onclick="showSection('emergencia')">
+      <span class="material-icons-outlined">emergency</span>Emergência
+    </button>
+    <div class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 px-3 mb-1 mt-4">Extras</div>
+    <button class="nav-item" onclick="showSection('regras')">
+      <span class="material-icons-outlined">rule</span>Regras
+    </button>
+  </aside>
+
+  <!-- Mobile nav (horizontal scroll) -->
+  <div class="md:hidden bg-white border-b border-gray-100 flex gap-1 overflow-x-auto px-3 py-2 sticky top-[57px] z-10" style="scrollbar-width:none">
+    <button class="nav-item flex-shrink-0" onclick="showSection('geral')"><span class="material-icons-outlined">tune</span>Geral</button>
+    <button class="nav-item flex-shrink-0" onclick="showSection('propriedade')"><span class="material-icons-outlined">home</span>Propriedade</button>
+    <button class="nav-item flex-shrink-0" onclick="showSection('hero')"><span class="material-icons-outlined">image</span>Apresentação</button>
+    <button class="nav-item flex-shrink-0" onclick="showSection('wifi')"><span class="material-icons-outlined">wifi</span>Wi-Fi</button>
+    <button class="nav-item flex-shrink-0" onclick="showSection('restaurantes')"><span class="material-icons-outlined">restaurant</span>Restaurantes</button>
+    <button class="nav-item flex-shrink-0" onclick="showSection('mercados')"><span class="material-icons-outlined">shopping_cart</span>Mercados</button>
+    <button class="nav-item flex-shrink-0" onclick="showSection('farmacias')"><span class="material-icons-outlined">local_pharmacy</span>Farmácias</button>
+    <button class="nav-item flex-shrink-0" onclick="showSection('atividades')"><span class="material-icons-outlined">beach_access</span>Atividades</button>
+    <button class="nav-item flex-shrink-0" onclick="showSection('academias')"><span class="material-icons-outlined">fitness_center</span>Academias</button>
+    <button class="nav-item flex-shrink-0" onclick="showSection('emergencia')"><span class="material-icons-outlined">emergency</span>Emergência</button>
+    <button class="nav-item flex-shrink-0" onclick="showSection('regras')"><span class="material-icons-outlined">rule</span>Regras</button>
+  </div>
+
+  <!-- Main content -->
+  <main class="flex-1 px-4 py-6 md:px-10 md:py-8 max-w-2xl">
+
+    <!-- Loading state -->
+    <div id="loading-state" class="flex items-center justify-center py-20 text-gray-400">
+      <span class="material-icons-outlined spin text-3xl">refresh</span>
+    </div>
+
+    <!-- === GERAL === -->
+    <div id="section-geral" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Configurações Gerais</h2>
+      <p class="text-sm text-gray-500 mb-6">Defina o nome da sua propriedade e o link único do guia.</p>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+        <div>
+          <label class="field-label">Nome da Propriedade</label>
+          <input id="g-propname" class="field-input" placeholder="Ex: Casa Zamio" type="text"/>
+        </div>
+        <div>
+          <label class="field-label">Seu Nome</label>
+          <input id="g-owner" class="field-input" placeholder="Ex: Rafael" type="text"/>
+        </div>
+        <div>
+          <label class="field-label">Slug (link do guia)</label>
+          <div class="flex gap-2">
+            <span class="flex items-center text-sm text-gray-400 bg-gray-100 rounded-l-xl px-3 border border-r-0 border-gray-200 flex-shrink-0 rounded-xl" style="border-radius:12px 0 0 12px">guia.html?h=</span>
+            <input id="g-slug" class="field-input" style="border-radius:0 12px 12px 0;border-left:none" placeholder="zamio" type="text" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')"/>
+          </div>
+          <p class="text-xs text-gray-400 mt-1.5">Somente letras minúsculas, números e hífens. Ex: <strong>casa-praia</strong></p>
+        </div>
+        <div class="pt-2">
+          <button class="save-btn" onclick="saveGeral()">
+            <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- === PROPRIEDADE === -->
+    <div id="section-propriedade" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Informações da Propriedade</h2>
+      <p class="text-sm text-gray-500 mb-6">Endereço, horários e acesso.</p>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+        <div>
+          <label class="field-label">Endereço Completo</label>
+          <input id="p-address" class="field-input" placeholder="Rua Poço Branco, 74 - Nova Parnamirim" type="text"/>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="field-label">Check-in</label>
+            <input id="p-checkin" class="field-input" type="time"/>
+          </div>
+          <div>
+            <label class="field-label">Check-out</label>
+            <input id="p-checkout" class="field-input" type="time"/>
+          </div>
+        </div>
+        <div>
+          <label class="field-label">Código de Acesso / Portaria</label>
+          <input id="p-access" class="field-input" placeholder="Ex: #1234 ou App: Smart Lock" type="text"/>
+        </div>
+        <div>
+          <label class="field-label">Link Google Maps (para botão "Como Chegar")</label>
+          <input id="p-maps" class="field-input" placeholder="https://maps.google.com/..." type="url"/>
+        </div>
+        <div>
+          <label class="field-label">Google Maps Embed URL (para o mapa no guia)</label>
+          <input id="p-embed" class="field-input" placeholder="https://www.google.com/maps/embed?pb=..." type="url"/>
+          <p class="text-xs text-gray-400 mt-1">No Google Maps: Compartilhar → Incorporar um mapa → copie o src do iframe</p>
+        </div>
+        <div class="pt-2">
+          <button class="save-btn" onclick="savePropriedade()">
+            <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- === HERO / APRESENTAÇÃO === -->
+    <div id="section-hero" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Apresentação</h2>
+      <p class="text-sm text-gray-500 mb-6">Foto principal e mensagem de boas-vindas do guia.</p>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+        <div>
+          <label class="field-label">URL da Foto Principal (hero)</label>
+          <input id="h-img" class="field-input" placeholder="https://... ou caminho local como assets/foto.jpg" type="text"/>
+          <p class="text-xs text-gray-400 mt-1">Dica: hospede a imagem no Supabase Storage e use a URL pública gerada.</p>
+        </div>
+        <div id="h-preview-wrap" class="hidden">
+          <img id="h-preview" src="" alt="" class="w-full h-40 object-cover rounded-xl border border-gray-100"/>
+        </div>
+        <div>
+          <label class="field-label">Mensagem de Boas-Vindas</label>
+          <textarea id="h-welcome" class="field-input field-textarea" placeholder="Seja bem-vindo(a)! Preparamos tudo para a sua chegada..."></textarea>
+        </div>
+        <div class="pt-2">
+          <button class="save-btn" onclick="saveHero()">
+            <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- === WI-FI === -->
+    <div id="section-wifi" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Wi-Fi</h2>
+      <p class="text-sm text-gray-500 mb-6">Dados da rede que aparecem no guia do hóspede.</p>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+        <div>
+          <label class="field-label">Nome da Rede (SSID)</label>
+          <input id="w-name" class="field-input" placeholder="Ex: Zamio_WiFi" type="text"/>
+        </div>
+        <div>
+          <label class="field-label">Senha do Wi-Fi</label>
+          <div class="relative">
+            <input id="w-pass" class="field-input pr-10" placeholder="Senha" type="text"/>
+            <span class="material-icons-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" style="font-size:18px">key</span>
+          </div>
+        </div>
+        <div>
+          <label class="field-label">QR Code do Wi-Fi (URL da imagem)</label>
+          <input id="w-qr" class="field-input" placeholder="https://..." type="text"/>
+          <p class="text-xs text-gray-400 mt-1.5">Gere gratuitamente em <strong>qr-code-generator.com</strong> → cole o link da imagem aqui. Aparece no guia para o hóspede escanear.</p>
+        </div>
+        <div class="pt-2">
+          <button class="save-btn" onclick="saveWifi()">
+            <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- === LIST SECTIONS === -->
+    <!-- Restaurantes -->
+    <div id="section-restaurantes" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Restaurantes</h2>
+      <p class="text-sm text-gray-500 mb-6">Indicações de onde comer perto da propriedade.</p>
+      <div id="list-restaurantes"></div>
+      <button onclick="openAddForm('restaurantes')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
+        <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Restaurante
+      </button>
+      <div id="form-restaurantes" class="add-form hidden mt-3"></div>
+    </div>
+
+    <!-- Mercados -->
+    <div id="section-mercados" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Mercados</h2>
+      <p class="text-sm text-gray-500 mb-6">Supermercados e lojas perto da propriedade.</p>
+      <div id="list-mercados"></div>
+      <button onclick="openAddForm('mercados')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
+        <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Mercado
+      </button>
+      <div id="form-mercados" class="add-form hidden mt-3"></div>
+    </div>
+
+    <!-- Farmácias -->
+    <div id="section-farmacias" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Farmácias</h2>
+      <p class="text-sm text-gray-500 mb-6">Farmácias e drogarias próximas.</p>
+      <div id="list-farmacias"></div>
+      <button onclick="openAddForm('farmacias')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
+        <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Farmácia
+      </button>
+      <div id="form-farmacias" class="add-form hidden mt-3"></div>
+    </div>
+
+    <!-- Atividades -->
+    <div id="section-atividades" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">O que Fazer</h2>
+      <p class="text-sm text-gray-500 mb-6">Praias, passeios e atrações turísticas.</p>
+      <div id="list-atividades"></div>
+      <button onclick="openAddForm('atividades')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
+        <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Atividade
+      </button>
+      <div id="form-atividades" class="add-form hidden mt-3"></div>
+    </div>
+
+    <!-- Academias -->
+    <div id="section-academias" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Academias</h2>
+      <p class="text-sm text-gray-500 mb-6">Academias e espaços para se exercitar.</p>
+      <div id="list-academias"></div>
+      <button onclick="openAddForm('academias')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
+        <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Academia
+      </button>
+      <div id="form-academias" class="add-form hidden mt-3"></div>
+    </div>
+
+    <!-- Emergência -->
+    <div id="section-emergencia" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Emergência</h2>
+      <p class="text-sm text-gray-500 mb-6">Contatos e locais para situações de urgência.</p>
+      <div id="list-emergencia"></div>
+      <button onclick="openAddForm('emergencia')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
+        <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Contato
+      </button>
+      <div id="form-emergencia" class="add-form hidden mt-3"></div>
+    </div>
+
+    <!-- === REGRAS === -->
+    <div id="section-regras" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Regras da Casa</h2>
+      <p class="text-sm text-gray-500 mb-6">Regras e orientações para os hóspedes.</p>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+        <div>
+          <label class="field-label">Regras (uma por linha)</label>
+          <textarea id="r-rules" class="field-input field-textarea" style="min-height:180px"
+            placeholder="Proibido fumar dentro da casa&#10;Check-out até 11h&#10;Não é permitido animais de estimação&#10;Respeite o silêncio após 22h"></textarea>
+        </div>
+        <div class="pt-2">
+          <button class="save-btn" onclick="saveRegras()">
+            <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast">✓ Salvo com sucesso!</div>
+
+<script>
+const SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
+const sb = window.supabase.createClient(SB_URL, SB_KEY);
+
+let hostId = null;
+let hostData = {};
+let content  = {};
+let editList  = null;
+let editIndex = -1;
+
+const LIST_KEYS = ['restaurantes','mercados','farmacias','atividades','academias','emergencia'];
+
+// ── Init ─────────────────────────────────────────────────────────────
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { location.href = 'login.html'; return; }
+  hostId = session.user.id;
+
+  const [{ data: h }, { data: c }] = await Promise.all([
+    sb.from('hosts').select('*').eq('id', hostId).single(),
+    sb.from('guide_content').select('*').eq('host_id', hostId).single()
+  ]);
+  hostData = h || {};
+
+  if (!c) {
+    await sb.from('guide_content').upsert({ host_id: hostId });
+    const { data: c2 } = await sb.from('guide_content').select('*').eq('host_id', hostId).single();
+    content = c2 || {};
+  } else {
+    content = c;
+  }
+
+  document.getElementById('loading-state').style.display = 'none';
+  populateForms();
+  updatePreviewLink();
+  showSection('geral');
+}
+
+function populateForms() {
+  // Geral
+  v('g-propname', hostData.property_name || '');
+  v('g-owner',    hostData.owner_name    || '');
+  v('g-slug',     hostData.slug          || '');
+  // Propriedade
+  v('p-address',  content.address     || '');
+  v('p-checkin',  content.checkin_time || '13:00');
+  v('p-checkout', content.checkout_time|| '11:00');
+  v('p-access',   content.access_code || '');
+  v('p-maps',     content.maps_url    || '');
+  v('p-embed',    content.maps_embed  || '');
+  // Hero
+  v('h-img',     content.hero_image_url   || '');
+  v('h-welcome', content.welcome_message  || '');
+  previewHeroImage();
+  // WiFi
+  v('w-name', content.wifi_name     || '');
+  v('w-pass', content.wifi_password || '');
+  v('w-qr',   content.wifi_qr_url  || '');
+  // Regras
+  v('r-rules', content.rules || '');
+  // Lists
+  LIST_KEYS.forEach(k => renderList(k));
+  // Header
+  document.getElementById('header-prop').textContent = hostData.property_name || 'Minha Propriedade';
+}
+
+function v(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val;
+}
+function g(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+// ── Navigation ───────────────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('section-' + name);
+  if (panel) panel.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b => {
+    if (b.getAttribute('onclick') === "showSection('" + name + "')") b.classList.add('active');
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Preview link ──────────────────────────────────────────────────────
+function updatePreviewLink() {
+  const slug = hostData.slug;
+  const link = document.getElementById('preview-link');
+  if (slug) {
+    link.href = 'guia.html?h=' + slug;
+    link.classList.remove('hidden');
+  }
+}
+
+// ── Save: Geral ───────────────────────────────────────────────────────
+async function saveGeral() {
+  const slug = g('g-slug');
+  if (!slug) { showToast('⚠ Defina um slug para o guia.'); return; }
+
+  const { error } = await sb.from('hosts').update({
+    property_name: g('g-propname'),
+    owner_name:    g('g-owner'),
+    slug:          slug
+  }).eq('id', hostId);
+
+  if (error) { showToast('Erro: ' + error.message); return; }
+  hostData.property_name = g('g-propname');
+  hostData.owner_name    = g('g-owner');
+  hostData.slug          = slug;
+  document.getElementById('header-prop').textContent = hostData.property_name || 'Minha Propriedade';
+  updatePreviewLink();
+  showToast('✓ Salvo com sucesso!');
+}
+
+// ── Save: Propriedade ─────────────────────────────────────────────────
+async function savePropriedade() {
+  const updates = {
+    address:      g('p-address'),
+    checkin_time: g('p-checkin'),
+    checkout_time:g('p-checkout'),
+    access_code:  g('p-access'),
+    maps_url:     g('p-maps'),
+    maps_embed:   g('p-embed'),
+    updated_at:   new Date().toISOString()
+  };
+  await upsertContent(updates);
+}
+
+// ── Save: Hero ────────────────────────────────────────────────────────
+async function saveHero() {
+  const updates = {
+    hero_image_url:  g('h-img'),
+    welcome_message: g('h-welcome'),
+    updated_at:      new Date().toISOString()
+  };
+  await upsertContent(updates);
+  previewHeroImage();
+}
+
+function previewHeroImage() {
+  const url = g('h-img');
+  const wrap = document.getElementById('h-preview-wrap');
+  const img  = document.getElementById('h-preview');
+  if (url) { img.src = url; wrap.classList.remove('hidden'); }
+  else { wrap.classList.add('hidden'); }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('h-img');
+  if (inp) inp.addEventListener('blur', previewHeroImage);
+});
+
+// ── Save: Wi-Fi ───────────────────────────────────────────────────────
+async function saveWifi() {
+  const updates = {
+    wifi_name:     g('w-name'),
+    wifi_password: g('w-pass'),
+    wifi_qr_url:   g('w-qr'),
+    updated_at:    new Date().toISOString()
+  };
+  await upsertContent(updates);
+}
+
+// ── Save: Regras ──────────────────────────────────────────────────────
+async function saveRegras() {
+  await upsertContent({ rules: g('r-rules'), updated_at: new Date().toISOString() });
+}
+
+// ── Upsert helper ─────────────────────────────────────────────────────
+async function upsertContent(updates) {
+  const { error } = await sb.from('guide_content')
+    .upsert({ host_id: hostId, ...content, ...updates });
+  if (error) { showToast('Erro: ' + error.message); return; }
+  Object.assign(content, updates);
+  showToast('✓ Salvo com sucesso!');
+}
+
+// ── List rendering ────────────────────────────────────────────────────
+function renderList(key) {
+  const container = document.getElementById('list-' + key);
+  if (!container) return;
+  const items = content[key] || [];
+  if (items.length === 0) {
+    container.innerHTML = '<p class="text-sm text-gray-400 mb-3">Nenhum item ainda.</p>';
+    return;
+  }
+  container.innerHTML = items.map((item, i) => `
+    <div class="item-card">
+      <div class="item-card-body">
+        <div class="item-card-name">${escHtml(item.name || '')}</div>
+        <div class="item-card-sub">${[item.time, item.category, item.description].filter(Boolean).join(' · ')}</div>
+      </div>
+      <button class="item-btn" onclick="openEditForm('${key}',${i})" title="Editar">
+        <span class="material-icons-outlined" style="font-size:18px">edit</span>
+      </button>
+      <button class="item-btn del" onclick="removeItem('${key}',${i})" title="Remover">
+        <span class="material-icons-outlined" style="font-size:18px">delete_outline</span>
+      </button>
+    </div>
+  `).join('');
+}
+
+// ── List form ──────────────────────────────────────────────────────────
+function formHTML(key, item) {
+  item = item || {};
+  return `
+    <p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-4">${editIndex >= 0 ? 'Editar' : 'Novo'} Item</p>
+    <div class="space-y-3">
+      <div>
+        <label class="field-label">Nome *</label>
+        <input id="fi-name" class="field-input" value="${escAttr(item.name||'')}" placeholder="Nome do local"/>
+      </div>
+      <div>
+        <label class="field-label">Descrição</label>
+        <input id="fi-desc" class="field-input" value="${escAttr(item.description||'')}" placeholder="Uma linha sobre o local"/>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="field-label">Tempo / Distância</label>
+          <input id="fi-time" class="field-input" value="${escAttr(item.time||'')}" placeholder="Ex: 5 min"/>
+        </div>
+        <div>
+          <label class="field-label">Categoria</label>
+          <input id="fi-cat" class="field-input" value="${escAttr(item.category||'')}" placeholder="Ex: Japonês"/>
+        </div>
+      </div>
+      <div>
+        <label class="field-label">Link Google Maps</label>
+        <input id="fi-maps" class="field-input" value="${escAttr(item.maps_url||'')}" placeholder="https://maps.google.com/..."/>
+      </div>
+      <div>
+        <label class="field-label">Endereço / Bairro</label>
+        <input id="fi-addr" class="field-input" value="${escAttr(item.address||'')}" placeholder="Ex: Ponta Negra, Natal — 200m daqui"/>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <button onclick="saveItem('${key}')" class="save-btn">
+        <span class="material-icons-outlined" style="font-size:16px">check</span>Salvar
+      </button>
+      <button onclick="closeForm('${key}')" style="background:#f3f4f6;color:#6b7280;font-weight:700;font-size:13px;padding:10px 18px;border-radius:12px;border:none;cursor:pointer;">
+        Cancelar
+      </button>
+    </div>
+  `;
+}
+
+function openAddForm(key) {
+  editList = key; editIndex = -1;
+  const form = document.getElementById('form-' + key);
+  form.innerHTML = formHTML(key, {});
+  form.classList.remove('hidden');
+  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function openEditForm(key, idx) {
+  editList = key; editIndex = idx;
+  const items = content[key] || [];
+  const form  = document.getElementById('form-' + key);
+  form.innerHTML = formHTML(key, items[idx] || {});
+  form.classList.remove('hidden');
+  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeForm(key) {
+  document.getElementById('form-' + key).classList.add('hidden');
+  editList = null; editIndex = -1;
+}
+
+async function saveItem(key) {
+  const name = document.getElementById('fi-name').value.trim();
+  if (!name) { showToast('⚠ Nome é obrigatório.'); return; }
+  const item = {
+    name,
+    description: document.getElementById('fi-desc').value.trim(),
+    time:        document.getElementById('fi-time').value.trim(),
+    category:    document.getElementById('fi-cat').value.trim(),
+    maps_url:    document.getElementById('fi-maps').value.trim(),
+    address:     document.getElementById('fi-addr').value.trim(),
+  };
+  const items = [...(content[key] || [])];
+  if (editIndex >= 0) items[editIndex] = item;
+  else items.push(item);
+
+  const updates = { [key]: items, updated_at: new Date().toISOString() };
+  const { error } = await sb.from('guide_content').upsert({ host_id: hostId, ...content, ...updates });
+  if (error) { showToast('Erro: ' + error.message); return; }
+  Object.assign(content, updates);
+  renderList(key);
+  closeForm(key);
+  showToast('✓ Salvo!');
+}
+
+async function removeItem(key, idx) {
+  if (!confirm('Remover este item?')) return;
+  const items = [...(content[key] || [])];
+  items.splice(idx, 1);
+  const updates = { [key]: items, updated_at: new Date().toISOString() };
+  const { error } = await sb.from('guide_content').upsert({ host_id: hostId, ...content, ...updates });
+  if (error) { showToast('Erro: ' + error.message); return; }
+  Object.assign(content, updates);
+  renderList(key);
+  showToast('✓ Removido!');
+}
+
+// ── Logout ─────────────────────────────────────────────────────────────
+async function doLogout() {
+  await sb.auth.signOut();
+  location.href = 'login.html';
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── Utils ──────────────────────────────────────────────────────────────
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
+
+init();
+</script>
+</body>
+</html>

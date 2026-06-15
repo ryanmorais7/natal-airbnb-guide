@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — Zamio Guias</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: { primary: "#4A6741", "primary-light": "#6B8E61" },
+      fontFamily: { serif: ["'DM Serif Display'","serif"], sans: ["'Nunito Sans'","sans-serif"] }
+    }
+  }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { font-family: 'Nunito Sans', sans-serif; }
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+.spin { animation:spin .7s linear infinite; display:inline-block; }
+.host-card { background:#fff; border-radius:16px; border:1.5px solid #e5e7eb; transition:all .2s; }
+.host-card:hover { border-color:rgba(74,103,65,.3); box-shadow:0 4px 20px rgba(74,103,65,.08); }
+.stat-card { background:#fff; border-radius:16px; border:1.5px solid #e5e7eb; padding:20px 24px; }
+.badge { display:inline-flex;align-items:center;font-size:10px;font-weight:800;padding:3px 8px;border-radius:100px;gap:4px; }
+.action-btn { display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:6px 12px;border-radius:9px;transition:all .15s;border:none;cursor:pointer; }
+</style>
+</head>
+<body class="min-h-screen bg-gray-50">
+
+<!-- Header -->
+<header class="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+  <div class="flex items-center gap-3">
+    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+      <span class="material-icons-outlined text-white" style="font-size:17px">admin_panel_settings</span>
+    </div>
+    <div>
+      <span class="font-bold text-gray-900 text-sm">Zamio Guias</span>
+      <span class="ml-2 badge bg-amber-100 text-amber-700">ADMIN</span>
+    </div>
+  </div>
+  <div class="flex items-center gap-4">
+    <a href="painel.html" class="action-btn bg-gray-100 text-gray-600 hover:bg-gray-200">
+      <span class="material-icons-outlined" style="font-size:15px">cottage</span>
+      Meu Guia
+    </a>
+    <button onclick="doLogout()" class="action-btn text-gray-400 hover:text-red-500 bg-transparent">
+      <span class="material-icons-outlined" style="font-size:15px">logout</span>
+      Sair
+    </button>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="max-w-5xl mx-auto px-4 py-8">
+
+  <!-- Not admin warning (hidden by default) -->
+  <div id="not-admin" class="hidden bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
+    <span class="material-icons-outlined text-4xl text-red-400 mb-3 block">block</span>
+    <h2 class="font-serif text-xl text-red-700 mb-2">Acesso Negado</h2>
+    <p class="text-sm text-red-500">Sua conta não tem permissão de administrador.</p>
+    <a href="painel.html" class="inline-flex items-center gap-2 mt-4 bg-gray-100 text-gray-700 font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-gray-200 transition-colors">
+      Ir para o Painel
+    </a>
+  </div>
+
+  <!-- Loading -->
+  <div id="loading" class="flex items-center justify-center py-24 text-gray-400">
+    <span class="material-icons-outlined spin text-3xl mr-2">refresh</span>
+    Carregando...
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="hidden">
+
+    <!-- Page title -->
+    <div class="mb-8">
+      <h1 class="font-serif text-3xl text-gray-900 mb-1">Painel de Administração</h1>
+      <p class="text-sm text-gray-500">Gerencie todos os anfitriões da plataforma.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="stat-card">
+        <p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-1">Anfitriões</p>
+        <p id="stat-hosts" class="font-serif text-3xl text-gray-900">—</p>
+      </div>
+      <div class="stat-card">
+        <p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-1">Guias Ativos</p>
+        <p id="stat-guides" class="font-serif text-3xl text-gray-900">—</p>
+      </div>
+      <div class="stat-card">
+        <p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-1">Com Slug</p>
+        <p id="stat-slugs" class="font-serif text-3xl text-gray-900">—</p>
+      </div>
+      <div class="stat-card">
+        <p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-1">Última Atualiz.</p>
+        <p id="stat-updated" class="font-serif text-xl text-gray-900">—</p>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="mb-5 flex items-center gap-3">
+      <div class="relative flex-1 max-w-xs">
+        <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" style="font-size:18px">search</span>
+        <input id="search-input" type="text" placeholder="Buscar por nome, e-mail ou slug..."
+          oninput="filterHosts()"
+          class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"/>
+      </div>
+      <button onclick="loadDashboard()" class="action-btn bg-gray-100 text-gray-600 hover:bg-gray-200">
+        <span class="material-icons-outlined" style="font-size:16px">refresh</span>
+        Atualizar
+      </button>
+    </div>
+
+    <!-- Hosts list -->
+    <div id="hosts-list" class="space-y-3"></div>
+    <p id="no-results" class="hidden text-center text-sm text-gray-400 py-8">Nenhum anfitrião encontrado.</p>
+  </div>
+
+</main>
+
+<!-- Edit modal (admin editing any host's content) -->
+<div id="edit-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between p-6 border-b border-gray-100">
+      <h3 class="font-serif text-xl text-gray-900">Editar Guia</h3>
+      <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+        <span class="material-icons-outlined">close</span>
+      </button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Nome da Propriedade</label>
+        <input id="m-propname" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Check-in</label>
+          <input id="m-checkin" type="time" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        </div>
+        <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Check-out</label>
+          <input id="m-checkout" type="time" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Wi-Fi — Rede</label>
+        <input id="m-wname" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+      </div>
+      <div>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Wi-Fi — Senha</label>
+        <input id="m-wpass" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+      </div>
+      <div>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Endereço</label>
+        <input id="m-address" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+      </div>
+      <div>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Mensagem de Boas-Vindas</label>
+        <textarea id="m-welcome" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+      </div>
+    </div>
+    <div class="p-6 border-t border-gray-100 flex gap-3">
+      <button onclick="saveModal()"
+        class="flex-1 bg-primary text-white font-bold text-sm py-2.5 rounded-xl hover:bg-primary-light transition-colors flex items-center justify-center gap-2">
+        <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar Alterações
+      </button>
+      <button onclick="closeModal()"
+        class="px-5 bg-gray-100 text-gray-600 font-bold text-sm py-2.5 rounded-xl hover:bg-gray-200 transition-colors">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
+const sb = window.supabase.createClient(SB_URL, SB_KEY);
+
+let allHosts   = [];
+let allContent = {};
+let editingHostId = null;
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { location.href = 'login.html'; return; }
+
+  // Check admin
+  const { data: me } = await sb.from('hosts').select('is_admin').eq('id', session.user.id).single();
+  if (!me || !me.is_admin) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('not-admin').classList.remove('hidden');
+    return;
+  }
+
+  loadDashboard();
+}
+
+async function loadDashboard() {
+  document.getElementById('loading').classList.remove('hidden');
+  document.getElementById('dashboard').classList.add('hidden');
+
+  // Load all hosts
+  const { data: hosts } = await sb.from('hosts').select('*').order('created_at', { ascending: false });
+  allHosts = hosts || [];
+
+  // Load all guide_content
+  const { data: contents } = await sb.from('guide_content').select('*');
+  allContent = {};
+  (contents || []).forEach(c => { allContent[c.host_id] = c; });
+
+  // Stats
+  const withSlug    = allHosts.filter(h => h.slug).length;
+  const withContent = allHosts.filter(h => allContent[h.id]).length;
+  const lastUpd     = (contents || []).map(c => c.updated_at).sort().pop();
+
+  document.getElementById('stat-hosts').textContent   = allHosts.length;
+  document.getElementById('stat-guides').textContent  = withContent;
+  document.getElementById('stat-slugs').textContent   = withSlug;
+  document.getElementById('stat-updated').textContent = lastUpd
+    ? new Date(lastUpd).toLocaleDateString('pt-BR', { day:'2-digit', month:'short' })
+    : '—';
+
+  document.getElementById('loading').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+
+  renderHosts(allHosts);
+}
+
+function filterHosts() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const filtered = allHosts.filter(h =>
+    (h.property_name || '').toLowerCase().includes(q) ||
+    (h.email         || '').toLowerCase().includes(q) ||
+    (h.slug          || '').toLowerCase().includes(q) ||
+    (h.owner_name    || '').toLowerCase().includes(q)
+  );
+  renderHosts(filtered);
+}
+
+function renderHosts(hosts) {
+  const container = document.getElementById('hosts-list');
+  const noRes     = document.getElementById('no-results');
+
+  if (hosts.length === 0) {
+    container.innerHTML = '';
+    noRes.classList.remove('hidden');
+    return;
+  }
+  noRes.classList.add('hidden');
+
+  container.innerHTML = hosts.map(h => {
+    const c    = allContent[h.id] || {};
+    const slug = h.slug;
+    const hasContent = !!allContent[h.id];
+    const lastUpd = c.updated_at
+      ? new Date(c.updated_at).toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'2-digit' })
+      : null;
+
+    const items = [
+      (c.restaurants || []).length,
+      (c.markets     || []).length,
+      (c.pharmacies  || []).length,
+      (c.activities  || []).length,
+      (c.gyms        || []).length,
+      (c.emergency   || []).length,
+    ].reduce((a, b) => a + b, 0);
+
+    return `
+    <div class="host-card p-5">
+      <div class="flex items-start gap-4">
+        <!-- Avatar -->
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-white text-lg"
+          style="background:${colorFromStr(h.email || h.id)}">
+          ${(h.property_name || h.email || '?')[0].toUpperCase()}
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap mb-1">
+            <p class="font-bold text-gray-900 text-sm">${escHtml(h.property_name || 'Sem nome')}</p>
+            ${h.is_admin ? '<span class="badge bg-amber-100 text-amber-700">ADMIN</span>' : ''}
+            ${hasContent
+              ? '<span class="badge bg-green-100 text-green-700"><span class="material-icons-outlined" style="font-size:10px">check_circle</span>Configurado</span>'
+              : '<span class="badge bg-gray-100 text-gray-500">Pendente</span>'
+            }
+          </div>
+          <p class="text-xs text-gray-400 mb-1">${escHtml(h.email || '—')} · ${escHtml(h.owner_name || 'Anfitrião')}</p>
+          <div class="flex items-center gap-3 flex-wrap text-xs text-gray-400">
+            ${slug ? `<span class="flex items-center gap-1"><span class="material-icons-outlined" style="font-size:12px">link</span>?h=${escHtml(slug)}</span>` : '<span class="text-gray-300">Sem slug</span>'}
+            ${items > 0 ? `<span>${items} indicações</span>` : ''}
+            ${lastUpd ? `<span>Atualizado ${lastUpd}</span>` : ''}
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-2 flex-shrink-0">
+          ${slug ? `
+            <a href="guia.html?h=${escAttr(slug)}" target="_blank"
+              class="action-btn bg-gray-100 text-gray-600 hover:bg-gray-200">
+              <span class="material-icons-outlined" style="font-size:14px">open_in_new</span>
+              <span class="hidden sm:inline">Ver Guia</span>
+            </a>
+          ` : ''}
+          <button onclick="openEdit('${h.id}')"
+            class="action-btn bg-primary/10 text-primary hover:bg-primary hover:text-white">
+            <span class="material-icons-outlined" style="font-size:14px">edit</span>
+            <span class="hidden sm:inline">Editar</span>
+          </button>
+          <button onclick="deleteHost('${h.id}', '${escAttr(h.email || '')}')"
+            class="action-btn bg-red-50 text-red-400 hover:bg-red-500 hover:text-white">
+            <span class="material-icons-outlined" style="font-size:14px">delete_outline</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    `;
+  }).join('');
+}
+
+// ── Edit modal ────────────────────────────────────────────────────────
+function openEdit(hostId) {
+  const c = allContent[hostId] || {};
+  const h = allHosts.find(x => x.id === hostId) || {};
+  editingHostId = hostId;
+
+  document.getElementById('m-propname').value = c.property_name || h.property_name || '';
+  document.getElementById('m-checkin').value  = c.checkin_time  || '13:00';
+  document.getElementById('m-checkout').value = c.checkout_time || '11:00';
+  document.getElementById('m-wname').value    = c.wifi_name     || '';
+  document.getElementById('m-wpass').value    = c.wifi_password || '';
+  document.getElementById('m-address').value  = c.address       || '';
+  document.getElementById('m-welcome').value  = c.welcome_message || '';
+
+  document.getElementById('edit-modal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('edit-modal').classList.add('hidden');
+  editingHostId = null;
+}
+
+async function saveModal() {
+  if (!editingHostId) return;
+  const existing = allContent[editingHostId] || {};
+  const updates = {
+    host_id:         editingHostId,
+    ...existing,
+    property_name:   document.getElementById('m-propname').value.trim(),
+    checkin_time:    document.getElementById('m-checkin').value,
+    checkout_time:   document.getElementById('m-checkout').value,
+    wifi_name:       document.getElementById('m-wname').value.trim(),
+    wifi_password:   document.getElementById('m-wpass').value.trim(),
+    address:         document.getElementById('m-address').value.trim(),
+    welcome_message: document.getElementById('m-welcome').value.trim(),
+    updated_at:      new Date().toISOString(),
+  };
+
+  const { error } = await sb.from('guide_content').upsert(updates);
+  if (error) { alert('Erro ao salvar: ' + error.message); return; }
+
+  // Update host property_name too
+  await sb.from('hosts').update({ property_name: updates.property_name }).eq('id', editingHostId);
+
+  allContent[editingHostId] = updates;
+  const host = allHosts.find(h => h.id === editingHostId);
+  if (host) host.property_name = updates.property_name;
+
+  closeModal();
+  renderHosts(allHosts);
+  showToast('✓ Guia atualizado!');
+}
+
+// ── Delete host ───────────────────────────────────────────────────────
+async function deleteHost(hostId, email) {
+  if (!confirm(`Remover o anfitrião "${email}"?\n\nEsta ação remove o perfil e o conteúdo do guia. O usuário em si precisa ser deletado no Supabase Dashboard (Authentication → Users).`)) return;
+
+  const { error } = await sb.from('hosts').delete().eq('id', hostId);
+  if (error) { alert('Erro: ' + error.message); return; }
+
+  allHosts = allHosts.filter(h => h.id !== hostId);
+  delete allContent[hostId];
+  renderHosts(allHosts);
+  showToast('Anfitrião removido.');
+}
+
+// ── Logout ────────────────────────────────────────────────────────────
+async function doLogout() {
+  await sb.auth.signOut();
+  location.href = 'login.html';
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────
+function colorFromStr(s) {
+  const colors = ['#4A6741','#6B8E61','#8B5CF6','#0EA5E9','#F59E0B','#EF4444','#14B8A6','#F97316'];
+  let hash = 0;
+  for (let i = 0; i < s.length; i++) hash = s.charCodeAt(i) + ((hash << 5) - hash);
+  return colors[Math.abs(hash) % colors.length];
+}
+
+let toastTimer;
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#111827;color:#fff;font-size:13px;font-weight:700;padding:10px 20px;border-radius:100px;z-index:9999;transition:transform .3s';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(80px)'; }, 2800);
+}
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
+
+init();
+</script>
+</body>
+</html>
