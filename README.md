@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Zamio Guias — Plataforma SaaS de Guias para Anfitriões
 
 Plataforma web multi-tenant que permite a anfitriões do Airbnb criar e gerenciar guias digitais personalizados para seus hóspedes, sem necessidade de conhecimento técnico.
@@ -152,3 +153,7 @@ Hóspede acessa o guia sem login, em qualquer dispositivo
 ├── ADMIN_SETUP.sql     # Configuração de permissões admin
 └── assets/             # Imagens da propriedade
 ```
+=======
+# natal-airbnb-guide
+Site para hóspedes do Airbnb com regras, WiFi, locais próximos, fotos, localização e avaliações.
+>>>>>>> fb0f7d38e059cd905b9709c1549ee8eebe5e9d6d
