@@ -61,6 +61,11 @@ tailwind.config = {
     <span id="header-prop" class="text-sm font-semibold text-gray-500 hidden sm:block">Carregando...</span>
   </div>
   <div class="flex items-center gap-3">
+    <a href="index.html" target="_blank"
+      class="flex items-center gap-1.5 text-xs font-bold text-primary border-2 border-primary/30 px-3 py-2 rounded-xl hover:bg-primary hover:text-white hover:border-primary transition-all">
+      <span class="material-icons-outlined" style="font-size:16px">open_in_new</span>
+      <span class="hidden sm:inline">Ver Guia</span>
+    </a>
     <button onclick="shareGuia()"
       class="save-btn text-xs py-2 px-4">
       <span class="material-icons-outlined" style="font-size:16px">share</span>
@@ -81,6 +86,9 @@ tailwind.config = {
     <button class="nav-item" onclick="showSection('geral')">
       <span class="material-icons-outlined">tune</span>Geral
     </button>
+    <button class="nav-item" onclick="showSection('limpeza')">
+      <span class="material-icons-outlined">cleaning_services</span>Limpeza
+    </button>
     <button class="nav-item" onclick="showSection('aparencia')">
       <span class="material-icons-outlined">palette</span>Aparência
     </button>
@@ -88,7 +96,7 @@ tailwind.config = {
       <span class="material-icons-outlined">home</span>Propriedade
     </button>
     <button class="nav-item" onclick="showSection('fechadura')">
-      <span class="material-icons-outlined">lock</span>Fechadura
+      <span class="material-icons-outlined">key</span>Acesso
     </button>
     <button class="nav-item" onclick="showSection('hero')">
       <span class="material-icons-outlined">image</span>Apresentação
@@ -124,9 +132,10 @@ tailwind.config = {
   <!-- Mobile nav (horizontal scroll) -->
   <div class="md:hidden bg-white border-b border-gray-100 flex gap-0.5 overflow-x-auto px-2 py-1.5 sticky top-[57px] z-10 w-full" style="scrollbar-width:none">
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('geral')"><span class="material-icons-outlined">tune</span><span class="hidden sm:inline">Geral</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('limpeza')"><span class="material-icons-outlined">cleaning_services</span><span class="hidden sm:inline">Limpeza</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('aparencia')"><span class="material-icons-outlined">palette</span><span class="hidden sm:inline">Aparência</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('propriedade')"><span class="material-icons-outlined">home</span><span class="hidden sm:inline">Propriedade</span></button>
-    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('fechadura')"><span class="material-icons-outlined">lock</span><span class="hidden sm:inline">Fechadura</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('fechadura')"><span class="material-icons-outlined">key</span><span class="hidden sm:inline">Acesso</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('hero')"><span class="material-icons-outlined">image</span><span class="hidden sm:inline">Apresentação</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('wifi')"><span class="material-icons-outlined">wifi</span><span class="hidden sm:inline">Wi-Fi</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('restaurantes')"><span class="material-icons-outlined">restaurant</span><span class="hidden sm:inline">Restaurantes</span></button>
@@ -188,6 +197,33 @@ tailwind.config = {
             <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- === LIMPEZA === -->
+    <div id="section-limpeza" class="section-panel">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4 sm:mb-6">
+        <div>
+          <h2 class="font-serif text-2xl text-gray-900 mb-1">Limpeza</h2>
+          <p class="text-sm text-gray-500">Marque o que precisa de atenção antes da próxima estadia.</p>
+        </div>
+        <button onclick="enviarWhatsapp()"
+          class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm text-white transition-all flex-shrink-0 shadow-sm active:scale-[.97]"
+          style="background:#25D366">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="flex-shrink:0">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Enviar lista pelo WhatsApp
+        </button>
+      </div>
+      <div id="limpeza-summary"></div>
+      <div id="limpeza-groups" class="space-y-4"></div>
+      <div class="mt-5 flex justify-end">
+        <button onclick="resetLimpeza()"
+          class="text-xs text-gray-400 hover:text-gray-600 font-bold flex items-center gap-1 transition-colors">
+          <span class="material-icons-outlined" style="font-size:15px">refresh</span>
+          Redefinir tudo para OK
+        </button>
       </div>
     </div>
 
@@ -295,9 +331,13 @@ tailwind.config = {
           <input id="w-qr" class="field-input" placeholder="https://..." type="text"/>
           <p class="text-xs text-gray-400 mt-1.5">Gere gratuitamente em <strong>qr-code-generator.com</strong> → cole o link da imagem aqui. Aparece no guia para o hóspede escanear.</p>
         </div>
-        <div class="pt-2">
+        <div class="pt-2 flex flex-wrap gap-2">
           <button class="save-btn" onclick="saveWifi()">
             <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
+          </button>
+          <button onclick="gerarCartao()"
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all">
+            <span class="material-icons-outlined" style="font-size:16px">print</span>Gerar cartão imprimível
           </button>
         </div>
       </div>
@@ -370,25 +410,22 @@ tailwind.config = {
       <div id="form-emergencia" class="add-form hidden mt-3"></div>
     </div>
 
-    <!-- === FECHADURA === -->
+    <!-- === ACESSO === -->
     <div id="section-fechadura" class="section-panel">
-      <h2 class="font-serif text-2xl text-gray-900 mb-1">Fechadura</h2>
-      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Código de acesso atual e prazo de validade.</p>
-      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-5">
-        <div>
-          <label class="field-label">Código da Fechadura</label>
-          <input id="f-code" class="field-input font-mono text-xl tracking-widest" placeholder="Ex: 5478" type="text" oninput="updateFechaduraStatus()"/>
-        </div>
-        <div>
-          <label class="field-label">Válido até</label>
-          <input id="f-valid" class="field-input" type="date" onchange="updateFechaduraStatus()"/>
-        </div>
-        <div id="f-status" class="hidden p-3 rounded-xl text-sm font-bold"></div>
-        <div class="pt-2">
-          <button class="save-btn" onclick="saveFechadura()">
-            <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
-          </button>
-        </div>
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Acesso</h2>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Como o hóspede acessa a propriedade.</p>
+
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 mb-4">
+        <p class="field-label mb-3">Tipo de acesso</p>
+        <div id="access-type-picker" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+      </div>
+
+      <div id="access-fields" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-4"></div>
+
+      <div class="pt-2 mt-4">
+        <button class="save-btn" onclick="saveAcesso()">
+          <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
+        </button>
       </div>
     </div>
 
@@ -422,7 +459,7 @@ tailwind.config = {
 <div id="onboarding" class="fixed inset-0 z-50 flex flex-col bg-stone-50" style="display:none">
 
   <!-- Header: step progress -->
-  <div class="bg-white border-b border-gray-100 px-6 py-5 shadow-sm">
+  <div class="bg-white border-b border-gray-100 px-4 sm:px-6 py-5 shadow-sm">
     <div class="max-w-md mx-auto">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2">
@@ -460,7 +497,7 @@ tailwind.config = {
 
   <!-- Content area (scrollable) -->
   <div class="flex-1 overflow-y-auto">
-    <div class="max-w-md mx-auto px-6 py-10">
+    <div class="max-w-md mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
       <!-- ── PASSO 1 · Geral ── -->
       <div id="ob-s1" class="ob-step">
@@ -570,7 +607,7 @@ tailwind.config = {
   </div>
 
   <!-- Footer: navigation buttons -->
-  <div class="bg-white border-t border-gray-100 px-6 py-4 shadow-[0_-2px_8px_rgba(0,0,0,.04)]">
+  <div class="bg-white border-t border-gray-100 px-4 sm:px-6 py-4 shadow-[0_-2px_8px_rgba(0,0,0,.04)]">
     <div class="max-w-md mx-auto flex items-center gap-3">
       <button id="ob-back" onclick="obPrev()"
         class="hidden px-5 py-3 rounded-xl border border-gray-200 text-sm font-bold text-gray-500 hover:bg-gray-50 transition-colors flex-shrink-0">
@@ -620,6 +657,7 @@ async function init() {
 
   document.getElementById('loading-state').style.display = 'none';
   populateForms();
+  loadLimpeza();
   showSection('geral');
   checkOnboarding();
 }
@@ -647,10 +685,10 @@ function populateForms() {
   // Aparência
   selectedThemeId = content.theme_id || 'oliva';
   renderThemePicker();
-  // Fechadura
-  v('f-code',  content.lock_code             || '');
-  v('f-valid', content.lock_code_valid_until || '');
-  updateFechaduraStatus();
+  // Acesso
+  selectedAccessType = content.access_type || 'fechadura';
+  renderAccessPicker();
+  renderAccessFields();
   // Regras
   v('r-rules', content.rules || '');
   // Lists
@@ -677,7 +715,162 @@ function showSection(name) {
   document.querySelectorAll('.nav-item').forEach(b => {
     if (b.getAttribute('onclick') === "showSection('" + name + "')") b.classList.add('active');
   });
+  if (name === 'limpeza') renderLimpeza();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Limpeza ───────────────────────────────────────────────────────────
+const LIMPEZA_GRUPOS = [
+  { id: 'cama', label: 'Cama', icon: 'bed', itens: [
+    { id: 'lencol',      label: 'Lençol de casal' },
+    { id: 'fronha',      label: 'Fronha (x2)' },
+    { id: 'cobertor',    label: 'Cobertor / Edredom' },
+    { id: 'travesseiro', label: 'Travesseiro (x2)' },
+  ]},
+  { id: 'banheiro', label: 'Banheiro', icon: 'shower', itens: [
+    { id: 'toalha-banho',  label: 'Toalha de banho (x2)' },
+    { id: 'toalha-rosto',  label: 'Toalha de rosto (x2)' },
+    { id: 'tapete-ban',    label: 'Tapete de banheiro' },
+    { id: 'papel',         label: 'Papel higiênico' },
+    { id: 'sabonete',      label: 'Sabonete / Shampoo' },
+  ]},
+  { id: 'cozinha', label: 'Cozinha', icon: 'kitchen', itens: [
+    { id: 'pratos',     label: 'Pratos' },
+    { id: 'copos',      label: 'Copos / Xícaras' },
+    { id: 'talheres',   label: 'Talheres' },
+    { id: 'panelas',    label: 'Panelas / Frigideira' },
+    { id: 'detergente', label: 'Detergente + Esponja' },
+  ]},
+  { id: 'geral', label: 'Geral', icon: 'home_work', itens: [
+    { id: 'almofadas',  label: 'Almofadas' },
+    { id: 'tapete-sal', label: 'Tapete da sala' },
+    { id: 'lixo',       label: 'Lixo esvaziado' },
+    { id: 'chao',       label: 'Chão varrido / lavado' },
+    { id: 'janelas',    label: 'Janelas limpas' },
+  ]},
+];
+
+const LIMPEZA_EST = {
+  ok:       { label: 'OK',       icon: 'check_circle', bg: 'bg-green-100', cor: 'text-green-600' },
+  atencao:  { label: 'Atenção',  icon: 'warning',      bg: 'bg-amber-100', cor: 'text-amber-600' },
+  faltando: { label: 'Faltando', icon: 'cancel',       bg: 'bg-red-100',   cor: 'text-red-600'   },
+};
+const CICLO_LIMP = ['ok', 'atencao', 'faltando'];
+let limpezaState = {};
+
+function loadLimpeza() {
+  limpezaState = (content && content.cleaning_state) ? { ...content.cleaning_state } : {};
+}
+
+async function salvarLimpeza() {
+  if (content) content.cleaning_state = { ...limpezaState };
+  await upsertContent({ cleaning_state: limpezaState });
+}
+
+function toggleLimpeza(id) {
+  const cur = limpezaState[id] || 'ok';
+  limpezaState[id] = CICLO_LIMP[(CICLO_LIMP.indexOf(cur) + 1) % 3];
+  salvarLimpeza();
+  renderLimpeza();
+}
+
+function resetLimpeza() {
+  limpezaState = {};
+  salvarLimpeza();
+  renderLimpeza();
+}
+
+function renderLimpeza() {
+  const container = document.getElementById('limpeza-groups');
+  const summary   = document.getElementById('limpeza-summary');
+  if (!container) return;
+
+  let nOk = 0, nAt = 0, nFalt = 0;
+  let html = '';
+
+  for (const g of LIMPEZA_GRUPOS) {
+    html += '<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">';
+    html += '<div class="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-100">';
+    html += '<span class="material-icons-outlined text-gray-400" style="font-size:18px">' + g.icon + '<\/span>';
+    html += '<span class="text-xs font-extrabold text-gray-500 uppercase tracking-wider">' + g.label + '<\/span>';
+    html += '<\/div><div class="divide-y divide-gray-50">';
+
+    for (const item of g.itens) {
+      const est  = limpezaState[item.id] || 'ok';
+      const e    = LIMPEZA_EST[est];
+      if (est === 'ok') nOk++; else if (est === 'atencao') nAt++; else nFalt++;
+
+      html += '<div class="flex items-center gap-3 px-4 py-3.5 cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors select-none" onclick="toggleLimpeza(\'' + item.id + '\')">';
+      html += '<div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ' + e.bg + ' ' + e.cor + '">';
+      html += '<span class="material-icons-outlined" style="font-size:16px">' + e.icon + '<\/span><\/div>';
+      html += '<span class="flex-1 text-sm font-semibold text-gray-700">' + item.label + '<\/span>';
+      html += '<span class="text-xs font-bold ' + e.cor + '">' + e.label + '<\/span>';
+      html += '<\/div>';
+    }
+    html += '<\/div><\/div>';
+  }
+  container.innerHTML = html;
+
+  // Barra de resumo
+  let sumHtml = '';
+  if (nAt === 0 && nFalt === 0) {
+    sumHtml = '<div class="flex items-center gap-2 p-3 bg-green-50 border border-green-100 rounded-xl mb-4 text-sm font-bold text-green-700">'
+      + '<span class="material-icons-outlined text-green-500" style="font-size:18px">check_circle<\/span>'
+      + 'Tudo em ordem! Todos os itens estão OK.<\/div>';
+  } else {
+    sumHtml = '<div class="flex flex-wrap gap-2 mb-4">';
+    if (nAt   > 0) sumHtml += '<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-100 text-amber-700 rounded-xl text-xs font-bold"><span class="material-icons-outlined" style="font-size:14px">warning<\/span>' + nAt   + ' Atenção<\/span>';
+    if (nFalt > 0) sumHtml += '<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-700 rounded-xl text-xs font-bold"><span class="material-icons-outlined" style="font-size:14px">cancel<\/span>' + nFalt + ' Faltando<\/span>';
+    sumHtml += '<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-green-100 text-green-700 rounded-xl text-xs font-bold"><span class="material-icons-outlined" style="font-size:14px">check_circle<\/span>' + nOk + ' OK<\/span><\/div>';
+  }
+  summary.innerHTML = sumHtml;
+}
+
+const GRUPO_EMOJI = { cama: '🛏', banheiro: '🛅', cozinha: '🍳', geral: '🏠' };
+
+function enviarWhatsapp() {
+  const prop = (hostData && hostData.property_name) ? hostData.property_name : 'Minha Propriedade';
+  const hoje = new Date().toLocaleDateString('pt-BR');
+
+  const atencao = [], faltando = [];
+  for (const g of LIMPEZA_GRUPOS) {
+    for (const item of g.itens) {
+      const est = limpezaState[item.id] || 'ok';
+      if (est === 'atencao')  atencao.push({ g, item });
+      if (est === 'faltando') faltando.push({ g, item });
+    }
+  }
+
+  const linha = '----------------------------';
+  let msg = '🧹 *LISTA DE LIMPEZA*\n'
+          + '🏠 ' + prop + '  •  📅 ' + hoje + '\n'
+          + linha + '\n\n';
+
+  if (atencao.length === 0 && faltando.length === 0) {
+    msg += '✅ Tudo em ordem! Todos os itens estão OK.\n';
+  } else {
+    if (faltando.length > 0) {
+      msg += '🔴 FALTANDO / RASGADO (' + faltando.length + ')\n';
+      let curG = '';
+      for (const { g, item } of faltando) {
+        if (g.label !== curG) { curG = g.label; msg += '\n' + (GRUPO_EMOJI[g.id] || '▶') + ' ' + g.label + '\n'; }
+        msg += '   • ' + item.label + '\n';
+      }
+      msg += '\n';
+    }
+    if (atencao.length > 0) {
+      msg += '🟡 PRECISA LIMPAR / TROCAR (' + atencao.length + ')\n';
+      let curG = '';
+      for (const { g, item } of atencao) {
+        if (g.label !== curG) { curG = g.label; msg += '\n' + (GRUPO_EMOJI[g.id] || '▶') + ' ' + g.label + '\n'; }
+        msg += '   • ' + item.label + '\n';
+      }
+      msg += '\n';
+    }
+  }
+
+  msg += linha + '\n_Enviado pelo Zamio Guias_';
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
 }
 
 // ── Aparência / Temas ─────────────────────────────────────────────────
@@ -962,18 +1155,96 @@ async function uploadHeroImage(input) {
   status.className = 'text-xs font-bold text-green-600 mb-2';
 }
 
-// ── Fechadura ─────────────────────────────────────────────────────────
-async function saveFechadura() {
-  await upsertContent({
-    lock_code:             g('f-code'),
-    lock_code_valid_until: g('f-valid') || null,
-    updated_at:            new Date().toISOString()
-  });
+// ── Acesso ────────────────────────────────────────────────────────────
+const ACCESS_TIPOS = [
+  { id: 'fechadura', label: 'Fechadura eletrônica', icon: 'lock' },
+  { id: 'cofre',     label: 'Cofre de chaves',      icon: 'lock_open' },
+  { id: 'chave',     label: 'Chave física',          icon: 'key' },
+  { id: 'portaria',  label: 'Portaria / Recepção',   icon: 'security' },
+  { id: 'outro',     label: 'Outro',                 icon: 'more_horiz' },
+];
+let selectedAccessType = 'fechadura';
+
+function renderAccessPicker() {
+  const c = document.getElementById('access-type-picker');
+  if (!c) return;
+  let h = '';
+  for (const t of ACCESS_TIPOS) {
+    const a = selectedAccessType === t.id;
+    h += '<button onclick="selectAccessType(\'' + t.id + '\')" class="flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 text-center transition-all '
+      + (a ? 'border-primary bg-primary/5 text-primary' : 'border-gray-100 text-gray-500 hover:border-gray-300') + '">'
+      + '<span class="material-icons-outlined" style="font-size:22px">' + t.icon + '<\/span>'
+      + '<span class="text-xs font-bold leading-tight">' + t.label + '<\/span>'
+      + '<\/button>';
+  }
+  c.innerHTML = h;
 }
 
-function updateFechaduraStatus() {
-  const valid  = document.getElementById('f-valid').value;
-  const el     = document.getElementById('f-status');
+function selectAccessType(id) {
+  selectedAccessType = id;
+  renderAccessPicker();
+  renderAccessFields();
+}
+
+function _fField(label, id, type, ph, extraCls) {
+  const cls = extraCls || 'field-input';
+  return '<div><label class="field-label">' + label + '<\/label>'
+    + '<input id="' + id + '" type="' + type + '" placeholder="' + (ph || '') + '" class="' + cls + '"/><\/div>';
+}
+function _fTextarea(label, id, ph, hint) {
+  return '<div><label class="field-label">' + label + '<\/label>'
+    + (hint ? '<p class="text-xs text-gray-400 -mt-1 mb-2">' + hint + '<\/p>' : '')
+    + '<textarea id="' + id + '" rows="4" placeholder="' + (ph || '') + '" class="field-input resize-none"><\/textarea><\/div>';
+}
+
+function renderAccessFields() {
+  const c = document.getElementById('access-fields');
+  if (!c) return;
+  let h = '';
+  const t = selectedAccessType;
+  const hint = 'Cada linha vira um passo numerado no guia do hóspede.';
+
+  if (t === 'fechadura') {
+    h += _fField('Código da Fechadura', 'f-code', 'text', 'Ex: 5478', 'field-input font-mono text-xl tracking-widest');
+    h += _fField('Válido até', 'f-valid', 'date', '');
+    h += '<div id="f-status" class="hidden p-3 rounded-xl text-sm font-bold"><\/div>';
+    h += _fTextarea('Instruções de entrada', 'f-instructions', 'Ex: Suba pela escada lateral\nPressione a fechadura para ativar o teclado\nDigite o código e puxe a porta por 2 segundos', hint);
+  } else if (t === 'cofre') {
+    h += _fField('Código do Cofre', 'f-code', 'text', 'Ex: 1234', 'field-input font-mono text-xl tracking-widest');
+    h += _fField('Localização do Cofre', 'f-location', 'text', 'Ex: Na entrada, à esquerda da porta', '');
+    h += _fField('Válido até', 'f-valid', 'date', '');
+    h += '<div id="f-status" class="hidden p-3 rounded-xl text-sm font-bold"><\/div>';
+    h += _fTextarea('Instruções de entrada', 'f-instructions', 'Ex: Localize o cofre ao lado da porta\nDigite o código e abra\nPegue a chave e acesse', hint);
+  } else if (t === 'chave') {
+    h += _fField('Onde retirar a chave', 'f-location', 'text', 'Ex: Na portaria, com o síndico...', '');
+    h += _fField('Contato', 'f-contact', 'tel', 'Ex: (84) 99999-9999', '');
+    h += _fTextarea('Instruções de entrada', 'f-instructions', 'Ex: Retire a chave na portaria\nSiga pelo corredor até o apartamento\nUse a chave para abrir', hint);
+  } else if (t === 'portaria') {
+    h += _fTextarea('Instruções para a portaria', 'f-instructions', 'Ex: Informe seu nome e número do apartamento na recepção...', hint);
+    h += _fField('Contato da portaria', 'f-contact', 'tel', 'Ex: (84) 99999-9999', '');
+  } else {
+    h += _fTextarea('Instruções de acesso', 'f-instructions', 'Descreva como o hóspede acessa a propriedade...', hint);
+  }
+  c.innerHTML = h;
+
+  v('f-code',         content.lock_code             || '');
+  v('f-valid',        content.lock_code_valid_until || '');
+  v('f-location',     content.access_location       || '');
+  v('f-contact',      content.access_contact        || '');
+  v('f-instructions', content.access_instructions   || '');
+
+  const codeEl  = document.getElementById('f-code');
+  const validEl = document.getElementById('f-valid');
+  if (codeEl)  codeEl.addEventListener('input',  updateValidadeStatus);
+  if (validEl) validEl.addEventListener('change', updateValidadeStatus);
+  updateValidadeStatus();
+}
+
+function updateValidadeStatus() {
+  const validEl = document.getElementById('f-valid');
+  const el      = document.getElementById('f-status');
+  if (!el || !validEl) return;
+  const valid = validEl.value;
   if (!valid) { el.classList.add('hidden'); return; }
   const today  = new Date(); today.setHours(0,0,0,0);
   const expiry = new Date(valid + 'T00:00:00');
@@ -989,6 +1260,22 @@ function updateFechaduraStatus() {
     el.className = 'p-3 rounded-xl text-sm font-bold bg-green-50 text-green-700 border border-green-200';
     el.textContent = '✓ Código válido por mais ' + days + ' dia(s).';
   }
+}
+
+async function saveAcesso() {
+  const updates = {
+    access_type:         selectedAccessType,
+    access_location:     g('f-location'),
+    access_contact:      g('f-contact'),
+    access_instructions: g('f-instructions'),
+    updated_at:          new Date().toISOString(),
+  };
+  if (selectedAccessType === 'fechadura' || selectedAccessType === 'cofre') {
+    updates.lock_code             = g('f-code');
+    updates.lock_code_valid_until = g('f-valid') || null;
+  }
+  await upsertContent(updates);
+  Object.assign(content, updates);
 }
 
 // ── Share ──────────────────────────────────────────────────────────────
@@ -1020,6 +1307,77 @@ function showToast(msg) {
 // ── Utils ──────────────────────────────────────────────────────────────
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
+
+// ── Cartão imprimível Wi-Fi ────────────────────────────────────────────
+function gerarCartao() {
+  const wifiName  = g('w-name') || content.wifi_name     || '';
+  const wifiPass  = g('w-pass') || content.wifi_password || '';
+  const propName  = hostData.property_name || 'Minha Propriedade';
+  const guideUrl  = location.href.replace('painel.html', 'index.html');
+  const cor       = (content.theme_color || '#4A6741').replace('#', '');
+  const corHex    = '#' + cor;
+  const qrSrc     = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=${cor}&bgcolor=ffffff&data=${encodeURIComponent(guideUrl)}&margin=0`;
+
+  const wifiQrData = 'WIFI:T:WPA;S:' + wifiName + ';P:' + wifiPass + ';;';
+  const wifiQrSrc  = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=' + cor + '&bgcolor=ffffff&data=' + encodeURIComponent(wifiQrData) + '&margin=0';
+  const guideQrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=' + cor + '&bgcolor=ffffff&data=' + encodeURIComponent(guideUrl) + '&margin=0';
+
+  const html = '<!DOCTYPE html>'
+    + '<html lang="pt-BR"><head><meta charset="UTF-8"/>'
+    + '<title>Cartão — ' + propName + '<\/title>'
+    + '<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;700;800&display=swap" rel="stylesheet"/>'
+    + '<style>'
+    + '*{margin:0;padding:0;box-sizing:border-box;}'
+    + 'body{font-family:"Nunito Sans",sans-serif;background:#efefef;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;gap:16px;}'
+    + '.btn-print{background:' + corHex + ';color:#fff;border:none;padding:11px 26px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;}'
+    + '.card{width:10cm;min-height:15cm;background:#fff;border-radius:18px;padding:1cm .85cm;display:flex;flex-direction:column;align-items:center;box-shadow:0 8px 40px rgba(0,0,0,.13);}'
+    + '.prop{font-family:"DM Serif Display",serif;font-size:20px;color:#111;text-align:center;line-height:1.2;margin-bottom:4px;}'
+    + '.welcome{font-size:9.5px;font-weight:700;letter-spacing:.1em;color:#bbb;text-align:center;margin-bottom:.4cm;text-transform:uppercase;}'
+    + '.qr-row{display:flex;gap:.35cm;width:100%;justify-content:center;margin-bottom:.35cm;}'
+    + '.qr-card{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;background:#f9fafb;border:1.5px solid #f0f0f0;border-radius:12px;padding:10px 8px;}'
+    + '.qr-card img{border-radius:6px;display:block;}'
+    + '.qr-tag{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:' + corHex + ';text-align:center;}'
+    + '.qr-sub{font-size:7.5px;color:#bbb;font-weight:600;text-align:center;line-height:1.3;}'
+    + '.divider{width:100%;height:1px;background:linear-gradient(to right,transparent,#e5e7eb,transparent);margin:.25cm 0;}'
+    + '.wifi-box{width:100%;background:#f9fafb;border:1.5px solid #f0f0f0;border-radius:11px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;}'
+    + '.wifi-row{display:flex;flex-direction:column;gap:1px;}'
+    + '.wifi-lbl{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#bbb;}'
+    + '.wifi-val{font-size:13px;font-weight:700;color:#222;}'
+    + '.wifi-pass{font-family:"Courier New",monospace;font-size:14px;font-weight:700;color:' + corHex + ';word-break:break-all;}'
+    + '.footer{margin-top:auto;padding-top:.35cm;font-size:8px;color:#ccc;text-align:center;letter-spacing:.05em;}'
+    + '@media print{body{background:#fff;padding:0;}.btn-print{display:none;}.card{box-shadow:none;border-radius:0;min-height:0;}@page{size:10cm 15cm;margin:0;}}'
+    + '<\/style><\/head><body>'
+    + '<button class="btn-print" onclick="window.print()">'
+    + '<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"><\/path><\/svg>'
+    + ' Imprimir cartão<\/button>'
+    + '<div class="card">'
+    + '<p class="prop">' + propName + '<\/p>'
+    + '<p class="welcome">Bem-vindo · Welcome · Bienvenido<\/p>'
+    + '<div class="qr-row">'
+    + '<div class="qr-card">'
+    + '<img src="' + guideQrSrc + '" width="118" height="118" alt="Guia"/>'
+    + '<p class="qr-tag">Guia do Hóspede<\/p>'
+    + '<p class="qr-sub">Escaneie para abrir<br/>o guia completo<\/p>'
+    + '<\/div>'
+    + '<div class="qr-card">'
+    + '<img src="' + wifiQrSrc + '" width="118" height="118" alt="Wi-Fi"/>'
+    + '<p class="qr-tag">Conectar Wi-Fi<\/p>'
+    + '<p class="qr-sub">Escaneie para conectar<br/>automaticamente<\/p>'
+    + '<\/div>'
+    + '<\/div>'
+    + '<div class="divider"><\/div>'
+    + '<div class="wifi-box">'
+    + '<div class="wifi-row"><p class="wifi-lbl">Rede · Network<\/p><p class="wifi-val">' + (wifiName || '—') + '<\/p><\/div>'
+    + '<div class="wifi-row"><p class="wifi-lbl">Senha · Password<\/p><p class="wifi-pass">' + (wifiPass || '—') + '<\/p><\/div>'
+    + '<\/div>'
+    + '<p class="footer">Gerado por Zamio Guias<\/p>'
+    + '<\/div><\/body><\/html>';
+
+  const win = window.open('', '_blank', 'width=520,height=750');
+  if (!win) { showToast('⚠ Permita pop-ups para gerar o cartão.'); return; }
+  win.document.write(html);
+  win.document.close();
+}
 
 // ── Onboarding ─────────────────────────────────────────────────────────
 let obStep = 1;
