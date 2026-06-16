@@ -1,0 +1,8 @@
+-- Execute 
+
+ALTER TABLE public.hosts
+  ADD COLUMN IF NOT EXISTS phone        TEXT,
+  ADD COLUMN IF NOT EXISTS plan_id      TEXT,
+  ADD COLUMN IF NOT EXISTS plan_name    TEXT,
+  ADD COLUMN IF NOT EXISTS plan_active  BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS plan_started_at TIMESTAMPTZ;

@@ -241,18 +241,14 @@ Acessar Guia
 <div class="grid grid-cols-2 gap-4 mb-6">
 <div class="bg-card-light dark:bg-card-dark rounded-2xl p-5">
 <p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-1">Horário</p>
-<p class="font-serif text-2xl font-bold text-primary">13:00 / 11:00</p>
+<p id="dyn-checkin-time" class="font-serif text-2xl font-bold text-primary">13:00 / 11:00</p>
 </div>
-<div class="bg-primary text-white rounded-2xl p-5">
-<p class="text-xs uppercase tracking-[0.3em] text-white/60 mb-1">Código</p>
-<p class="font-mono text-3xl font-bold tracking-[0.2em]">5478</p>
+<div id="dyn-code-card" class="bg-primary text-white rounded-2xl p-5">
+<p id="dyn-code-label" class="text-xs uppercase tracking-[0.3em] text-white/60 mb-1">Código</p>
+<p id="dyn-code-value" class="font-mono text-3xl font-bold tracking-[0.2em]">—</p>
 </div>
 </div>
-<ol class="space-y-4 text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed">
-<li class="flex gap-3"><span class="font-bold text-primary">1.</span><span>Estacione em frente à casa e siga pela escada na calçada até a porta.</span></li>
-<li class="flex gap-3"><span class="font-bold text-primary">2.</span><span>Pressione e deslize para cima a fechadura eletrônica para ativar o teclado numérico.</span></li>
-<li class="flex gap-3"><span class="font-bold text-primary">3.</span><span>Digite o código e aguarde o bipe e puxe a porta por 2 segundos para destrancar.</span></li>
-</ol>
+<div id="dyn-access-info" class="space-y-3 text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed"></div>
 </div>
 <div class="bg-white/70 dark:bg-card-dark/50 rounded-[2rem] p-8 border border-primary/10 shadow-soft">
 <h2 class="font-serif text-3xl text-primary font-bold mb-5">Wi-Fi e suporte</h2>
@@ -934,13 +930,28 @@ Acessar Guia
             if (el && val) el.textContent = val;
         }
 
+        function infoCard(label, icon, value) {
+            return '<div class="flex items-start gap-3 bg-card-light dark:bg-card-dark rounded-2xl p-4">'
+                + '<span class="material-icons-outlined text-primary mt-0.5" style="font-size:18px">' + icon + '<\/span>'
+                + '<div><p class="text-xs uppercase tracking-widest text-primary/50 mb-0.5">' + label + '<\/p>'
+                + '<p class="font-semibold text-text-dark dark:text-text-light">' + value + '<\/p><\/div><\/div>';
+        }
+        function renderAccessLines(text) {
+            var lines = text.split('\n').filter(function(l){ return l.trim(); });
+            if (lines.length === 0) return '';
+            if (lines.length === 1) return '<p class="text-sm leading-relaxed">' + lines[0] + '<\/p>';
+            return '<ol class="space-y-3 text-sm leading-relaxed">' + lines.map(function(l, i){
+                return '<li class="flex gap-3"><span class="font-bold text-primary">' + (i+1) + '.<\/span><span>' + l + '<\/span><\/li>';
+            }).join('') + '<\/ol>';
+        }
+
         async function loadDynamic() {
             var hostRes = await sb.from('hosts').select('id, property_name').eq('slug', OWNER_SLUG).single();
             if (!hostRes.data) return;
             var host = hostRes.data;
 
             var contentRes = await sb.from('guide_content')
-                .select('property_name, wifi_name, wifi_password, address, maps_url, maps_embed, theme_color, theme_color_light')
+                .select('property_name, wifi_name, wifi_password, address, maps_url, maps_embed, theme_color, theme_color_light, checkin_time, checkout_time, lock_code, access_type, access_location, access_contact, access_instructions')
                 .eq('host_id', host.id).single();
             if (!contentRes.data) return;
             var c = contentRes.data;
@@ -959,6 +970,43 @@ Acessar Guia
             setText('dyn-footer',      name);
             setText('dyn-wifi-name',   c.wifi_name     || '');
             setText('dyn-wifi-pass',   c.wifi_password || '');
+
+            // Check-in / acesso
+            setText('dyn-checkin-time', (c.checkin_time || '13:00') + ' / ' + (c.checkout_time || '11:00'));
+            var accessType = c.access_type || 'fechadura';
+            var codeCard   = document.getElementById('dyn-code-card');
+            var accessInfo = document.getElementById('dyn-access-info');
+
+            if (accessType === 'fechadura' || accessType === 'cofre') {
+                setText('dyn-code-label', accessType === 'cofre' ? 'Código do cofre' : 'Código');
+                setText('dyn-code-value', c.lock_code || '—');
+                if (codeCard) codeCard.style.display = '';
+            } else {
+                if (codeCard) codeCard.style.display = 'none';
+            }
+
+            if (accessInfo) {
+                var infoHtml = '';
+                if (accessType === 'fechadura') {
+                    if (c.access_instructions) {
+                        infoHtml = renderAccessLines(c.access_instructions);
+                    } else {
+                        infoHtml = '<p class="text-sm text-text-dark/70 leading-relaxed">Digite o código acima na fechadura eletrônica e aguarde o bipe para destrancar.</p>';
+                    }
+                } else if (accessType === 'cofre') {
+                    if (c.access_location) infoHtml += infoCard('Localização do cofre', 'lock_open', c.access_location);
+                    if (c.access_instructions) infoHtml += '<div class="mt-2">' + renderAccessLines(c.access_instructions) + '<\/div>';
+                } else if (accessType === 'chave') {
+                    if (c.access_location) infoHtml += infoCard('Onde retirar a chave', 'key', c.access_location);
+                    if (c.access_contact)  infoHtml += infoCard('Contato', 'phone', c.access_contact);
+                } else if (accessType === 'portaria') {
+                    if (c.access_instructions) infoHtml += renderAccessLines(c.access_instructions);
+                    if (c.access_contact)      infoHtml += infoCard('Contato da portaria', 'phone', c.access_contact);
+                } else {
+                    if (c.access_instructions) infoHtml += renderAccessLines(c.access_instructions);
+                }
+                accessInfo.innerHTML = infoHtml;
+            }
 
             if (c.address) {
                 setText('dyn-address', c.address);

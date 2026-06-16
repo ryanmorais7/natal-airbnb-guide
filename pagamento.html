@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pagamento — Zamio Guias</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: { primary: "#4A6741", "primary-light": "#6B8E61" },
+      fontFamily: { serif: ["'DM Serif Display'","serif"], sans: ["'Nunito Sans'","sans-serif"] }
+    }
+  }
+}
+</script>
+<style>
+body { font-family: 'Nunito Sans', sans-serif; }
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+.spin { animation: spin .8s linear infinite; display:inline-block; }
+.field-label { display:block; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#6b7280; margin-bottom:6px; }
+.field-input { width:100%; padding:12px 16px; border-radius:12px; border:1.5px solid #e5e7eb; font-size:14px; outline:none; background:#f9fafb; transition:all .15s; box-sizing:border-box; }
+.field-input:focus { border-color:#4A6741; box-shadow:0 0 0 3px rgba(74,103,65,.12); background:#fff; }
+
+/* Containers dos iframes do Mercado Pago */
+.mp-field-container {
+  width:100%; min-height:46px; border-radius:12px; border:1.5px solid #e5e7eb;
+  background:#f9fafb; transition:all .15s; overflow:hidden; display:flex; align-items:center;
+  padding:0 4px;
+}
+.mp-field-container iframe { width:100% !important; height:38px !important; border:none !important; }
+.mp-field-container.focused { border-color:#4A6741; box-shadow:0 0 0 3px rgba(74,103,65,.12); background:#fff; }
+
+/* Loading skeleton */
+.mp-loading { display:flex; align-items:center; justify-content:center; gap:6px; padding:11px 16px; color:#9ca3af; font-size:13px; }
+</style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-stone-100 to-stone-50 flex flex-col items-center justify-center p-4 py-10">
+
+<div class="w-full max-w-sm">
+
+  <!-- Logo -->
+  <div class="text-center mb-8">
+    <div class="inline-flex items-center justify-center w-14 h-14 bg-primary rounded-2xl mb-4 shadow-xl shadow-primary/20">
+      <span class="material-icons-outlined text-white" style="font-size:26px">cottage</span>
+    </div>
+    <h1 class="font-serif text-2xl text-gray-900 mb-1">Pagamento</h1>
+    <p class="text-sm text-gray-500">Última etapa para ativar sua conta</p>
+  </div>
+
+  <!-- Step progress -->
+  <div class="flex items-center justify-center gap-0 mb-8">
+    <div class="flex flex-col items-center">
+      <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-extrabold shadow-sm">
+        <span class="material-icons-outlined" style="font-size:14px">check</span>
+      </div>
+      <span class="text-[10px] font-bold text-primary mt-1">Conta</span>
+    </div>
+    <div class="w-10 h-0.5 bg-primary mb-4"></div>
+    <div class="flex flex-col items-center">
+      <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-extrabold shadow-sm">
+        <span class="material-icons-outlined" style="font-size:14px">check</span>
+      </div>
+      <span class="text-[10px] font-bold text-primary mt-1">Plano</span>
+    </div>
+    <div class="w-10 h-0.5 bg-primary mb-4"></div>
+    <div class="flex flex-col items-center">
+      <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-extrabold">3</div>
+      <span class="text-[10px] font-bold text-primary mt-1">Pagamento</span>
+    </div>
+  </div>
+
+  <!-- Resumo do plano -->
+  <div class="bg-primary/5 border border-primary/15 rounded-2xl p-4 mb-6 flex items-center justify-between">
+    <div>
+      <p class="text-xs font-extrabold uppercase tracking-widest text-primary/60 mb-0.5">Plano selecionado</p>
+      <p id="resumo-nome" class="font-bold text-gray-900 text-sm"></p>
+    </div>
+    <div class="text-right">
+      <p id="resumo-preco" class="font-serif text-2xl font-bold text-primary"></p>
+      <p class="text-xs text-gray-400">por mês</p>
+    </div>
+  </div>
+
+  <!-- Formulário Mercado Pago -->
+  <form id="form-checkout" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4 mb-4">
+
+    <!-- Campos ocultos exigidos pelo SDK -->
+    <select id="form-checkout__identificationType" class="hidden"></select>
+    <input type="hidden" id="form-checkout__cardholderEmail"/>
+
+    <!-- Mensagem de erro -->
+    <div id="error-msg" class="hidden p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-center gap-2">
+      <span class="material-icons-outlined text-base">error_outline</span>
+      <span id="error-text"></span>
+    </div>
+
+    <!-- Nome no cartão -->
+    <div>
+      <label class="field-label">Nome no cartão</label>
+      <input id="form-checkout__cardholderName" type="text" placeholder="Como está escrito no cartão"
+        autocomplete="cc-name" class="field-input"/>
+    </div>
+
+    <!-- CPF -->
+    <div>
+      <label class="field-label">CPF do titular</label>
+      <input id="form-checkout__identificationNumber" type="text" placeholder="000.000.000-00"
+        maxlength="14" oninput="maskCPF(this)" class="field-input" autocomplete="off"/>
+    </div>
+
+    <!-- Número do cartão (iframe MP) -->
+    <div>
+      <label class="field-label">Número do cartão</label>
+      <div id="mp-card-number" class="mp-field-container">
+        <div class="mp-loading"><span class="material-icons-outlined spin" style="font-size:16px">refresh</span>Carregando...</div>
+      </div>
+    </div>
+
+    <!-- Validade + CVV (iframes MP) -->
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="field-label">Validade</label>
+        <div id="mp-expiration" class="mp-field-container">
+          <div class="mp-loading"><span class="material-icons-outlined spin" style="font-size:16px">refresh</span></div>
+        </div>
+      </div>
+      <div>
+        <label class="field-label">CVV</label>
+        <div id="mp-security-code" class="mp-field-container">
+          <div class="mp-loading"><span class="material-icons-outlined spin" style="font-size:16px">refresh</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Parcelamento (aparece após MP detectar a bandeira) -->
+    <div id="installments-wrap" class="hidden">
+      <label class="field-label">Parcelamento</label>
+      <select id="form-checkout__installments" class="field-input bg-white cursor-pointer"></select>
+    </div>
+
+    <!-- Botão submit -->
+    <button id="form-checkout__submit" type="submit"
+      class="w-full bg-primary text-white font-bold py-4 rounded-2xl hover:bg-primary-light active:scale-[.98] transition-all flex items-center justify-center gap-2 text-sm shadow-xl shadow-primary/25 mt-2">
+      <span class="material-icons-outlined text-base">lock</span>
+      Confirmar pagamento
+    </button>
+
+  </form>
+
+  <!-- Badges de segurança -->
+  <div class="flex items-center justify-center gap-4 text-xs text-gray-400">
+    <span class="flex items-center gap-1">
+      <span class="material-icons-outlined" style="font-size:13px">lock</span>Pagamento seguro
+    </span>
+    <span class="flex items-center gap-1">
+      <span class="material-icons-outlined" style="font-size:13px">verified_user</span>Dados protegidos
+    </span>
+  </div>
+  <div class="flex items-center justify-center mt-2">
+    <img src="https://imgmp.mlstatic.com/org-img/banners/br/medios/120X35.jpg" alt="Mercado Pago" class="h-6 opacity-60"/>
+  </div>
+
+  <p class="text-center text-xs text-gray-400 mt-4">
+    <a href="planos.html" class="hover:underline">← Voltar e trocar plano</a>
+  </p>
+
+</div>
+
+<!-- Overlay de sucesso -->
+<div id="overlay-sucesso" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl">
+    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <span class="material-icons-outlined text-green-600" style="font-size:32px">check_circle</span>
+    </div>
+    <h2 class="font-serif text-2xl text-gray-900 mb-2">Tudo certo!</h2>
+    <p class="text-sm text-gray-500 mb-6">Pagamento aprovado. Bem-vindo ao Zamio Guias!</p>
+    <div class="flex items-center justify-center gap-1.5 text-sm text-primary font-bold">
+      <span class="material-icons-outlined text-base spin">refresh</span>
+      Acessando o painel...
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Configurações ──────────────────────────────────────────────────────
+// ⚠️  TROQUE PELA SUA PUBLIC KEY do painel do Mercado Pago (Credenciais)
+const MP_PUBLIC_KEY = 'TUA_PUBLIC_KEY_AQUI';
+
+const SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
+const sb = window.supabase.createClient(SB_URL, SB_KEY);
+
+// ── Dados da sessão ────────────────────────────────────────────────────
+const isInvite   = sessionStorage.getItem('zreg_invite') === '1';
+const email      = sessionStorage.getItem('zreg_email');
+const senha      = sessionStorage.getItem('zreg_senha');
+const celular    = sessionStorage.getItem('zreg_celular');
+const planoId      = sessionStorage.getItem('zreg_plano_id');
+const planoNome    = sessionStorage.getItem('zreg_plano_nome');
+const planoPreco   = sessionStorage.getItem('zreg_plano_preco');
+const planoPeriodo = sessionStorage.getItem('zreg_plano_periodo') || 'mensal';
+
+if (!email || !planoId) location.href = isInvite ? 'login.html' : 'cadastro.html';
+
+document.getElementById('resumo-nome').textContent  = 'Plano ' + (planoNome || '') + ' · ' + (planoPeriodo === 'anual' ? 'Anual' : 'Mensal');
+document.getElementById('resumo-preco').textContent = 'R$ ' + (planoPreco || '');
+document.getElementById('form-checkout__cardholderEmail').value = email || '';
+
+// ── Máscara CPF ────────────────────────────────────────────────────────
+function maskCPF(el) {
+  let v = el.value.replace(/\D/g, '').slice(0, 11);
+  if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
+  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
+  else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,3})/, '$1.$2');
+  el.value = v;
+}
+
+// ── UI helpers ─────────────────────────────────────────────────────────
+function showError(msg) {
+  document.getElementById('error-text').textContent = msg;
+  document.getElementById('error-msg').classList.remove('hidden');
+  resetBtn();
+}
+function hideError() {
+  document.getElementById('error-msg').classList.add('hidden');
+}
+function resetBtn() {
+  const btn = document.getElementById('form-checkout__submit');
+  btn.disabled = false;
+  btn.innerHTML = '<span class="material-icons-outlined text-base">lock</span> Confirmar pagamento';
+}
+
+// ── Inicializa SDK Mercado Pago ────────────────────────────────────────
+const mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
+
+const precoNum = (planoPreco || '34.90').replace(',', '.');
+
+const cardForm = mp.cardForm({
+  amount: precoNum,
+  iframe: true,
+  form: {
+    id: 'form-checkout',
+    cardholderName:       { id: 'form-checkout__cardholderName',       placeholder: 'Nome como no cartão' },
+    cardNumber:           { id: 'mp-card-number',                      placeholder: '0000 0000 0000 0000' },
+    expirationDate:       { id: 'mp-expiration',                       placeholder: 'MM/AA' },
+    securityCode:         { id: 'mp-security-code',                    placeholder: 'CVV' },
+    installments:         { id: 'form-checkout__installments' },
+    identificationType:   { id: 'form-checkout__identificationType' },
+    identificationNumber: { id: 'form-checkout__identificationNumber' },
+    cardholderEmail:      { id: 'form-checkout__cardholderEmail' },
+  },
+  callbacks: {
+
+    onFormMounted: error => {
+      if (error) console.warn('[MP] mount error:', error);
+      // Remove loading spinners após iframes carregarem
+      ['mp-card-number','mp-expiration','mp-security-code'].forEach(id => {
+        const el = document.getElementById(id);
+        const loader = el?.querySelector('.mp-loading');
+        if (loader) loader.remove();
+      });
+    },
+
+    onInstallmentsReceived: (error, data) => {
+      if (!error && data?.installments?.length > 0) {
+        document.getElementById('installments-wrap').classList.remove('hidden');
+      }
+    },
+
+    onSubmit: async event => {
+      event.preventDefault();
+      hideError();
+
+      // Valida nome
+      const nome = document.getElementById('form-checkout__cardholderName').value.trim();
+      if (!nome) { showError('Informe o nome como está no cartão.'); return; }
+
+      // Valida CPF
+      const cpf = document.getElementById('form-checkout__identificationNumber').value.replace(/\D/g, '');
+      if (cpf.length !== 11) { showError('Informe um CPF válido (11 dígitos).'); return; }
+
+      // Loading
+      const btn = document.getElementById('form-checkout__submit');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-icons-outlined text-base spin">refresh</span> Processando...';
+
+      const { token, installments, paymentMethodId, issuerId } = cardForm.getCardFormData();
+
+      if (!token) { showError('Não foi possível processar o cartão. Verifique os dados.'); return; }
+
+      // ── ENVIAR PARA SEU BACKEND ──────────────────────────────────────
+      // Você precisará de um servidor (Node, Edge Function, etc.) que chame
+      // a API do Mercado Pago com seu ACCESS TOKEN (nunca exponha no frontend).
+      //
+      // Exemplo de chamada:
+      //
+      // const res = await fetch('/api/pagar', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({
+      //     token,           // token do cartão (uso único, expira em minutos)
+      //     installments,    // número de parcelas escolhido
+      //     paymentMethodId, // ex: 'visa', 'master'
+      //     issuerId,        // banco emissor
+      //     email,           // e-mail do pagador
+      //     planoId,         // 'individual' ou 'pro'
+      //     planoPeriodo,    // 'mensal' ou 'anual'
+      //     precoNum,        // valor em reais (ex: '34.90')
+      //   })
+      // });
+      // const result = await res.json();
+      // if (!result.approved) { showError('Pagamento recusado: ' + result.message); return; }
+      //
+      // ─────────────────────────────────────────────────────────────────
+      // ⚠️  REMOVA o await abaixo e descomente o bloco acima quando tiver o backend:
+      await criarConta();
+    },
+
+    onError: errors => {
+      console.warn('[MP] errors:', errors);
+    },
+
+  }
+});
+
+// ── Cria / atualiza conta no Supabase após pagamento aprovado ──────────
+async function criarConta() {
+  let userId;
+
+  if (isInvite) {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { showError('Sessão expirada. Peça ao administrador um novo convite.'); return; }
+    userId = session.user.id;
+  } else {
+    const { data, error } = await sb.auth.signUp({ email, password: senha });
+    if (error) {
+      showError(error.message.includes('already registered')
+        ? 'Este e-mail já possui uma conta. Tente fazer login.'
+        : 'Erro ao criar conta: ' + error.message);
+      return;
+    }
+    await new Promise(r => setTimeout(r, 1200));
+    userId = data.user?.id;
+  }
+
+  if (userId) {
+    const upd = {
+      plan_id:         planoId,
+      plan_name:       planoNome + ' ' + (planoPeriodo === 'anual' ? '(Anual)' : '(Mensal)'),
+      plan_active:     true,
+      plan_started_at: new Date().toISOString(),
+    };
+    if (celular) upd.phone = celular;
+    await sb.from('hosts').update(upd).eq('id', userId);
+  }
+
+  ['zreg_email','zreg_senha','zreg_celular','zreg_plano_id','zreg_plano_nome','zreg_plano_preco','zreg_plano_periodo','zreg_invite']
+    .forEach(k => sessionStorage.removeItem(k));
+
+  document.getElementById('overlay-sucesso').classList.remove('hidden');
+  setTimeout(() => location.href = 'painel.html', 2500);
+}
+</script>
+</body>
+</html>
