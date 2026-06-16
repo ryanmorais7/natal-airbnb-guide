@@ -32,7 +32,7 @@ tailwind.config = {
 <body class="min-h-screen bg-gray-50">
 
 <!-- Header -->
-<header class="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+<header class="bg-white border-b border-gray-100 px-3 sm:px-6 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
   <div class="flex items-center gap-3">
     <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
       <span class="material-icons-outlined text-white" style="font-size:17px">admin_panel_settings</span>
@@ -78,7 +78,7 @@ tailwind.config = {
 
     <!-- Page title -->
     <div class="mb-8">
-      <h1 class="font-serif text-3xl text-gray-900 mb-1">Painel de Administração</h1>
+      <h1 class="font-serif text-3xl text-gray-900 mb-1">Painel de Administração dos Airbnb</h1>
       <p class="text-sm text-gray-500">Gerencie todos os anfitriões da plataforma.</p>
     </div>
 
@@ -132,10 +132,30 @@ tailwind.config = {
         <span class="material-icons-outlined">close</span>
       </button>
     </div>
-    <div class="p-6 space-y-4">
+    <div class="p-6 space-y-5 overflow-y-auto" style="max-height:70vh">
+
+      <!-- Geral -->
+      <p class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300">Geral</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Nome da Propriedade</label>
+          <input id="m-propname" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        </div>
+        <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Nome do Anfitrião</label>
+          <input id="m-owner" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        </div>
+      </div>
       <div>
-        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Nome da Propriedade</label>
-        <input id="m-propname" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Slug (link)</label>
+        <input id="m-slug" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')"/>
+      </div>
+
+      <!-- Propriedade -->
+      <p class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 pt-1">Propriedade</p>
+      <div>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Endereço</label>
+        <input id="m-address" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
@@ -148,21 +168,71 @@ tailwind.config = {
         </div>
       </div>
       <div>
-        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Wi-Fi — Rede</label>
-        <input id="m-wname" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Link Google Maps</label>
+        <input id="m-maps" type="url" placeholder="https://maps.google.com/..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
       </div>
       <div>
-        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Wi-Fi — Senha</label>
-        <input id="m-wpass" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Google Maps Embed URL</label>
+        <input id="m-embed" type="url" placeholder="https://www.google.com/maps/embed?pb=..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
       </div>
+
+      <!-- Apresentação -->
+      <p class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 pt-1">Apresentação</p>
       <div>
-        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Endereço</label>
-        <input id="m-address" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Foto Principal (URL)</label>
+        <input id="m-heroimg" type="url" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
       </div>
       <div>
         <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Mensagem de Boas-Vindas</label>
         <textarea id="m-welcome" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
       </div>
+
+      <!-- Wi-Fi -->
+      <p class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 pt-1">Wi-Fi</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Rede (SSID)</label>
+          <input id="m-wname" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        </div>
+        <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Senha</label>
+          <input id="m-wpass" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">QR Code do Wi-Fi (URL da imagem)</label>
+        <input id="m-wqr" type="url" placeholder="https://..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+      </div>
+
+      <!-- Fechadura -->
+      <p class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 pt-1">Fechadura</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Código</label>
+          <input id="m-lockcode" type="text" placeholder="Ex: 5478" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        </div>
+        <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Válido até</label>
+          <input id="m-lockvalid" type="date" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        </div>
+      </div>
+
+      <!-- Aparência -->
+      <p class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 pt-1">Aparência</p>
+      <div>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-2">Tema do Guia</label>
+        <div id="m-theme-picker" class="grid grid-cols-3 gap-2"></div>
+      </div>
+      <input id="m-theme-id"    type="hidden"/>
+      <input id="m-theme-color" type="hidden"/>
+      <input id="m-theme-light" type="hidden"/>
+
+      <!-- Regras -->
+      <p class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 pt-1">Regras da Casa</p>
+      <div>
+        <textarea id="m-rules" rows="5" placeholder="Proibido fumar dentro da casa&#10;Check-out até 11h&#10;Não é permitido animais" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+      </div>
+
     </div>
     <div class="p-6 border-t border-gray-100 flex gap-3">
       <button onclick="saveModal()"
@@ -272,10 +342,10 @@ function renderHosts(hosts) {
     ].reduce((a, b) => a + b, 0);
 
     return `
-    <div class="host-card p-5">
-      <div class="flex items-start gap-4">
+    <div class="host-card p-4 sm:p-5">
+      <div class="flex items-start gap-3 sm:gap-4 flex-wrap">
         <!-- Avatar -->
-        <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-white text-lg"
+        <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-white text-base sm:text-lg"
           style="background:${colorFromStr(h.email || h.id)}">
           ${(h.property_name || h.email || '?')[0].toUpperCase()}
         </div>
@@ -298,19 +368,17 @@ function renderHosts(hosts) {
           </div>
         </div>
 
-        <!-- Actions -->
-        <div class="flex items-center gap-2 flex-shrink-0">
-          ${slug ? `
-            <a href="guia.html?h=${escAttr(slug)}" target="_blank"
-              class="action-btn bg-gray-100 text-gray-600 hover:bg-gray-200">
-              <span class="material-icons-outlined" style="font-size:14px">open_in_new</span>
-              <span class="hidden sm:inline">Ver Guia</span>
-            </a>
-          ` : ''}
+        <!-- Actions: envolve para baixo no mobile, fica ao lado no desktop -->
+        <div class="flex items-center gap-2 w-full sm:w-auto border-t border-gray-100 sm:border-0 pt-3 sm:pt-0 mt-1 sm:mt-0">
+          <a href="index.html" target="_blank"
+            class="action-btn bg-gray-100 text-gray-600 hover:bg-gray-200 flex-1 sm:flex-none justify-center sm:justify-start">
+            <span class="material-icons-outlined" style="font-size:14px">open_in_new</span>
+            Ver Guia
+          </a>
           <button onclick="openEdit('${h.id}')"
-            class="action-btn bg-primary/10 text-primary hover:bg-primary hover:text-white">
+            class="action-btn bg-primary/10 text-primary hover:bg-primary hover:text-white flex-1 sm:flex-none justify-center sm:justify-start">
             <span class="material-icons-outlined" style="font-size:14px">edit</span>
-            <span class="hidden sm:inline">Editar</span>
+            Editar
           </button>
           <button onclick="deleteHost('${h.id}', '${escAttr(h.email || '')}')"
             class="action-btn bg-red-50 text-red-400 hover:bg-red-500 hover:text-white">
@@ -323,19 +391,66 @@ function renderHosts(hosts) {
   }).join('');
 }
 
+// ── Themes ────────────────────────────────────────────────────────────
+const ADMIN_THEMES = [
+  { id: 'oliva',     name: 'Oliva',     color: '#4A6741', light: '#6B8E61' },
+  { id: 'oceano',    name: 'Oceano',    color: '#1D4ED8', light: '#3B82F6' },
+  { id: 'terracota', name: 'Terracota', color: '#B45309', light: '#D97706' },
+  { id: 'lavanda',   name: 'Lavanda',   color: '#7C3AED', light: '#8B5CF6' },
+  { id: 'vinho',     name: 'Vinho',     color: '#9D174D', light: '#BE185D' },
+  { id: 'ardosia',   name: 'Ardósia',   color: '#334155', light: '#64748B' },
+];
+let adminSelectedTheme = 'oliva';
+
+function renderAdminThemePicker() {
+  const container = document.getElementById('m-theme-picker');
+  if (!container) return;
+  container.innerHTML = ADMIN_THEMES.map(t => {
+    const active = adminSelectedTheme === t.id;
+    return `<button type="button" onclick="adminSelectTheme('${t.id}')"
+      class="rounded-xl overflow-hidden border-2 transition-all ${active ? 'border-gray-800 shadow-md scale-[1.04]' : 'border-gray-100 hover:border-gray-300'}">
+      <div class="h-8" style="background:linear-gradient(135deg,${t.color},${t.light})"></div>
+      <div class="py-1.5 px-2 bg-white flex items-center justify-between">
+        <span class="text-[11px] font-bold text-gray-700">${t.name}</span>
+        ${active ? `<span class="material-icons-outlined" style="font-size:13px;color:${t.color}">check_circle</span>` : ''}
+      </div>
+    </button>`;
+  }).join('');
+  document.getElementById('m-theme-id').value    = adminSelectedTheme;
+  const t = ADMIN_THEMES.find(x => x.id === adminSelectedTheme) || ADMIN_THEMES[0];
+  document.getElementById('m-theme-color').value = t.color;
+  document.getElementById('m-theme-light').value = t.light;
+}
+
+function adminSelectTheme(id) {
+  adminSelectedTheme = id;
+  renderAdminThemePicker();
+}
+
 // ── Edit modal ────────────────────────────────────────────────────────
 function openEdit(hostId) {
   const c = allContent[hostId] || {};
   const h = allHosts.find(x => x.id === hostId) || {};
   editingHostId = hostId;
 
-  document.getElementById('m-propname').value = c.property_name || h.property_name || '';
-  document.getElementById('m-checkin').value  = c.checkin_time  || '13:00';
-  document.getElementById('m-checkout').value = c.checkout_time || '11:00';
-  document.getElementById('m-wname').value    = c.wifi_name     || '';
-  document.getElementById('m-wpass').value    = c.wifi_password || '';
-  document.getElementById('m-address').value  = c.address       || '';
-  document.getElementById('m-welcome').value  = c.welcome_message || '';
+  document.getElementById('m-propname').value  = c.property_name || h.property_name || '';
+  document.getElementById('m-owner').value     = h.owner_name    || '';
+  document.getElementById('m-slug').value      = h.slug          || '';
+  document.getElementById('m-address').value   = c.address       || '';
+  document.getElementById('m-checkin').value   = c.checkin_time  || '13:00';
+  document.getElementById('m-checkout').value  = c.checkout_time || '11:00';
+  document.getElementById('m-maps').value      = c.maps_url      || '';
+  document.getElementById('m-embed').value     = c.maps_embed    || '';
+  document.getElementById('m-heroimg').value   = c.hero_image_url   || '';
+  document.getElementById('m-welcome').value   = c.welcome_message  || '';
+  document.getElementById('m-wname').value     = c.wifi_name        || '';
+  document.getElementById('m-wpass').value     = c.wifi_password    || '';
+  document.getElementById('m-wqr').value       = c.wifi_qr_url      || '';
+  document.getElementById('m-lockcode').value  = c.lock_code             || '';
+  document.getElementById('m-lockvalid').value = c.lock_code_valid_until || '';
+  document.getElementById('m-rules').value     = c.rules          || '';
+  adminSelectedTheme = c.theme_id || 'oliva';
+  renderAdminThemePicker();
 
   document.getElementById('edit-modal').classList.remove('hidden');
 }
@@ -349,27 +464,46 @@ async function saveModal() {
   if (!editingHostId) return;
   const existing = allContent[editingHostId] || {};
   const updates = {
-    host_id:         editingHostId,
+    host_id:               editingHostId,
     ...existing,
-    property_name:   document.getElementById('m-propname').value.trim(),
-    checkin_time:    document.getElementById('m-checkin').value,
-    checkout_time:   document.getElementById('m-checkout').value,
-    wifi_name:       document.getElementById('m-wname').value.trim(),
-    wifi_password:   document.getElementById('m-wpass').value.trim(),
-    address:         document.getElementById('m-address').value.trim(),
-    welcome_message: document.getElementById('m-welcome').value.trim(),
-    updated_at:      new Date().toISOString(),
+    property_name:         document.getElementById('m-propname').value.trim(),
+    address:               document.getElementById('m-address').value.trim(),
+    checkin_time:          document.getElementById('m-checkin').value,
+    checkout_time:         document.getElementById('m-checkout').value,
+    maps_url:              document.getElementById('m-maps').value.trim(),
+    maps_embed:            document.getElementById('m-embed').value.trim(),
+    hero_image_url:        document.getElementById('m-heroimg').value.trim(),
+    welcome_message:       document.getElementById('m-welcome').value.trim(),
+    wifi_name:             document.getElementById('m-wname').value.trim(),
+    wifi_password:         document.getElementById('m-wpass').value.trim(),
+    wifi_qr_url:           document.getElementById('m-wqr').value.trim(),
+    lock_code:             document.getElementById('m-lockcode').value.trim() || null,
+    lock_code_valid_until: document.getElementById('m-lockvalid').value || null,
+    rules:                 document.getElementById('m-rules').value.trim(),
+    theme_id:              document.getElementById('m-theme-id').value || 'oliva',
+    theme_color:           document.getElementById('m-theme-color').value || '#4A6741',
+    theme_color_light:     document.getElementById('m-theme-light').value || '#6B8E61',
+    updated_at:            new Date().toISOString(),
   };
 
   const { error } = await sb.from('guide_content').upsert(updates);
   if (error) { alert('Erro ao salvar: ' + error.message); return; }
 
-  // Update host property_name too
-  await sb.from('hosts').update({ property_name: updates.property_name }).eq('id', editingHostId);
+  // Update hosts table (name, slug, property_name)
+  await sb.from('hosts').update({
+    property_name: updates.property_name,
+    owner_name:    document.getElementById('m-owner').value.trim(),
+    slug:          document.getElementById('m-slug').value.trim(),
+  }).eq('id', editingHostId);
+
+  const host = allHosts.find(h => h.id === editingHostId);
+  if (host) {
+    host.property_name = updates.property_name;
+    host.owner_name    = document.getElementById('m-owner').value.trim();
+    host.slug          = document.getElementById('m-slug').value.trim();
+  }
 
   allContent[editingHostId] = updates;
-  const host = allHosts.find(h => h.id === editingHostId);
-  if (host) host.property_name = updates.property_name;
 
   closeModal();
   renderHosts(allHosts);

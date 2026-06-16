@@ -94,6 +94,30 @@
         .rain-drop { animation: rainDrop 1.4s ease-in-out infinite; }
         .cloud-drift { animation: cloudDrift 4s ease-in-out infinite; }
     </style>
+<style id="theme-vars">
+/* CSS variables para tema dinâmico — sobrescreve as classes Tailwind de primary */
+:root { --p: #4A6741; --pl: #6B8E61; }
+.bg-primary                    { background-color: var(--p)  !important; }
+.text-primary                  { color:            var(--p)  !important; }
+.border-primary                { border-color:     var(--p)  !important; }
+.bg-primary-light              { background-color: var(--pl) !important; }
+.text-primary-light            { color:            var(--pl) !important; }
+.border-primary-light          { border-color:     var(--pl) !important; }
+.hover\:bg-primary:hover       { background-color: var(--p)  !important; }
+.hover\:text-primary:hover     { color:            var(--p)  !important; }
+.hover\:bg-primary-light:hover { background-color: var(--pl) !important; }
+.selection\:bg-primary::selection { background-color: var(--p) !important; }
+.ring-primary                  { --tw-ring-color:  var(--p)  !important; }
+.bg-primary\/5  { background-color: color-mix(in srgb, var(--p)  5%,  transparent) !important; }
+.bg-primary\/10 { background-color: color-mix(in srgb, var(--p)  10%, transparent) !important; }
+.bg-primary\/80 { background-color: color-mix(in srgb, var(--p)  80%, transparent) !important; }
+.text-primary\/50 { color: color-mix(in srgb, var(--p) 50%, transparent) !important; }
+.text-primary\/70 { color: color-mix(in srgb, var(--p) 70%, transparent) !important; }
+.text-primary\/80 { color: color-mix(in srgb, var(--p) 80%, transparent) !important; }
+.border-primary\/10 { border-color: color-mix(in srgb, var(--p) 10%, transparent) !important; }
+.border-primary\/20 { border-color: color-mix(in srgb, var(--p) 20%, transparent) !important; }
+.hover\:shadow-\[0_12px_30px_-16px_rgba\(74\,103\,65\,0\.5\)\]:hover { box-shadow: 0 12px 30px -16px color-mix(in srgb, var(--p) 50%, transparent) !important; }
+</style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-text-dark dark:text-text-light transition-colors duration-300 font-sans min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-white scroll-smooth">
 <nav class="relative z-10 w-full p-6 flex justify-between items-center max-w-7xl mx-auto">
@@ -112,13 +136,13 @@
 </div>
 
 <!-- badge topo esquerdo -->
-<div class="absolute top-6 left-6 md:left-14 z-10">
+<div class="absolute top-12 md:top-6 left-6 md:left-14 z-10">
 <span class="text-xs font-bold uppercase tracking-[0.35em] text-primary-light border border-primary-light/50 px-4 py-2 rounded-sm backdrop-blur-sm bg-black/20">Guia do Hóspede</span>
 </div>
 
 <!-- conteúdo principal — embaixo-esquerda estilo Netflix -->
 <div class="relative z-10 flex flex-col justify-end px-6 md:px-14 pb-20 md:pb-28" style="min-height:96vh">
-<h1 id="dyn-hero-title" class="font-serif font-bold text-white leading-none mb-4" style="font-size:clamp(2.2rem,5.5vw,4rem);text-shadow:0 6px 50px rgba(0,0,0,0.55)">Bem-vindo ao Zamio</h1>
+<h1 id="dyn-hero-title" class="font-serif font-bold text-white leading-none mb-4 text-2xl sm:text-4xl lg:text-5xl xl:text-[4rem]" style="text-shadow:0 6px 50px rgba(0,0,0,0.55)">Bem-vindo ao Zamio</h1>
 <p class="text-white/80 text-base md:text-lg leading-relaxed max-w-md mb-8">
 Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e direções reunidos aqui.
 </p>
@@ -197,20 +221,24 @@ Acessar Guia
 <h2 class="font-serif text-3xl md:text-4xl text-primary dark:text-primary-light font-bold">Como entrar na casa</h2>
 </div>
 <div class="relative rounded-[2rem] overflow-hidden border border-primary/10 shadow-soft bg-card-light dark:bg-card-dark" style="min-height: 340px;">
-<div id="video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center gap-4 text-primary/40 p-8 text-center">
-<span class="material-icons-outlined" style="font-size: 5rem;">play_circle</span>
-<p class="font-serif text-xl text-primary/60">Vídeo de acesso à casa</p>
-<p class="font-sans text-sm text-primary/40 max-w-sm">Para adicionar o vídeo, abra index.html e coloque o link de embed do YouTube no src do iframe abaixo.</p>
+<div id="video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center gap-5 p-8 text-center" style="background:linear-gradient(135deg,#f0f4ef 0%,#e9eed9 100%)">
+  <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+    <span class="material-icons-outlined text-primary/50" style="font-size:2.5rem">play_circle</span>
+  </div>
+  <div>
+    <p class="font-serif text-2xl text-primary font-bold mb-2">Tutorial em vídeo</p>
+    <p class="font-sans text-sm leading-relaxed max-w-xs" style="color:#2D3B2A;opacity:.5">Em breve disponível. Confira as instruções de acesso passo a passo logo abaixo.</p>
+  </div>
 </div>
 <!-- VÍDEO: substitua o src pelo link de embed do YouTube -->
 <!-- Exemplo: src="https://www.youtube.com/embed/SEU_VIDEO_ID" -->
 <iframe id="video-acesso" src="" title="Como entrar na casa" class="w-full absolute inset-0" style="min-height: 340px; border: 0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
 </section>
-<section class="mt-16 w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
+<section class="mt-16 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
 <div class="bg-white/70 dark:bg-card-dark/50 rounded-[2rem] p-8 border border-primary/10 shadow-soft">
 <h2 class="font-serif text-3xl text-primary font-bold mb-5">Check-in e acesso</h2>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+<div class="grid grid-cols-2 gap-4 mb-6">
 <div class="bg-card-light dark:bg-card-dark rounded-2xl p-5">
 <p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-1">Horário</p>
 <p class="font-serif text-2xl font-bold text-primary">13:00 / 11:00</p>
@@ -235,7 +263,12 @@ Acessar Guia
 </div>
 <div class="bg-primary/5 dark:bg-primary/10 rounded-2xl p-5 border border-primary/10">
 <p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-1">Senha</p>
-<p id="dyn-wifi-pass" class="font-mono text-3xl font-bold text-primary">••••••••</p>
+<div class="flex items-center justify-between gap-3">
+  <p id="dyn-wifi-pass" class="font-mono text-3xl font-bold text-primary">••••••••</p>
+  <button onclick="copyWifiPass()" id="btn-copy-wifi" class="flex items-center gap-1.5 text-xs font-bold text-primary border border-primary/20 px-3 py-2 rounded-xl hover:bg-primary hover:text-white transition-colors flex-shrink-0">
+    <span class="material-icons-outlined text-base">content_copy</span>Copiar
+  </button>
+</div>
 </div>
 <div class="bg-card-light dark:bg-card-dark rounded-2xl p-5">
 <p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-3">QR Code Wi-Fi</p>
@@ -907,10 +940,16 @@ Acessar Guia
             var host = hostRes.data;
 
             var contentRes = await sb.from('guide_content')
-                .select('property_name, wifi_name, wifi_password, address, maps_url, maps_embed')
+                .select('property_name, wifi_name, wifi_password, address, maps_url, maps_embed, theme_color, theme_color_light')
                 .eq('host_id', host.id).single();
             if (!contentRes.data) return;
             var c = contentRes.data;
+
+            if (c.theme_color) {
+                var r = document.documentElement;
+                r.style.setProperty('--p',  c.theme_color);
+                r.style.setProperty('--pl', c.theme_color_light || c.theme_color);
+            }
 
             var name = c.property_name || host.property_name || 'Zamio';
 
@@ -937,5 +976,18 @@ Acessar Guia
 
         loadDynamic();
     })();
+    </script>
+    <script>
+    function copyWifiPass() {
+      var pass = document.getElementById('dyn-wifi-pass').textContent;
+      navigator.clipboard.writeText(pass).then(function() {
+        var btn = document.getElementById('btn-copy-wifi');
+        btn.innerHTML = '<span class="material-icons-outlined text-base">check</span>Copiado!';
+        setTimeout(function() {
+          btn.innerHTML = '<span class="material-icons-outlined text-base">content_copy</span>Copiar';
+        }, 2000);
+      });
+    }
+
     </script>
 </body></html>

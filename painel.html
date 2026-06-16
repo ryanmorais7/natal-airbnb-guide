@@ -51,7 +51,7 @@ tailwind.config = {
 <body class="min-h-screen bg-gray-50">
 
 <!-- Top bar -->
-<header class="bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+<header class="bg-white border-b border-gray-100 px-3 sm:px-4 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
   <div class="flex items-center gap-2.5">
     <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
       <span class="material-icons-outlined text-white" style="font-size:18px">cottage</span>
@@ -60,12 +60,12 @@ tailwind.config = {
     <span class="text-gray-300 hidden sm:block">·</span>
     <span id="header-prop" class="text-sm font-semibold text-gray-500 hidden sm:block">Carregando...</span>
   </div>
-  <div class="flex items-center gap-4">
-    <a id="preview-link" href="#" target="_blank"
-      class="hidden text-xs font-bold text-primary flex items-center gap-1 hover:underline">
-      <span class="material-icons-outlined" style="font-size:15px">open_in_new</span>
-      <span class="hidden sm:inline">Ver Guia</span>
-    </a>
+  <div class="flex items-center gap-3">
+    <button onclick="shareGuia()"
+      class="save-btn text-xs py-2 px-4">
+      <span class="material-icons-outlined" style="font-size:16px">share</span>
+      <span class="hidden sm:inline">Compartilhar Guia</span>
+    </button>
     <button onclick="doLogout()"
       class="text-xs text-gray-400 hover:text-red-500 flex items-center gap-1 font-bold transition-colors">
       <span class="material-icons-outlined" style="font-size:16px">logout</span>
@@ -74,15 +74,21 @@ tailwind.config = {
   </div>
 </header>
 
-<div class="flex" style="min-height:calc(100vh - 57px)">
+<div class="flex flex-col md:flex-row" style="min-height:calc(100vh - 57px)">
   <!-- Sidebar (desktop) -->
   <aside class="w-52 hidden md:flex flex-col bg-white border-r border-gray-100 py-3 px-2 sticky top-[57px] self-start h-[calc(100vh-57px)] overflow-y-auto flex-shrink-0">
     <div class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 px-3 mb-1 mt-1">Configurações</div>
     <button class="nav-item" onclick="showSection('geral')">
       <span class="material-icons-outlined">tune</span>Geral
     </button>
+    <button class="nav-item" onclick="showSection('aparencia')">
+      <span class="material-icons-outlined">palette</span>Aparência
+    </button>
     <button class="nav-item" onclick="showSection('propriedade')">
       <span class="material-icons-outlined">home</span>Propriedade
+    </button>
+    <button class="nav-item" onclick="showSection('fechadura')">
+      <span class="material-icons-outlined">lock</span>Fechadura
     </button>
     <button class="nav-item" onclick="showSection('hero')">
       <span class="material-icons-outlined">image</span>Apresentação
@@ -116,33 +122,51 @@ tailwind.config = {
   </aside>
 
   <!-- Mobile nav (horizontal scroll) -->
-  <div class="md:hidden bg-white border-b border-gray-100 flex gap-1 overflow-x-auto px-3 py-2 sticky top-[57px] z-10" style="scrollbar-width:none">
-    <button class="nav-item flex-shrink-0" onclick="showSection('geral')"><span class="material-icons-outlined">tune</span>Geral</button>
-    <button class="nav-item flex-shrink-0" onclick="showSection('propriedade')"><span class="material-icons-outlined">home</span>Propriedade</button>
-    <button class="nav-item flex-shrink-0" onclick="showSection('hero')"><span class="material-icons-outlined">image</span>Apresentação</button>
-    <button class="nav-item flex-shrink-0" onclick="showSection('wifi')"><span class="material-icons-outlined">wifi</span>Wi-Fi</button>
-    <button class="nav-item flex-shrink-0" onclick="showSection('restaurantes')"><span class="material-icons-outlined">restaurant</span>Restaurantes</button>
-    <button class="nav-item flex-shrink-0" onclick="showSection('mercados')"><span class="material-icons-outlined">shopping_cart</span>Mercados</button>
-    <button class="nav-item flex-shrink-0" onclick="showSection('farmacias')"><span class="material-icons-outlined">local_pharmacy</span>Farmácias</button>
-    <button class="nav-item flex-shrink-0" onclick="showSection('atividades')"><span class="material-icons-outlined">beach_access</span>Atividades</button>
-    <button class="nav-item flex-shrink-0" onclick="showSection('academias')"><span class="material-icons-outlined">fitness_center</span>Academias</button>
-    <button class="nav-item flex-shrink-0" onclick="showSection('emergencia')"><span class="material-icons-outlined">emergency</span>Emergência</button>
-    <button class="nav-item flex-shrink-0" onclick="showSection('regras')"><span class="material-icons-outlined">rule</span>Regras</button>
+  <div class="md:hidden bg-white border-b border-gray-100 flex gap-0.5 overflow-x-auto px-2 py-1.5 sticky top-[57px] z-10 w-full" style="scrollbar-width:none">
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('geral')"><span class="material-icons-outlined">tune</span><span class="hidden sm:inline">Geral</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('aparencia')"><span class="material-icons-outlined">palette</span><span class="hidden sm:inline">Aparência</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('propriedade')"><span class="material-icons-outlined">home</span><span class="hidden sm:inline">Propriedade</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('fechadura')"><span class="material-icons-outlined">lock</span><span class="hidden sm:inline">Fechadura</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('hero')"><span class="material-icons-outlined">image</span><span class="hidden sm:inline">Apresentação</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('wifi')"><span class="material-icons-outlined">wifi</span><span class="hidden sm:inline">Wi-Fi</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('restaurantes')"><span class="material-icons-outlined">restaurant</span><span class="hidden sm:inline">Restaurantes</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('mercados')"><span class="material-icons-outlined">shopping_cart</span><span class="hidden sm:inline">Mercados</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('farmacias')"><span class="material-icons-outlined">local_pharmacy</span><span class="hidden sm:inline">Farmácias</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('atividades')"><span class="material-icons-outlined">beach_access</span><span class="hidden sm:inline">Atividades</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('academias')"><span class="material-icons-outlined">fitness_center</span><span class="hidden sm:inline">Academias</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('emergencia')"><span class="material-icons-outlined">emergency</span><span class="hidden sm:inline">Emergência</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('regras')"><span class="material-icons-outlined">rule</span><span class="hidden sm:inline">Regras</span></button>
   </div>
 
   <!-- Main content -->
   <main class="flex-1 px-4 py-6 md:px-10 md:py-8 max-w-2xl">
 
-    <!-- Loading state -->
-    <div id="loading-state" class="flex items-center justify-center py-20 text-gray-400">
-      <span class="material-icons-outlined spin text-3xl">refresh</span>
+    <!-- Loading skeleton -->
+    <div id="loading-state" class="animate-pulse">
+      <div class="h-7 bg-gray-200 rounded-xl w-52 mb-2"></div>
+      <div class="h-4 bg-gray-100 rounded-xl w-72 mb-5"></div>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-5">
+        <div>
+          <div class="h-3 bg-gray-200 rounded w-36 mb-2"></div>
+          <div class="h-11 bg-gray-100 rounded-xl w-full"></div>
+        </div>
+        <div>
+          <div class="h-3 bg-gray-200 rounded w-24 mb-2"></div>
+          <div class="h-11 bg-gray-100 rounded-xl w-full"></div>
+        </div>
+        <div>
+          <div class="h-3 bg-gray-200 rounded w-40 mb-2"></div>
+          <div class="h-11 bg-gray-100 rounded-xl w-full"></div>
+        </div>
+        <div class="h-10 bg-gray-200 rounded-xl w-24"></div>
+      </div>
     </div>
 
     <!-- === GERAL === -->
     <div id="section-geral" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Configurações Gerais</h2>
-      <p class="text-sm text-gray-500 mb-6">Defina o nome da sua propriedade e o link único do guia.</p>
-      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Defina o nome da sua propriedade e o link único do guia.</p>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-5">
         <div>
           <label class="field-label">Nome da Propriedade</label>
           <input id="g-propname" class="field-input" placeholder="Ex: Casa Zamio" type="text"/>
@@ -167,11 +191,26 @@ tailwind.config = {
       </div>
     </div>
 
+    <!-- === APARÊNCIA === -->
+    <div id="section-aparencia" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Aparência</h2>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Escolha o tema de cores do guia do hóspede.</p>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
+        <div id="theme-picker" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5"></div>
+        <div class="pt-4 border-t border-gray-100">
+          <p class="text-xs text-gray-400 mb-4">A cor escolhida será aplicada nos botões, ícones e destaques do guia do hóspede.</p>
+          <button class="save-btn" onclick="saveAparencia()">
+            <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar Tema
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- === PROPRIEDADE === -->
     <div id="section-propriedade" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Informações da Propriedade</h2>
-      <p class="text-sm text-gray-500 mb-6">Endereço, horários e acesso.</p>
-      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Endereço, horários e acesso.</p>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-5">
         <div>
           <label class="field-label">Endereço Completo</label>
           <input id="p-address" class="field-input" placeholder="Rua Poço Branco, 74 - Nova Parnamirim" type="text"/>
@@ -185,10 +224,6 @@ tailwind.config = {
             <label class="field-label">Check-out</label>
             <input id="p-checkout" class="field-input" type="time"/>
           </div>
-        </div>
-        <div>
-          <label class="field-label">Código de Acesso / Portaria</label>
-          <input id="p-access" class="field-input" placeholder="Ex: #1234 ou App: Smart Lock" type="text"/>
         </div>
         <div>
           <label class="field-label">Link Google Maps (para botão "Como Chegar")</label>
@@ -210,12 +245,19 @@ tailwind.config = {
     <!-- === HERO / APRESENTAÇÃO === -->
     <div id="section-hero" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Apresentação</h2>
-      <p class="text-sm text-gray-500 mb-6">Foto principal e mensagem de boas-vindas do guia.</p>
-      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Foto principal e mensagem de boas-vindas do guia.</p>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-5">
         <div>
-          <label class="field-label">URL da Foto Principal (hero)</label>
-          <input id="h-img" class="field-input" placeholder="https://... ou caminho local como assets/foto.jpg" type="text"/>
-          <p class="text-xs text-gray-400 mt-1">Dica: hospede a imagem no Supabase Storage e use a URL pública gerada.</p>
+          <label class="field-label">Foto Principal</label>
+          <label for="h-file" class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-primary/30 rounded-xl p-5 cursor-pointer hover:bg-primary/5 transition-colors text-center mb-2">
+            <span class="material-icons-outlined text-primary/40 text-4xl">cloud_upload</span>
+            <span class="text-sm font-bold text-primary/60">Clique para fazer upload</span>
+            <span class="text-xs text-gray-400">JPG, PNG, WebP — máx. 5MB</span>
+            <input id="h-file" type="file" accept="image/*" class="hidden" onchange="uploadHeroImage(this)"/>
+          </label>
+          <p id="h-upload-status" class="text-xs font-bold hidden mb-2"></p>
+          <label class="field-label mt-2">Ou cole uma URL</label>
+          <input id="h-img" class="field-input" placeholder="https://..." type="text"/>
         </div>
         <div id="h-preview-wrap" class="hidden">
           <img id="h-preview" src="" alt="" class="w-full h-40 object-cover rounded-xl border border-gray-100"/>
@@ -235,8 +277,8 @@ tailwind.config = {
     <!-- === WI-FI === -->
     <div id="section-wifi" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Wi-Fi</h2>
-      <p class="text-sm text-gray-500 mb-6">Dados da rede que aparecem no guia do hóspede.</p>
-      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Dados da rede que aparecem no guia do hóspede.</p>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-5">
         <div>
           <label class="field-label">Nome da Rede (SSID)</label>
           <input id="w-name" class="field-input" placeholder="Ex: Zamio_WiFi" type="text"/>
@@ -265,7 +307,7 @@ tailwind.config = {
     <!-- Restaurantes -->
     <div id="section-restaurantes" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Restaurantes</h2>
-      <p class="text-sm text-gray-500 mb-6">Indicações de onde comer perto da propriedade.</p>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Indicações de onde comer perto da propriedade.</p>
       <div id="list-restaurantes"></div>
       <button onclick="openAddForm('restaurantes')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
         <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Restaurante
@@ -276,7 +318,7 @@ tailwind.config = {
     <!-- Mercados -->
     <div id="section-mercados" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Mercados</h2>
-      <p class="text-sm text-gray-500 mb-6">Supermercados e lojas perto da propriedade.</p>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Supermercados e lojas perto da propriedade.</p>
       <div id="list-mercados"></div>
       <button onclick="openAddForm('mercados')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
         <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Mercado
@@ -287,7 +329,7 @@ tailwind.config = {
     <!-- Farmácias -->
     <div id="section-farmacias" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Farmácias</h2>
-      <p class="text-sm text-gray-500 mb-6">Farmácias e drogarias próximas.</p>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Farmácias e drogarias próximas.</p>
       <div id="list-farmacias"></div>
       <button onclick="openAddForm('farmacias')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
         <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Farmácia
@@ -298,7 +340,7 @@ tailwind.config = {
     <!-- Atividades -->
     <div id="section-atividades" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">O que Fazer</h2>
-      <p class="text-sm text-gray-500 mb-6">Praias, passeios e atrações turísticas.</p>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Praias, passeios e atrações turísticas.</p>
       <div id="list-atividades"></div>
       <button onclick="openAddForm('atividades')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
         <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Atividade
@@ -309,7 +351,7 @@ tailwind.config = {
     <!-- Academias -->
     <div id="section-academias" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Academias</h2>
-      <p class="text-sm text-gray-500 mb-6">Academias e espaços para se exercitar.</p>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Academias e espaços para se exercitar.</p>
       <div id="list-academias"></div>
       <button onclick="openAddForm('academias')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
         <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Academia
@@ -320,7 +362,7 @@ tailwind.config = {
     <!-- Emergência -->
     <div id="section-emergencia" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Emergência</h2>
-      <p class="text-sm text-gray-500 mb-6">Contatos e locais para situações de urgência.</p>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Contatos e locais para situações de urgência.</p>
       <div id="list-emergencia"></div>
       <button onclick="openAddForm('emergencia')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
         <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Contato
@@ -328,11 +370,33 @@ tailwind.config = {
       <div id="form-emergencia" class="add-form hidden mt-3"></div>
     </div>
 
+    <!-- === FECHADURA === -->
+    <div id="section-fechadura" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Fechadura</h2>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Código de acesso atual e prazo de validade.</p>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-5">
+        <div>
+          <label class="field-label">Código da Fechadura</label>
+          <input id="f-code" class="field-input font-mono text-xl tracking-widest" placeholder="Ex: 5478" type="text" oninput="updateFechaduraStatus()"/>
+        </div>
+        <div>
+          <label class="field-label">Válido até</label>
+          <input id="f-valid" class="field-input" type="date" onchange="updateFechaduraStatus()"/>
+        </div>
+        <div id="f-status" class="hidden p-3 rounded-xl text-sm font-bold"></div>
+        <div class="pt-2">
+          <button class="save-btn" onclick="saveFechadura()">
+            <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- === REGRAS === -->
     <div id="section-regras" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Regras da Casa</h2>
-      <p class="text-sm text-gray-500 mb-6">Regras e orientações para os hóspedes.</p>
-      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Regras e orientações para os hóspedes.</p>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-5">
         <div>
           <label class="field-label">Regras (uma por linha)</label>
           <textarea id="r-rules" class="field-input field-textarea" style="min-height:180px"
@@ -351,6 +415,175 @@ tailwind.config = {
 
 <!-- Toast notification -->
 <div id="toast" class="toast">✓ Salvo com sucesso!</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ONBOARDING OVERLAY
+════════════════════════════════════════════════════════ -->
+<div id="onboarding" class="fixed inset-0 z-50 flex flex-col bg-stone-50" style="display:none">
+
+  <!-- Header: step progress -->
+  <div class="bg-white border-b border-gray-100 px-6 py-5 shadow-sm">
+    <div class="max-w-md mx-auto">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+            <span class="material-icons-outlined text-white" style="font-size:15px">cottage</span>
+          </div>
+          <span class="text-sm font-bold text-gray-700">Zamio Guias</span>
+        </div>
+        <button onclick="skipOnboarding()" class="text-xs text-gray-300 hover:text-gray-400 font-bold transition-colors">Pular configuração</button>
+      </div>
+      <!-- Step bubbles -->
+      <div class="flex items-center">
+        <div class="flex flex-col items-center" id="ob-dot-1">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all duration-300"></div>
+          <span class="text-[10px] font-bold mt-1.5 transition-colors duration-300">Geral</span>
+        </div>
+        <div id="ob-line-1" class="flex-1 h-0.5 mb-4 transition-all duration-500 bg-gray-200"></div>
+        <div class="flex flex-col items-center" id="ob-dot-2">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all duration-300"></div>
+          <span class="text-[10px] font-bold mt-1.5 transition-colors duration-300">Imóvel</span>
+        </div>
+        <div id="ob-line-2" class="flex-1 h-0.5 mb-4 transition-all duration-500 bg-gray-200"></div>
+        <div class="flex flex-col items-center" id="ob-dot-3">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all duration-300"></div>
+          <span class="text-[10px] font-bold mt-1.5 transition-colors duration-300">Wi-Fi</span>
+        </div>
+        <div id="ob-line-3" class="flex-1 h-0.5 mb-4 transition-all duration-500 bg-gray-200"></div>
+        <div class="flex flex-col items-center" id="ob-dot-4">
+          <div class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all duration-300"></div>
+          <span class="text-[10px] font-bold mt-1.5 transition-colors duration-300">Visual</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content area (scrollable) -->
+  <div class="flex-1 overflow-y-auto">
+    <div class="max-w-md mx-auto px-6 py-10">
+
+      <!-- ── PASSO 1 · Geral ── -->
+      <div id="ob-s1" class="ob-step">
+        <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
+          <span class="material-icons-outlined text-primary" style="font-size:32px">cottage</span>
+        </div>
+        <h2 class="font-serif text-3xl text-gray-900 leading-tight mb-2">Olá! Vamos montar<br/>o seu guia.</h2>
+        <p class="text-gray-500 text-sm mb-8 leading-relaxed">Em menos de 3 minutos o seu guia vai estar pronto para enviar ao hóspede. Sem complicação nenhuma.</p>
+        <div class="space-y-4">
+          <div>
+            <label class="field-label">Como se chama o seu espaço?</label>
+            <input id="ob-propname" class="field-input" placeholder="Ex: Casa Zamio, Apto Vista Mar..." type="text"/>
+            <p class="text-xs text-gray-400 mt-1">Esse nome aparece no topo do guia do hóspede.</p>
+          </div>
+          <div>
+            <label class="field-label">E você, como se chama?</label>
+            <input id="ob-owner" class="field-input" placeholder="Ex: Rafael, Ana, Carlos..." type="text"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PASSO 2 · Imóvel ── -->
+      <div id="ob-s2" class="ob-step hidden">
+        <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
+          <span class="material-icons-outlined text-primary" style="font-size:32px">location_on</span>
+        </div>
+        <h2 class="font-serif text-3xl text-gray-900 leading-tight mb-2">Onde fica a<br/>sua propriedade?</h2>
+        <p class="text-gray-500 text-sm mb-8 leading-relaxed">Essas informações ajudam o hóspede a se localizar e saber os horários de entrada e saída.</p>
+        <div class="space-y-4">
+          <div>
+            <label class="field-label">Endereço completo</label>
+            <input id="ob-address" class="field-input" placeholder="Ex: Rua Poço Branco, 74 — Nova Parnamirim" type="text"/>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="field-label">Horário de Check-in</label>
+              <input id="ob-checkin" class="field-input" type="time" value="13:00"/>
+              <p class="text-xs text-gray-400 mt-1">A partir de que horas?</p>
+            </div>
+            <div>
+              <label class="field-label">Horário de Check-out</label>
+              <input id="ob-checkout" class="field-input" type="time" value="11:00"/>
+              <p class="text-xs text-gray-400 mt-1">Até que horas?</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PASSO 3 · Wi-Fi ── -->
+      <div id="ob-s3" class="ob-step hidden">
+        <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
+          <span class="material-icons-outlined text-primary" style="font-size:32px">wifi</span>
+        </div>
+        <h2 class="font-serif text-3xl text-gray-900 leading-tight mb-2">Qual é o Wi-Fi<br/>da casa?</h2>
+        <p class="text-gray-500 text-sm mb-8 leading-relaxed">O Wi-Fi é a primeira coisa que o hóspede procura ao chegar. Deixe bem visível!</p>
+        <div class="space-y-4">
+          <div>
+            <label class="field-label">Nome da rede (SSID)</label>
+            <input id="ob-wname" class="field-input" placeholder="Ex: Zamio_WiFi" type="text"/>
+          </div>
+          <div>
+            <label class="field-label">Senha do Wi-Fi</label>
+            <div class="relative">
+              <input id="ob-wpass" class="field-input pr-10" placeholder="Senha da rede" type="text"/>
+              <span class="material-icons-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" style="font-size:18px">key</span>
+            </div>
+          </div>
+          <div class="p-4 bg-primary/5 border border-primary/15 rounded-xl flex items-start gap-3">
+            <span class="material-icons-outlined text-primary/60 flex-shrink-0" style="font-size:18px">tips_and_updates</span>
+            <p class="text-xs text-primary/70 font-semibold leading-relaxed">Você pode adicionar um QR code do Wi-Fi depois, no painel. Assim o hóspede escaneia e conecta na hora!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PASSO 4 · Visual ── -->
+      <div id="ob-s4" class="ob-step hidden">
+        <div class="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
+          <span class="material-icons-outlined text-primary" style="font-size:32px">add_photo_alternate</span>
+        </div>
+        <h2 class="font-serif text-3xl text-gray-900 leading-tight mb-2">Último toque:<br/>a primeira impressão!</h2>
+        <p class="text-gray-500 text-sm mb-8 leading-relaxed">Uma foto bonita e uma mensagem calorosa fazem o hóspede se sentir em casa antes mesmo de chegar.</p>
+        <div class="space-y-4">
+          <div>
+            <label class="field-label">Foto principal</label>
+            <label for="ob-file" class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-primary/30 rounded-xl p-5 cursor-pointer hover:bg-primary/5 transition-colors text-center">
+              <span class="material-icons-outlined text-primary/40" style="font-size:36px">cloud_upload</span>
+              <span class="text-sm font-bold text-primary/60">Clique para enviar uma foto</span>
+              <span class="text-xs text-gray-400">JPG, PNG, WebP — máx. 5MB</span>
+              <input id="ob-file" type="file" accept="image/*" class="hidden" onchange="obUploadHeroImage(this)"/>
+            </label>
+            <p id="ob-upload-status" class="text-xs font-bold hidden mt-2"></p>
+            <div id="ob-img-wrap" class="hidden mt-3">
+              <img id="ob-img" src="" alt="" class="w-full h-40 object-cover rounded-xl border border-gray-100 shadow-sm"/>
+            </div>
+            <p class="text-xs text-gray-400 mt-3">Ou cole o link de uma imagem:</p>
+            <input id="ob-heroimg" class="field-input mt-1.5" placeholder="https://..." type="url" oninput="obPreviewImg()"/>
+          </div>
+          <div>
+            <label class="field-label">Mensagem de boas-vindas</label>
+            <textarea id="ob-welcome" class="field-input field-textarea" rows="4"
+              placeholder="Ex: Seja muito bem-vindo(a)! Preparamos tudo com carinho para a sua chegada. Qualquer dúvida, estou à disposição. Aproveite!"></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer: navigation buttons -->
+  <div class="bg-white border-t border-gray-100 px-6 py-4 shadow-[0_-2px_8px_rgba(0,0,0,.04)]">
+    <div class="max-w-md mx-auto flex items-center gap-3">
+      <button id="ob-back" onclick="obPrev()"
+        class="hidden px-5 py-3 rounded-xl border border-gray-200 text-sm font-bold text-gray-500 hover:bg-gray-50 transition-colors flex-shrink-0">
+        ← Voltar
+      </button>
+      <button id="ob-next" onclick="obNext()"
+        class="flex-1 bg-primary text-white font-bold py-3.5 rounded-xl hover:bg-primary-light transition-all flex items-center justify-center gap-2 text-sm shadow-lg shadow-primary/20 active:scale-[.98]">
+        Próximo →
+      </button>
+    </div>
+  </div>
+
+</div>
 
 <script>
 const SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
@@ -387,8 +620,8 @@ async function init() {
 
   document.getElementById('loading-state').style.display = 'none';
   populateForms();
-  updatePreviewLink();
   showSection('geral');
+  checkOnboarding();
 }
 
 function populateForms() {
@@ -411,6 +644,13 @@ function populateForms() {
   v('w-name', content.wifi_name     || '');
   v('w-pass', content.wifi_password || '');
   v('w-qr',   content.wifi_qr_url  || '');
+  // Aparência
+  selectedThemeId = content.theme_id || 'oliva';
+  renderThemePicker();
+  // Fechadura
+  v('f-code',  content.lock_code             || '');
+  v('f-valid', content.lock_code_valid_until || '');
+  updateFechaduraStatus();
   // Regras
   v('r-rules', content.rules || '');
   // Lists
@@ -440,14 +680,48 @@ function showSection(name) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ── Preview link ──────────────────────────────────────────────────────
-function updatePreviewLink() {
-  const slug = hostData.slug;
-  const link = document.getElementById('preview-link');
-  if (slug) {
-    link.href = 'guia.html?h=' + slug;
-    link.classList.remove('hidden');
-  }
+// ── Aparência / Temas ─────────────────────────────────────────────────
+const THEMES = [
+  { id: 'oliva',     name: 'Oliva',     sub: 'Padrão',       color: '#4A6741', light: '#6B8E61' },
+  { id: 'oceano',    name: 'Oceano',    sub: 'Sofisticado',  color: '#1D4ED8', light: '#3B82F6' },
+  { id: 'terracota', name: 'Terracota', sub: 'Aconchegante', color: '#B45309', light: '#D97706' },
+  { id: 'lavanda',   name: 'Lavanda',   sub: 'Elegante',     color: '#7C3AED', light: '#8B5CF6' },
+  { id: 'vinho',     name: 'Vinho',     sub: 'Requintado',   color: '#9D174D', light: '#BE185D' },
+  { id: 'ardosia',   name: 'Ardósia',   sub: 'Minimalista',  color: '#334155', light: '#64748B' },
+];
+let selectedThemeId = 'oliva';
+
+function renderThemePicker() {
+  const container = document.getElementById('theme-picker');
+  if (!container) return;
+  container.innerHTML = THEMES.map(t => {
+    const active = selectedThemeId === t.id;
+    return `
+      <button onclick="selectTheme('${t.id}')"
+        class="text-left rounded-2xl overflow-hidden border-2 transition-all duration-200 ${active ? 'border-gray-800 shadow-lg scale-[1.03]' : 'border-gray-100 hover:border-gray-300 hover:shadow-sm'}">
+        <div class="h-12" style="background:linear-gradient(135deg,${t.color},${t.light})"></div>
+        <div class="p-3 bg-white relative">
+          <p class="text-sm font-extrabold text-gray-800">${t.name}</p>
+          <p class="text-xs text-gray-400">${t.sub}</p>
+          ${active ? `<span class="absolute top-2.5 right-2.5 material-icons-outlined" style="font-size:15px;color:${t.color}">check_circle</span>` : ''}
+        </div>
+      </button>`;
+  }).join('');
+}
+
+function selectTheme(id) {
+  selectedThemeId = id;
+  renderThemePicker();
+}
+
+async function saveAparencia() {
+  const t = THEMES.find(x => x.id === selectedThemeId) || THEMES[0];
+  await upsertContent({
+    theme_id:          t.id,
+    theme_color:       t.color,
+    theme_color_light: t.light,
+    updated_at:        new Date().toISOString()
+  });
 }
 
 // ── Save: Geral ───────────────────────────────────────────────────────
@@ -466,7 +740,6 @@ async function saveGeral() {
   hostData.owner_name    = g('g-owner');
   hostData.slug          = slug;
   document.getElementById('header-prop').textContent = hostData.property_name || 'Minha Propriedade';
-  updatePreviewLink();
   showToast('✓ Salvo com sucesso!');
 }
 
@@ -659,6 +932,75 @@ async function removeItem(key, idx) {
   showToast('✓ Removido!');
 }
 
+// ── Upload foto hero ──────────────────────────────────────────────────
+async function uploadHeroImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('h-upload-status');
+  if (file.size > 5 * 1024 * 1024) {
+    status.textContent = '⚠ Arquivo muito grande (máx 5MB).';
+    status.className = 'text-xs font-bold text-red-500 mb-2';
+    status.classList.remove('hidden');
+    return;
+  }
+  status.textContent = 'Enviando...';
+  status.className = 'text-xs font-bold text-primary mb-2';
+  status.classList.remove('hidden');
+
+  const ext  = file.name.split('.').pop();
+  const path = `${hostId}/hero-${Date.now()}.${ext}`;
+  const { error } = await sb.storage.from('guide-images').upload(path, file, { upsert: true });
+  if (error) {
+    status.textContent = 'Erro: ' + error.message;
+    status.className = 'text-xs font-bold text-red-500 mb-2';
+    return;
+  }
+  const { data } = sb.storage.from('guide-images').getPublicUrl(path);
+  document.getElementById('h-img').value = data.publicUrl;
+  previewHeroImage();
+  status.textContent = '✓ Foto enviada com sucesso!';
+  status.className = 'text-xs font-bold text-green-600 mb-2';
+}
+
+// ── Fechadura ─────────────────────────────────────────────────────────
+async function saveFechadura() {
+  await upsertContent({
+    lock_code:             g('f-code'),
+    lock_code_valid_until: g('f-valid') || null,
+    updated_at:            new Date().toISOString()
+  });
+}
+
+function updateFechaduraStatus() {
+  const valid  = document.getElementById('f-valid').value;
+  const el     = document.getElementById('f-status');
+  if (!valid) { el.classList.add('hidden'); return; }
+  const today  = new Date(); today.setHours(0,0,0,0);
+  const expiry = new Date(valid + 'T00:00:00');
+  const days   = Math.round((expiry - today) / 86400000);
+  el.classList.remove('hidden');
+  if (days < 0) {
+    el.className = 'p-3 rounded-xl text-sm font-bold bg-red-50 text-red-600 border border-red-200';
+    el.textContent = '⚠ Código expirado há ' + Math.abs(days) + ' dia(s). Atualize!';
+  } else if (days <= 3) {
+    el.className = 'p-3 rounded-xl text-sm font-bold bg-amber-50 text-amber-700 border border-amber-200';
+    el.textContent = '⚠ Expira em ' + days + ' dia(s). Considere renovar.';
+  } else {
+    el.className = 'p-3 rounded-xl text-sm font-bold bg-green-50 text-green-700 border border-green-200';
+    el.textContent = '✓ Código válido por mais ' + days + ' dia(s).';
+  }
+}
+
+// ── Share ──────────────────────────────────────────────────────────────
+function shareGuia() {
+  const url = location.href.replace('painel.html', 'index.html');
+  if (navigator.share) {
+    navigator.share({ title: 'Guia do Hóspede', text: 'Acesse o guia completo da sua estadia:', url });
+  } else {
+    navigator.clipboard.writeText(url).then(() => showToast('✓ Link do guia copiado!'));
+  }
+}
+
 // ── Logout ─────────────────────────────────────────────────────────────
 async function doLogout() {
   await sb.auth.signOut();
@@ -678,6 +1020,158 @@ function showToast(msg) {
 // ── Utils ──────────────────────────────────────────────────────────────
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
+
+// ── Onboarding ─────────────────────────────────────────────────────────
+let obStep = 1;
+const OB_STEPS = 4;
+const OB_KEY   = () => 'zamio_ob_v1_' + hostId;
+
+function checkOnboarding() {
+  if (!localStorage.getItem(OB_KEY())) obOpen();
+}
+
+function obOpen() {
+  // Pre-fill with any existing data
+  document.getElementById('ob-propname').value = hostData.property_name  || '';
+  document.getElementById('ob-owner').value    = hostData.owner_name     || '';
+  document.getElementById('ob-address').value  = content.address         || '';
+  document.getElementById('ob-checkin').value  = content.checkin_time    || '13:00';
+  document.getElementById('ob-checkout').value = content.checkout_time   || '11:00';
+  document.getElementById('ob-wname').value    = content.wifi_name       || '';
+  document.getElementById('ob-wpass').value    = content.wifi_password   || '';
+  document.getElementById('ob-heroimg').value  = content.hero_image_url  || '';
+  document.getElementById('ob-welcome').value  = content.welcome_message || '';
+  obPreviewImg();
+  obStep = 1;
+  obRender();
+  document.getElementById('onboarding').style.display = 'flex';
+}
+
+function obRender() {
+  // Show/hide step content
+  for (let i = 1; i <= OB_STEPS; i++) {
+    document.getElementById('ob-s' + i).classList.toggle('hidden', i !== obStep);
+  }
+  // Step dots
+  for (let i = 1; i <= OB_STEPS; i++) {
+    const dot  = document.getElementById('ob-dot-' + i).querySelector('div');
+    const lbl  = document.getElementById('ob-dot-' + i).querySelector('span');
+    const done = i < obStep;
+    const curr = i === obStep;
+    dot.textContent = done ? '✓' : i;
+    dot.className   = 'w-9 h-9 rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all duration-300 '
+      + (done ? 'bg-primary border-primary text-white'
+        : curr ? 'bg-white border-primary text-primary scale-110 shadow-md shadow-primary/20'
+               : 'bg-white border-gray-200 text-gray-300');
+    lbl.className   = 'text-[10px] font-bold mt-1.5 transition-colors duration-300 '
+      + (done || curr ? 'text-primary' : 'text-gray-300');
+    // Connecting lines
+    if (i < OB_STEPS) {
+      const line = document.getElementById('ob-line-' + i);
+      if (line) line.className = 'flex-1 h-0.5 mb-4 transition-all duration-500 ' + (i < obStep ? 'bg-primary' : 'bg-gray-200');
+    }
+  }
+  // Back button
+  document.getElementById('ob-back').classList.toggle('hidden', obStep === 1);
+  // Next button label
+  const next = document.getElementById('ob-next');
+  if (obStep === OB_STEPS) {
+    next.innerHTML = '<span class="material-icons-outlined" style="font-size:17px">check_circle</span> Concluir e abrir o painel!';
+  } else {
+    next.innerHTML = 'Próximo →';
+  }
+}
+
+async function obNext() {
+  if (obStep === OB_STEPS) {
+    const btn = document.getElementById('ob-next');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-icons-outlined spin" style="font-size:17px">refresh</span> Salvando...';
+    await obSaveAll();
+    obFinish();
+    return;
+  }
+  obStep++;
+  obRender();
+}
+
+function obPrev() {
+  if (obStep > 1) { obStep--; obRender(); }
+}
+
+async function obSaveAll() {
+  const propname = document.getElementById('ob-propname').value.trim();
+  const owner    = document.getElementById('ob-owner').value.trim();
+  if (propname || owner) {
+    await sb.from('hosts').update({
+      property_name: propname || hostData.property_name || '',
+      owner_name:    owner    || hostData.owner_name    || '',
+    }).eq('id', hostId);
+    if (propname) hostData.property_name = propname;
+    if (owner)    hostData.owner_name    = owner;
+  }
+  const updates = {
+    address:         document.getElementById('ob-address').value.trim(),
+    checkin_time:    document.getElementById('ob-checkin').value,
+    checkout_time:   document.getElementById('ob-checkout').value,
+    wifi_name:       document.getElementById('ob-wname').value.trim(),
+    wifi_password:   document.getElementById('ob-wpass').value.trim(),
+    hero_image_url:  document.getElementById('ob-heroimg').value.trim(),
+    welcome_message: document.getElementById('ob-welcome').value.trim(),
+    updated_at:      new Date().toISOString(),
+  };
+  await sb.from('guide_content').upsert({ host_id: hostId, ...content, ...updates });
+  Object.assign(content, updates);
+}
+
+function obFinish() {
+  localStorage.setItem(OB_KEY(), '1');
+  document.getElementById('onboarding').style.display = 'none';
+  populateForms();
+  document.getElementById('header-prop').textContent = hostData.property_name || 'Minha Propriedade';
+  showToast('🎉 Guia configurado! Explore o painel para personalizar mais.');
+}
+
+function skipOnboarding() {
+  localStorage.setItem(OB_KEY(), '1');
+  document.getElementById('onboarding').style.display = 'none';
+}
+
+function obPreviewImg() {
+  const url  = document.getElementById('ob-heroimg').value.trim();
+  const wrap = document.getElementById('ob-img-wrap');
+  const img  = document.getElementById('ob-img');
+  if (url) { img.src = url; wrap.classList.remove('hidden'); }
+  else { wrap.classList.add('hidden'); }
+}
+
+async function obUploadHeroImage(input) {
+  const file   = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('ob-upload-status');
+  if (file.size > 5 * 1024 * 1024) {
+    status.textContent = '⚠ Arquivo muito grande (máx 5MB).';
+    status.className = 'text-xs font-bold text-red-500 mt-2';
+    status.classList.remove('hidden');
+    return;
+  }
+  status.textContent = 'Enviando...';
+  status.className = 'text-xs font-bold text-primary mt-2';
+  status.classList.remove('hidden');
+  const ext  = file.name.split('.').pop();
+  const path = `${hostId}/hero-${Date.now()}.${ext}`;
+  const { error } = await sb.storage.from('guide-images').upload(path, file, { upsert: true });
+  if (error) {
+    status.textContent = 'Erro: ' + error.message;
+    status.className = 'text-xs font-bold text-red-500 mt-2';
+    return;
+  }
+  const { data } = sb.storage.from('guide-images').getPublicUrl(path);
+  document.getElementById('ob-heroimg').value = data.publicUrl;
+  obPreviewImg();
+  status.textContent = '✓ Foto enviada com sucesso!';
+  status.className = 'text-xs font-bold text-green-600 mt-2';
+}
 
 init();
 </script>
