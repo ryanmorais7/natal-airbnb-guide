@@ -90,8 +90,8 @@ body { font-family: 'Nunito Sans', sans-serif; }
   <!-- Formulário Mercado Pago -->
   <form id="form-checkout" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4 mb-4">
 
-    <!-- Campos ocultos exigidos pelo SDK -->
-    <select id="form-checkout__identificationType" class="hidden"></select>
+    <!-- Campos ocultos exigidos pelo SDK (visibility:hidden para o MP conseguir interagir) -->
+    <select id="form-checkout__identificationType" style="position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;overflow:hidden;"></select>
     <input type="hidden" id="form-checkout__cardholderEmail"/>
 
     <!-- Mensagem de erro -->
