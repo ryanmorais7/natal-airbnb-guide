@@ -289,7 +289,10 @@ async function criarConta() {
     if (!session) { showError('Sessão expirada. Peça ao administrador um novo convite.'); return; }
     userId = session.user.id;
   } else {
-    const { data, error } = await sb.auth.signUp({ email, password: senha });
+    const { data, error } = await sb.auth.signUp({
+      email, password: senha,
+      options: { emailRedirectTo: 'https://guiazamio.vercel.app/painel.html' }
+    });
     if (error) {
       showError(error.message.includes('already registered')
         ? 'Este e-mail já possui uma conta. Tente fazer login.'
