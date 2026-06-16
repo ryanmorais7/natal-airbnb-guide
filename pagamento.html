@@ -258,7 +258,6 @@ async function confirmarPagamento() {
         token:              token.id,
         installments:       1,
         payment_method_id:  token.payment_method_id,
-        issuer_id:          token.card?.cardholder?.issuer_id,
         transaction_amount: precoNum,
         payer: {
           email,
@@ -275,7 +274,7 @@ async function confirmarPagamento() {
   }
 
   if (!result.ok) {
-    showError(result.message || 'Pagamento recusado. Verifique os dados do cartão.');
+    showError((result.message || 'Pagamento recusado.') + (result.detail ? ' [' + result.detail + ']' : ''));
     return;
   }
 
