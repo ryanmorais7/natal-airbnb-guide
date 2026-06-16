@@ -23,14 +23,9 @@ tailwind.config = {
 body { font-family: 'Nunito Sans', sans-serif; }
 @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
 .spin { animation: spin .8s linear infinite; display:inline-block; }
-
-/* Brick container — o MP renderiza o formulário completo aqui */
-#mp-brick-container { min-height: 320px; }
-
-/* Override de cor primária para o Brick via CSS variables do MP */
-:root {
-  --ck-font-family: 'Nunito Sans', sans-serif;
-}
+.field-label { display:block; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#6b7280; margin-bottom:6px; }
+.field-input { width:100%; padding:12px 16px; border-radius:12px; border:1.5px solid #e5e7eb; font-size:14px; outline:none; background:#f9fafb; transition:all .15s; box-sizing:border-box; font-family:'Nunito Sans',sans-serif; }
+.field-input:focus { border-color:#4A6741; box-shadow:0 0 0 3px rgba(74,103,65,.12); background:#fff; }
 </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-stone-100 to-stone-50 flex flex-col items-center justify-center p-4 py-10">
@@ -80,29 +75,59 @@ body { font-family: 'Nunito Sans', sans-serif; }
     </div>
   </div>
 
-  <!-- Erro geral -->
-  <div id="error-msg" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-center gap-2">
-    <span class="material-icons-outlined text-base">error_outline</span>
-    <span id="error-text"></span>
+  <!-- Formulário -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4 mb-4">
+
+    <div id="error-msg" class="hidden p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-center gap-2">
+      <span class="material-icons-outlined text-base">error_outline</span>
+      <span id="error-text"></span>
+    </div>
+
+    <div>
+      <label class="field-label">Nome no cartão</label>
+      <input id="p-nome" type="text" placeholder="Como está escrito no cartão"
+        autocomplete="cc-name" class="field-input"/>
+    </div>
+
+    <div>
+      <label class="field-label">CPF do titular</label>
+      <input id="p-cpf" type="text" placeholder="000.000.000-00"
+        maxlength="14" oninput="maskCPF(this)" autocomplete="off" class="field-input"/>
+    </div>
+
+    <div>
+      <label class="field-label">Número do cartão</label>
+      <div class="relative">
+        <input id="p-numero" type="text" placeholder="0000 0000 0000 0000"
+          autocomplete="cc-number" maxlength="19" oninput="maskCard(this)" class="field-input pr-10"/>
+        <span id="card-icon" class="material-icons-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" style="font-size:20px">credit_card</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="field-label">Validade</label>
+        <input id="p-validade" type="text" placeholder="MM/AA"
+          autocomplete="cc-exp" maxlength="5" oninput="maskExpiry(this)" class="field-input"/>
+      </div>
+      <div>
+        <label class="field-label">CVV</label>
+        <input id="p-cvv" type="password" placeholder="•••"
+          autocomplete="cc-csc" maxlength="4" class="field-input"/>
+      </div>
+    </div>
+
+    <button id="btn-pagar" onclick="confirmarPagamento()"
+      class="w-full bg-primary text-white font-bold py-4 rounded-2xl hover:bg-primary-light active:scale-[.98] transition-all flex items-center justify-center gap-2 text-sm shadow-xl shadow-primary/25 mt-2">
+      <span class="material-icons-outlined text-base">lock</span>
+      Confirmar pagamento
+    </button>
+
   </div>
 
-  <!-- Loading inicial enquanto o Brick carrega -->
-  <div id="brick-loading" class="bg-white rounded-2xl border border-gray-100 p-8 flex flex-col items-center justify-center gap-3 text-gray-400 text-sm mb-4" style="min-height:280px">
-    <span class="material-icons-outlined spin text-3xl">refresh</span>
-    Carregando formulário de pagamento...
-  </div>
-
-  <!-- Container onde o MP Brick é renderizado -->
-  <div id="mp-brick-container" class="mb-4"></div>
-
-  <!-- Badges de segurança -->
-  <div class="flex items-center justify-center gap-4 text-xs text-gray-400 mt-2">
-    <span class="flex items-center gap-1">
-      <span class="material-icons-outlined" style="font-size:13px">lock</span>Pagamento seguro
-    </span>
-    <span class="flex items-center gap-1">
-      <span class="material-icons-outlined" style="font-size:13px">verified_user</span>Dados protegidos
-    </span>
+  <div class="flex items-center justify-center gap-4 text-xs text-gray-400">
+    <span class="flex items-center gap-1"><span class="material-icons-outlined" style="font-size:13px">lock</span>Pagamento seguro</span>
+    <span class="flex items-center gap-1"><span class="material-icons-outlined" style="font-size:13px">verified_user</span>Dados protegidos</span>
   </div>
   <div class="flex items-center justify-center mt-2">
     <img src="https://imgmp.mlstatic.com/org-img/banners/br/medios/120X35.jpg" alt="Mercado Pago" class="h-6 opacity-60"/>
@@ -131,10 +156,10 @@ body { font-family: 'Nunito Sans', sans-serif; }
 
 <script>
 const MP_PUBLIC_KEY = 'TEST-c47e3ad4-8d2a-4205-a895-e3a40a84deda';
-
 const SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
+const mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
 
 const isInvite   = sessionStorage.getItem('zreg_invite') === '1';
 const email      = sessionStorage.getItem('zreg_email');
@@ -152,90 +177,111 @@ document.getElementById('resumo-preco').textContent = 'R$ ' + (planoPreco || '')
 
 const precoNum = parseFloat((planoPreco || '34.90').replace(',', '.'));
 
+// Máscaras
+function maskCard(el) {
+  let v = el.value.replace(/\D/g, '').slice(0, 16);
+  el.value = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+  const icon = document.getElementById('card-icon');
+  if (v.startsWith('4')) icon.textContent = 'credit_card';
+  else if (v.startsWith('5') || v.startsWith('2')) icon.textContent = 'credit_card';
+  else icon.textContent = 'credit_card';
+}
+function maskExpiry(el) {
+  let v = el.value.replace(/\D/g, '').slice(0, 4);
+  if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+  el.value = v;
+}
+function maskCPF(el) {
+  let v = el.value.replace(/\D/g, '').slice(0, 11);
+  if (v.length > 9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
+  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
+  else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,3})/, '$1.$2');
+  el.value = v;
+}
+
 function showError(msg) {
   document.getElementById('error-text').textContent = msg;
   document.getElementById('error-msg').classList.remove('hidden');
+  resetBtn();
+}
+function resetBtn() {
+  const btn = document.getElementById('btn-pagar');
+  btn.disabled = false;
+  btn.innerHTML = '<span class="material-icons-outlined text-base">lock</span> Confirmar pagamento';
 }
 
-// ── Inicializa MP Bricks ───────────────────────────────────────────────
-const mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
+async function confirmarPagamento() {
+  const nome    = document.getElementById('p-nome').value.trim();
+  const cpf     = document.getElementById('p-cpf').value.replace(/\D/g, '');
+  const numero  = document.getElementById('p-numero').value.replace(/\s/g, '');
+  const validade = document.getElementById('p-validade').value.trim();
+  const cvv     = document.getElementById('p-cvv').value.trim();
 
-mp.bricks().then(bricksBuilder => {
-  bricksBuilder.create('cardPayment', 'mp-brick-container', {
-    initialization: {
-      amount: precoNum,
-      payer:  { email: email || '' },
-    },
-    customization: {
-      visual: {
-        style: {
-          theme: 'default',
-          customVariables: {
-            baseColor:            '#4A6741',
-            baseColorFirstVariant:'#6B8E61',
-            baseColorSecondVariant:'#3d5635',
-            buttonTextColor:      '#ffffff',
-            fontSizeExtraSmall:   '11px',
-            fontSizeSmall:        '13px',
-            fontSizeMedium:       '14px',
-            fontSizeLarge:        '16px',
-            fontWeightNormal:     '600',
-            fontWeightSemiBold:   '700',
-            borderRadiusSmall:    '8px',
-            borderRadiusMedium:   '12px',
-            borderRadiusLarge:    '16px',
-            formBackgroundColor:  '#ffffff',
-            inputBackgroundColor: '#f9fafb',
-            inputBorderColor:     '#e5e7eb',
-            inputFocusedBorderColor: '#4A6741',
-          },
+  document.getElementById('error-msg').classList.add('hidden');
+
+  if (!nome)               { showError('Informe o nome no cartão.'); return; }
+  if (cpf.length !== 11)   { showError('Informe um CPF válido (11 dígitos).'); return; }
+  if (numero.length < 15)  { showError('Número de cartão inválido.'); return; }
+  if (validade.length < 5) { showError('Informe a validade (MM/AA).'); return; }
+  if (cvv.length < 3)      { showError('CVV inválido.'); return; }
+
+  const btn = document.getElementById('btn-pagar');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-icons-outlined text-base spin">refresh</span> Processando...';
+
+  const [mes, ano] = validade.split('/');
+
+  let token;
+  try {
+    token = await mp.createCardToken({
+      cardNumber:           numero,
+      cardholderName:       nome,
+      cardExpirationMonth:  mes,
+      cardExpirationYear:   '20' + ano,
+      securityCode:         cvv,
+      identificationType:   'CPF',
+      identificationNumber: cpf,
+    });
+  } catch (e) {
+    showError('Não foi possível validar o cartão. Verifique os dados.');
+    return;
+  }
+
+  if (!token?.id) { showError('Erro ao gerar token do cartão.'); return; }
+
+  let result;
+  try {
+    const res = await fetch(SB_URL + '/functions/v1/pagar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        token:              token.id,
+        installments:       1,
+        payment_method_id:  token.payment_method_id,
+        issuer_id:          token.card?.cardholder?.issuer_id,
+        transaction_amount: precoNum,
+        payer: {
+          email,
+          identification: { type: 'CPF', number: cpf }
         },
-      },
-      paymentMethods: {
-        maxInstallments: planoPeriodo === 'anual' ? 12 : 1,
-      },
-    },
-    callbacks: {
-      onReady: () => {
-        document.getElementById('brick-loading').style.display = 'none';
-      },
-      onSubmit: ({ formData }) => {
-        document.getElementById('error-msg').classList.add('hidden');
-        return new Promise(async (resolve, reject) => {
-          try {
-            const res = await fetch(SB_URL + '/functions/v1/pagar', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ...formData, planoId, planoPeriodo }),
-            });
-            const result = await res.json();
-            if (result.ok) {
-              resolve();
-              await criarConta();
-            } else {
-              reject(result.message || 'Pagamento recusado.');
-              showError(result.message || 'Pagamento recusado. Verifique os dados do cartão.');
-            }
-          } catch (e) {
-            reject('Erro de conexão.');
-            showError('Erro de conexão. Tente novamente.');
-          }
-        });
-      },
-      onError: error => {
-        console.error('[MP Brick]', error);
-        showError('Erro no formulário de pagamento. Recarregue a página.');
-      },
-    },
-  });
-}).catch(err => {
-  console.error('[MP Bricks init]', err);
-  document.getElementById('brick-loading').innerHTML =
-    '<span class="material-icons-outlined text-red-400 text-3xl">error_outline</span>' +
-    '<p>Falha ao carregar o formulário de pagamento.<br/><a href="" class="text-primary underline">Recarregar</a></p>';
-});
+        planoId,
+        planoPeriodo,
+      }),
+    });
+    result = await res.json();
+  } catch (e) {
+    showError('Erro de conexão. Tente novamente.');
+    return;
+  }
 
-// ── Cria / atualiza conta no Supabase após pagamento aprovado ──────────
+  if (!result.ok) {
+    showError(result.message || 'Pagamento recusado. Verifique os dados do cartão.');
+    return;
+  }
+
+  await criarConta();
+}
+
 async function criarConta() {
   let userId;
 
@@ -272,6 +318,8 @@ async function criarConta() {
   document.getElementById('overlay-sucesso').classList.remove('hidden');
   setTimeout(() => location.href = 'painel.html', 2500);
 }
+
+document.addEventListener('keydown', e => { if (e.key === 'Enter') confirmarPagamento(); });
 </script>
 </body>
 </html>
