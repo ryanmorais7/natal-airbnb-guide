@@ -190,7 +190,7 @@ body { font-family: 'Nunito Sans', sans-serif; }
 <script>
 // ── Configurações ──────────────────────────────────────────────────────
 // ⚠️  TROQUE PELA SUA PUBLIC KEY do painel do Mercado Pago (Credenciais)
-const MP_PUBLIC_KEY = 'TUA_PUBLIC_KEY_AQUI';
+const MP_PUBLIC_KEY = 'TEST-c47e3ad4-8d2a-4205-a895-e3a40a84deda';
 
 const SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
@@ -294,31 +294,26 @@ const cardForm = mp.cardForm({
 
       if (!token) { showError('Não foi possível processar o cartão. Verifique os dados.'); return; }
 
-      // ── ENVIAR PARA SEU BACKEND ──────────────────────────────────────
-      // Você precisará de um servidor (Node, Edge Function, etc.) que chame
-      // a API do Mercado Pago com seu ACCESS TOKEN (nunca exponha no frontend).
-      //
-      // Exemplo de chamada:
-      //
-      // const res = await fetch('/api/pagar', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     token,           // token do cartão (uso único, expira em minutos)
-      //     installments,    // número de parcelas escolhido
-      //     paymentMethodId, // ex: 'visa', 'master'
-      //     issuerId,        // banco emissor
-      //     email,           // e-mail do pagador
-      //     planoId,         // 'individual' ou 'pro'
-      //     planoPeriodo,    // 'mensal' ou 'anual'
-      //     precoNum,        // valor em reais (ex: '34.90')
-      //   })
-      // });
-      // const result = await res.json();
-      // if (!result.approved) { showError('Pagamento recusado: ' + result.message); return; }
-      //
-      // ─────────────────────────────────────────────────────────────────
-      // ⚠️  REMOVA o await abaixo e descomente o bloco acima quando tiver o backend:
+      // Chama a Edge Function do Supabase (Access Token fica seguro no servidor)
+      let res, result;
+      try {
+        res = await fetch('https://xhtkwtiskqyiohurwkxg.supabase.co/functions/v1/pagar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, installments, paymentMethodId, issuerId, email, planoId, planoPeriodo, precoNum }),
+        });
+        result = await res.json();
+      } catch (e) {
+        showError('Erro de conexão. Tente novamente.');
+        return;
+      }
+
+      if (!result.ok) {
+        showError(result.message || 'Pagamento recusado. Verifique os dados do cartão.');
+        return;
+      }
+
+      // Pagamento aprovado — cria/atualiza conta no Supabase
       await criarConta();
     },
 
