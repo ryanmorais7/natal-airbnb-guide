@@ -110,9 +110,13 @@ tailwind.config = {
           oninput="filterHosts()"
           class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"/>
       </div>
-      <button onclick="abrirConvite()" class="action-btn bg-primary text-white hover:bg-primary-light shadow-sm shadow-primary/20">
-        <span class="material-icons-outlined" style="font-size:16px">person_add</span>
-        <span class="hidden sm:inline">Convidar anfitrião</span>
+      <button onclick="abrirConvite('livre')" class="action-btn bg-primary text-white hover:bg-primary-light shadow-sm shadow-primary/20">
+        <span class="material-icons-outlined" style="font-size:16px">person_check</span>
+        <span class="hidden sm:inline">Acesso Livre</span>
+      </button>
+      <button onclick="abrirConvite('pagamento')" class="action-btn bg-white border border-primary text-primary hover:bg-primary/5">
+        <span class="material-icons-outlined" style="font-size:16px">credit_card</span>
+        <span class="hidden sm:inline">Para Pagamento</span>
       </button>
       <button onclick="loadDashboard()" class="action-btn bg-gray-100 text-gray-600 hover:bg-gray-200">
         <span class="material-icons-outlined" style="font-size:16px">refresh</span>
@@ -284,7 +288,7 @@ tailwind.config = {
 
     <!-- Form state -->
     <div id="invite-form" class="p-6 space-y-4">
-      <p class="text-sm text-gray-500">O anfitrião receberá um link mágico por e-mail para acessar o painel diretamente, sem precisar de senha.</p>
+      <p id="invite-desc" class="text-sm text-gray-500"></p>
 
       <div id="invite-error" class="hidden p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-center gap-2">
         <span class="material-icons-outlined text-base">error_outline</span>
@@ -297,19 +301,14 @@ tailwind.config = {
           class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-gray-50 focus:bg-white transition-all"/>
       </div>
 
-      <div class="flex flex-col gap-2 pt-1">
-        <button id="btn-convite-livre" onclick="enviarConvite('livre')"
-          class="w-full bg-primary text-white font-bold text-sm py-2.5 rounded-xl hover:bg-primary-light transition-colors flex items-center justify-center gap-2">
-          <span class="material-icons-outlined" style="font-size:16px">person_check</span>
-          Acesso Livre (Free)
-        </button>
-        <button id="btn-convite-pago" onclick="enviarConvite('pagamento')"
-          class="w-full bg-white border-2 border-primary text-primary font-bold text-sm py-2.5 rounded-xl hover:bg-primary/5 transition-colors flex items-center justify-center gap-2">
-          <span class="material-icons-outlined" style="font-size:16px">credit_card</span>
-          Convidar para Pagamento
+      <div class="flex gap-3 pt-1">
+        <button id="btn-enviar-convite" onclick="enviarConvite()"
+          class="flex-1 bg-primary text-white font-bold text-sm py-2.5 rounded-xl hover:bg-primary-light transition-colors flex items-center justify-center gap-2">
+          <span class="material-icons-outlined" style="font-size:16px">send</span>
+          Enviar convite
         </button>
         <button onclick="fecharConvite()"
-          class="w-full bg-gray-100 text-gray-500 font-bold text-xs py-2 rounded-xl hover:bg-gray-200 transition-colors">
+          class="px-5 bg-gray-100 text-gray-500 font-bold text-sm py-2.5 rounded-xl hover:bg-gray-200 transition-colors">
           Cancelar
         </button>
       </div>
@@ -835,15 +834,28 @@ function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'
 function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
 
 // ── Convidar anfitrião ────────────────────────────────────────────────
-function abrirConvite() {
+let _inviteTipo = 'livre';
+
+function abrirConvite(tipo) {
+  _inviteTipo = tipo || 'livre';
   document.getElementById('invite-form').classList.remove('hidden');
   document.getElementById('invite-success').classList.add('hidden');
   document.getElementById('invite-error').classList.add('hidden');
   document.getElementById('inv-email').value = '';
-  document.getElementById('btn-convite-livre').disabled = false;
-  document.getElementById('btn-convite-livre').innerHTML = '<span class="material-icons-outlined" style="font-size:16px">person_check</span> Acesso Livre (Free)';
-  document.getElementById('btn-convite-pago').disabled = false;
-  document.getElementById('btn-convite-pago').innerHTML = '<span class="material-icons-outlined" style="font-size:16px">credit_card</span> Convidar para Pagamento';
+  const btn = document.getElementById('btn-enviar-convite');
+  btn.disabled = false;
+  btn.innerHTML = '<span class="material-icons-outlined" style="font-size:16px">send</span> Enviar convite';
+
+  const isLivre = _inviteTipo === 'livre';
+  document.getElementById('invite-desc').textContent = isLivre
+    ? 'O anfitrião receberá um link e terá acesso imediato ao painel, sem precisar pagar.'
+    : 'O anfitrião receberá um link e será direcionado para escolher um plano antes de acessar o painel.';
+
+  const titleIcon = isLivre ? 'person_check' : 'credit_card';
+  const titleText = isLivre ? 'Acesso Livre (Free)' : 'Convidar para Pagamento';
+  document.querySelector('#invite-modal h3').textContent = titleText;
+  document.querySelector('#invite-modal .w-9 .material-icons-outlined').textContent = titleIcon;
+
   document.getElementById('invite-modal').classList.remove('hidden');
   setTimeout(() => document.getElementById('inv-email').focus(), 100);
 }
@@ -852,7 +864,7 @@ function fecharConvite() {
   document.getElementById('invite-modal').classList.add('hidden');
 }
 
-async function enviarConvite(tipo) {
+async function enviarConvite() {
   const email = document.getElementById('inv-email').value.trim();
   const errEl = document.getElementById('invite-error');
   errEl.classList.add('hidden');
@@ -863,14 +875,11 @@ async function enviarConvite(tipo) {
     return;
   }
 
-  const btnLivre = document.getElementById('btn-convite-livre');
-  const btnPago  = document.getElementById('btn-convite-pago');
-  btnLivre.disabled = true;
-  btnPago.disabled  = true;
-  const activeBtn = tipo === 'livre' ? btnLivre : btnPago;
-  activeBtn.innerHTML = '<span class="material-icons-outlined spin" style="font-size:16px">refresh</span> Enviando...';
+  const btn = document.getElementById('btn-enviar-convite');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-icons-outlined spin" style="font-size:16px">refresh</span> Enviando...';
 
-  const dest      = tipo === 'pagamento' ? 'planos.html?invite=1' : 'painel.html';
+  const dest       = _inviteTipo === 'pagamento' ? 'planos.html?invite=1' : 'painel.html';
   const redirectTo = location.origin + location.pathname.replace('admin.html', dest);
 
   const { error } = await sb.auth.signInWithOtp({
@@ -881,14 +890,12 @@ async function enviarConvite(tipo) {
   if (error) {
     document.getElementById('invite-error-text').textContent = error.message;
     errEl.classList.remove('hidden');
-    btnLivre.disabled = false;
-    btnPago.disabled  = false;
-    btnLivre.innerHTML = '<span class="material-icons-outlined" style="font-size:16px">person_check</span> Acesso Livre (Free)';
-    btnPago.innerHTML  = '<span class="material-icons-outlined" style="font-size:16px">credit_card</span> Convidar para Pagamento';
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-icons-outlined" style="font-size:16px">send</span> Enviar convite';
     return;
   }
 
-  const msg = tipo === 'pagamento'
+  const msg = _inviteTipo === 'pagamento'
     ? 'Link enviado para ' + email + '. O anfitrião precisará escolher um plano antes de acessar o painel.'
     : 'Link enviado para ' + email + '. O anfitrião terá acesso imediato ao painel ao clicar no e-mail.';
 
