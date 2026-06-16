@@ -8,14 +8,14 @@ const cors = {
 };
 
 const STATUS_MESSAGES: Record<string, string> = {
-  cc_rejected_insufficient_amount:    "Saldo insuficiente no cartão.",
-  cc_rejected_bad_filled_card_number: "Número de cartão inválido.",
-  cc_rejected_bad_filled_date:        "Data de validade inválida.",
+  cc_rejected_insufficient_amount:      "Saldo insuficiente no cartão.",
+  cc_rejected_bad_filled_card_number:   "Número de cartão inválido.",
+  cc_rejected_bad_filled_date:          "Data de validade inválida.",
   cc_rejected_bad_filled_security_code: "CVV inválido.",
-  cc_rejected_call_for_authorize:     "Cartão bloqueado. Entre em contato com seu banco.",
-  cc_rejected_card_disabled:          "Cartão desativado. Entre em contato com seu banco.",
-  cc_rejected_duplicated_payment:     "Pagamento duplicado detectado.",
-  cc_rejected_high_risk:              "Pagamento recusado por segurança. Tente outro cartão.",
+  cc_rejected_call_for_authorize:       "Cartão bloqueado. Entre em contato com seu banco.",
+  cc_rejected_card_disabled:            "Cartão desativado. Entre em contato com seu banco.",
+  cc_rejected_duplicated_payment:       "Pagamento duplicado detectado.",
+  cc_rejected_high_risk:                "Pagamento recusado por segurança. Tente outro cartão.",
 };
 
 serve(async (req) => {
@@ -24,36 +24,23 @@ serve(async (req) => {
   }
 
   try {
-    const {
-      token,
-      installments,
-      paymentMethodId,
-      issuerId,
-      email,
-      planoId,
-      planoPeriodo,
-      precoNum,
-    } = await req.json();
+    // Bricks envia formData com token, payer, installments, payment_method_id etc.
+    const { planoId, planoPeriodo, ...formData } = await req.json();
 
-    if (!token) {
+    if (!formData.token) {
       return json({ ok: false, message: "Token do cartão inválido." }, 400);
     }
 
     const mpRes = await fetch("https://api.mercadopago.com/v1/payments", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${MP_ACCESS_TOKEN}`,
-        "Content-Type": "application/json",
-        "X-Idempotency-Key": crypto.randomUUID(),
+        Authorization:        `Bearer ${MP_ACCESS_TOKEN}`,
+        "Content-Type":       "application/json",
+        "X-Idempotency-Key":  crypto.randomUUID(),
       },
       body: JSON.stringify({
-        token,
-        installments:         Number(installments) || 1,
-        payment_method_id:    paymentMethodId,
-        issuer_id:            issuerId ? Number(issuerId) : undefined,
-        transaction_amount:   Number(precoNum),
-        description:          `Zamio Guias – Plano ${planoId} (${planoPeriodo})`,
-        payer: { email },
+        ...formData,
+        description: `Zamio Guias – Plano ${planoId ?? "—"} (${planoPeriodo ?? "mensal"})`,
       }),
     });
 
