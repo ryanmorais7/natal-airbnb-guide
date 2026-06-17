@@ -1133,7 +1133,7 @@ Tudo que voc√™ precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire√
                     var article = slotEl.closest('article');
                     if (!article) return;
                     var overlay = document.createElement('div');
-                    overlay.style.cssText = 'position:absolute;left:0;right:0;bottom:0;z-index:20;padding:1.25rem;border-radius:0 0 2rem 2rem;background:rgba(0,0,0,0.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);transform:translateY(100%);transition:transform 0.3s ease-out;cursor:default;';
+                    overlay.style.cssText = 'position:absolute;left:0;right:0;bottom:0;z-index:20;padding:1.25rem;border-radius:0 0 2rem 2rem;background:rgba(0,0,0,0.75);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;transform:translateY(10px);transition:opacity 0.25s ease,transform 0.25s ease;pointer-events:none;';
                     overlay.innerHTML = '<p style="font-size:10px;text-transform:uppercase;letter-spacing:0.35em;color:rgba(255,255,255,0.5);margin:0 0 10px" data-i18n="photos.items_label">Itens dispon√≠veis<\/p>'
                         + '<ul style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin:0;padding:0;list-style:none">'
                         + items.map(function(item) {
@@ -1142,11 +1142,11 @@ Tudo que voc√™ precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire√
                         + '<\/ul>';
                     article.appendChild(overlay);
                     article.style.cursor = 'pointer';
-                    article.addEventListener('mouseenter', function() { overlay.style.transform = 'translateY(0)'; });
-                    article.addEventListener('mouseleave', function() { overlay.style.transform = 'translateY(100%)'; });
-                    article.addEventListener('click', function() {
-                        overlay.style.transform = (overlay.style.transform === 'translateY(0px)' || overlay.style.transform === 'translateY(0)') ? 'translateY(100%)' : 'translateY(0)';
-                    });
+                    function _showOverlay() { overlay.style.opacity = '1'; overlay.style.transform = 'translateY(0)'; overlay.style.pointerEvents = 'auto'; }
+                    function _hideOverlay() { overlay.style.opacity = '0'; overlay.style.transform = 'translateY(10px)'; overlay.style.pointerEvents = 'none'; }
+                    article.addEventListener('mouseenter', _showOverlay);
+                    article.addEventListener('mouseleave', _hideOverlay);
+                    article.addEventListener('click', function() { overlay.style.opacity === '1' ? _hideOverlay() : _showOverlay(); });
                 });
             }
 
