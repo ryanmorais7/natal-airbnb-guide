@@ -1151,6 +1151,7 @@ function renderLimpeza() {
   let nOk = 0, nAt = 0, nFalt = 0;
   const allGroups = getAllLimpezaGroups();
   const LIMP_ICONS = ['pool','yard','garage','deck','balcony','local_laundry_service','local_parking','outdoor_grill','spa','hot_tub'];
+  const LIMP_ICON_LABELS = { pool:'Piscina', yard:'Quintal', garage:'Garagem', deck:'Deck', balcony:'Varanda', local_laundry_service:'Lavanderia', local_parking:'Estacionamento', outdoor_grill:'Churrasqueira', spa:'Spa', hot_tub:'Banheira' };
   let html = '';
 
   for (const g of allGroups) {
@@ -1216,7 +1217,7 @@ function renderLimpeza() {
         + 'class="flex flex-col items-center gap-0.5 p-2 rounded-xl border-2 transition-all text-center w-14 '
         + (sel ? 'border-primary text-primary bg-primary/5' : 'border-gray-200 text-gray-500 hover:border-primary hover:text-primary') + '">'
         + '<span class="material-icons-outlined" style="font-size:20px">' + ic + '<\/span>'
-        + '<span style="font-size:8px;line-height:1.1;word-break:break-word">' + ic.replace(/_/g,' ') + '<\/span>'
+        + '<span style="font-size:8px;line-height:1.1;word-break:break-word">' + (LIMP_ICON_LABELS[ic] || ic.replace(/_/g,' ')) + '<\/span>'
         + '<\/button>';
     }
     html += '<\/div><\/div>';
