@@ -390,6 +390,16 @@ tailwind.config = {
           <label class="field-label">Google Maps Embed URL (para o mapa no guia)</label>
           <input id="p-embed" class="field-input" placeholder="https://www.google.com/maps/embed?pb=..." type="url"/>
           <p id="p-embed-hint" class="text-xs text-gray-400 mt-1">Preenchido automaticamente ao colar o link acima. Edite manualmente se necessário.</p>
+          <details class="mt-2">
+            <summary class="text-xs text-primary cursor-pointer font-semibold hover:underline">Como obter o URL de embed manualmente?</summary>
+            <ol class="mt-2 text-xs text-gray-500 space-y-1 pl-4 list-decimal">
+              <li>Abra o <strong>Google Maps</strong> e pesquise o endereço</li>
+              <li>Clique em <strong>Compartilhar</strong> (ícone de corrente)</li>
+              <li>Selecione a aba <strong>"Incorporar um mapa"</strong></li>
+              <li>Copie apenas o valor do atributo <strong>src="…"</strong> do código iframe</li>
+              <li>Cole aqui no campo acima</li>
+            </ol>
+          </details>
         </div>
         <div class="pt-2">
           <button class="save-btn" onclick="savePropriedade()">
@@ -933,6 +943,17 @@ async function init() {
   if (hostData.is_demo) {
     window.isDemoMode = true;
     document.getElementById('demo-banner').classList.remove('hidden');
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      const m = (btn.getAttribute('onclick') || '').match(/showSection\('(\w+)'\)/);
+      if (m && !DEMO_ALLOWED_SECTIONS.has(m[1])) {
+        btn.style.opacity = '0.45';
+        const lock = document.createElement('span');
+        lock.className = 'material-icons-outlined';
+        lock.style.cssText = 'font-size:14px;margin-left:auto;flex-shrink:0';
+        lock.textContent = 'lock';
+        btn.appendChild(lock);
+      }
+    });
   }
 
   const subStatus = hostData.subscription_status;
@@ -1000,7 +1021,13 @@ function g(id) {
 }
 
 // ── Navigation ───────────────────────────────────────────────────────
+const DEMO_ALLOWED_SECTIONS = new Set(['geral','limpeza','manutencao','aparencia','propriedade']);
+
 function showSection(name) {
+  if (window.isDemoMode && !DEMO_ALLOWED_SECTIONS.has(name)) {
+    window.location.href = 'planos.html';
+    return;
+  }
   document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   const panel = document.getElementById('section-' + name);
@@ -2038,8 +2065,6 @@ function renderAccessFields() {
 
   if (t === 'fechadura') {
     h += _fField('Código da Fechadura', 'f-code', 'text', 'Ex: 5478', 'field-input font-mono text-xl tracking-widest');
-    h += _fField('Válido até', 'f-valid', 'date', '');
-    h += '<div id="f-status" class="hidden p-3 rounded-xl text-sm font-bold"><\/div>';
     h += _fTextarea('Instruções de entrada', 'f-instructions', 'Ex: Suba pela escada lateral\nPressione a fechadura para ativar o teclado\nDigite o código e puxe a porta por 2 segundos', hint);
   } else if (t === 'chave') {
     h += _fField('Onde retirar a chave', 'f-location', 'text', 'Ex: Na portaria, com o síndico...', '');
@@ -2054,38 +2079,9 @@ function renderAccessFields() {
   c.innerHTML = h;
 
   v('f-code',         content.lock_code             || '');
-  v('f-valid',        content.lock_code_valid_until || '');
   v('f-location',     content.access_location       || '');
   v('f-contact',      content.access_contact        || '');
   v('f-instructions', content.access_instructions   || '');
-
-  const codeEl  = document.getElementById('f-code');
-  const validEl = document.getElementById('f-valid');
-  if (codeEl)  codeEl.addEventListener('input',  updateValidadeStatus);
-  if (validEl) validEl.addEventListener('change', updateValidadeStatus);
-  updateValidadeStatus();
-}
-
-function updateValidadeStatus() {
-  const validEl = document.getElementById('f-valid');
-  const el      = document.getElementById('f-status');
-  if (!el || !validEl) return;
-  const valid = validEl.value;
-  if (!valid) { el.classList.add('hidden'); return; }
-  const today  = new Date(); today.setHours(0,0,0,0);
-  const expiry = new Date(valid + 'T00:00:00');
-  const days   = Math.round((expiry - today) / 86400000);
-  el.classList.remove('hidden');
-  if (days < 0) {
-    el.className = 'p-3 rounded-xl text-sm font-bold bg-red-50 text-red-600 border border-red-200';
-    el.textContent = '⚠ Código expirado há ' + Math.abs(days) + ' dia(s). Atualize!';
-  } else if (days <= 3) {
-    el.className = 'p-3 rounded-xl text-sm font-bold bg-amber-50 text-amber-700 border border-amber-200';
-    el.textContent = '⚠ Expira em ' + days + ' dia(s). Considere renovar.';
-  } else {
-    el.className = 'p-3 rounded-xl text-sm font-bold bg-green-50 text-green-700 border border-green-200';
-    el.textContent = '✓ Código válido por mais ' + days + ' dia(s).';
-  }
 }
 
 async function saveAcesso() {
@@ -2097,8 +2093,7 @@ async function saveAcesso() {
     updated_at:          new Date().toISOString(),
   };
   if (selectedAccessType === 'fechadura') {
-    updates.lock_code             = g('f-code');
-    updates.lock_code_valid_until = g('f-valid') || null;
+    updates.lock_code = g('f-code');
   }
   await upsertContent(updates);
   Object.assign(content, updates);

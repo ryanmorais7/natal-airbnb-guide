@@ -75,6 +75,23 @@ body { font-family: 'Nunito Sans', sans-serif; }
     </div>
   </div>
 
+  <!-- Escolha do início -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-4">
+    <p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-3">Como começar</p>
+    <div class="grid grid-cols-2 gap-2">
+      <button id="opt-trial" onclick="setStartMode('trial')" type="button"
+        class="p-3 rounded-xl border-2 text-left transition-all border-primary bg-primary/5">
+        <p class="text-sm font-extrabold text-primary mb-0.5">🎁 7 dias grátis</p>
+        <p class="text-xs text-gray-500 leading-snug">Teste sem cobranças, cancele quando quiser</p>
+      </button>
+      <button id="opt-direct" onclick="setStartMode('direct')" type="button"
+        class="p-3 rounded-xl border-2 text-left transition-all border-gray-200 hover:border-gray-300">
+        <p class="text-sm font-extrabold text-gray-700 mb-0.5">⚡ Começar agora</p>
+        <p class="text-xs text-gray-500 leading-snug">Cobrança imediata, sem período de teste</p>
+      </button>
+    </div>
+  </div>
+
   <!-- Formulário -->
   <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4 mb-4">
 
@@ -146,7 +163,7 @@ body { font-family: 'Nunito Sans', sans-serif; }
       <span class="material-icons-outlined text-green-600" style="font-size:32px">check_circle</span>
     </div>
     <h2 class="font-serif text-2xl text-gray-900 mb-2">Assinatura ativada!</h2>
-    <p class="text-sm text-gray-500 mb-6">Seus 7 dias grátis começam agora. Bem-vindo ao Zamio Guias!</p>
+    <p id="overlay-msg" class="text-sm text-gray-500 mb-6">Seus 7 dias grátis começam agora. Bem-vindo ao Zamio Guias!</p>
     <div class="flex items-center justify-center gap-1.5 text-sm text-primary font-bold">
       <span class="material-icons-outlined text-base spin">refresh</span>
       Acessando o painel...
@@ -169,6 +186,16 @@ const planoId      = sessionStorage.getItem('zreg_plano_id');
 const planoNome    = sessionStorage.getItem('zreg_plano_nome');
 const planoPreco   = sessionStorage.getItem('zreg_plano_preco');
 const planoPeriodo = sessionStorage.getItem('zreg_plano_periodo') || 'mensal';
+let withTrial = true;
+
+function setStartMode(mode) {
+  withTrial = (mode === 'trial');
+  const trialCls  = 'p-3 rounded-xl border-2 text-left transition-all ';
+  document.getElementById('opt-trial').className  = trialCls + (withTrial  ? 'border-primary bg-primary/5'   : 'border-gray-200 hover:border-gray-300');
+  document.getElementById('opt-direct').className = trialCls + (!withTrial ? 'border-primary bg-primary/5'   : 'border-gray-200 hover:border-gray-300');
+  const btn = document.getElementById('btn-pagar');
+  btn.innerHTML = '<span class="material-icons-outlined text-base">lock</span>' + (withTrial ? 'Começar 7 dias grátis' : 'Assinar agora');
+}
 
 if (!email || !planoId) location.href = isInvite ? 'login.html' : 'cadastro.html';
 
@@ -260,6 +287,7 @@ async function confirmarPagamento() {
         cpf,
         planoId,
         planoPeriodo,
+        withTrial,
       }),
     });
     result = await res.json();
@@ -315,6 +343,10 @@ async function criarConta(subscriptionId, trialEndsAt) {
   ['zreg_email','zreg_senha','zreg_celular','zreg_plano_id','zreg_plano_nome','zreg_plano_preco','zreg_plano_periodo','zreg_invite']
     .forEach(k => sessionStorage.removeItem(k));
 
+  const el = document.getElementById('overlay-msg');
+  if (el) el.textContent = withTrial
+    ? 'Seus 7 dias grátis começam agora. Bem-vindo ao Zamio Guias!'
+    : 'Assinatura ativada com sucesso. Bem-vindo ao Zamio Guias!';
   document.getElementById('overlay-sucesso').classList.remove('hidden');
   setTimeout(() => location.href = 'painel.html', 2500);
 }

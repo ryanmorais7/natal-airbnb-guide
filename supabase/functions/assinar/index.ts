@@ -17,7 +17,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   try {
-    const { cardToken, email, cpf, planoId, planoPeriodo } = await req.json();
+    const { cardToken, email, cpf, planoId, planoPeriodo, withTrial = true } = await req.json();
 
     if (!cardToken) return json({ ok: false, message: "Token do cartão inválido." }, 400);
     if (!email)     return json({ ok: false, message: "E-mail obrigatório." }, 400);
@@ -28,22 +28,25 @@ serve(async (req) => {
     const frequency     = periodo === "anual" ? 12 : 1;
     const frequencyType = "months";
 
-    const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const trialEndsAt = withTrial
+      ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+      : null;
+
+    const autoRecurring: Record<string, unknown> = {
+      frequency,
+      frequency_type:     frequencyType,
+      transaction_amount: amount,
+      currency_id:        "BRL",
+    };
+    if (withTrial) {
+      autoRecurring.free_trial = { frequency: 7, frequency_type: "days" };
+    }
 
     const body: Record<string, unknown> = {
       reason:        `Zamio Guias – Plano ${planKey} (${periodo})`,
       payer_email:   email,
       card_token_id: cardToken,
-      auto_recurring: {
-        frequency,
-        frequency_type:     frequencyType,
-        transaction_amount: amount,
-        currency_id:        "BRL",
-        free_trial: {
-          frequency:      7,
-          frequency_type: "days",
-        },
-      },
+      auto_recurring: autoRecurring,
       back_url: "https://guiazamio.vercel.app/painel.html",
       status:   "authorized",
     };
@@ -65,7 +68,7 @@ serve(async (req) => {
     const sub = await res.json();
 
     if (sub.status === "authorized") {
-      return json({ ok: true, subscriptionId: String(sub.id), trialEndsAt });
+      return json({ ok: true, subscriptionId: String(sub.id), trialEndsAt, withTrial });
     }
 
     const msg = sub.message ?? "Não foi possível criar a assinatura. Verifique os dados do cartão.";
