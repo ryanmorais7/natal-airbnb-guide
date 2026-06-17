@@ -1,4 +1,4 @@
--- Execute no Supabase SQL Editor para adicionar suporte a temas
+
 
 ALTER TABLE public.guide_content
   ADD COLUMN IF NOT EXISTS theme_id          TEXT DEFAULT 'oliva',

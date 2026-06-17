@@ -1,4 +1,3 @@
--- Cole e execute tudo isso no Supabase SQL Editor
 
 -- 1. Tabela de perfis dos anfitriões
 CREATE TABLE IF NOT EXISTS public.hosts (

@@ -271,7 +271,7 @@ tailwind.config = {
         <div>
           <label class="field-label">Slug (link do guia)</label>
           <div class="flex gap-2">
-            <span class="flex items-center text-sm text-gray-400 bg-gray-100 rounded-l-xl px-3 border border-r-0 border-gray-200 flex-shrink-0 rounded-xl" style="border-radius:12px 0 0 12px">guia.html?h=</span>
+            <span class="flex items-center text-sm text-gray-400 bg-gray-100 rounded-l-xl px-3 border border-r-0 border-gray-200 flex-shrink-0 rounded-xl" style="border-radius:12px 0 0 12px">index.html?h=</span>
             <input id="g-slug" class="field-input" style="border-radius:0 12px 12px 0;border-left:none" placeholder="zamio" type="text" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')"/>
           </div>
           <p class="text-xs text-gray-400 mt-1.5">Somente letras minúsculas, números e hífens. Ex: <strong>casa-praia</strong></p>
@@ -1012,8 +1012,7 @@ function populateForms() {
   loadRoomItems();
   // Header
   document.getElementById('header-prop').textContent = hostData.property_name || 'Minha Propriedade';
-  const verGuiaLink = document.getElementById('ver-guia-link');
-  if (verGuiaLink) verGuiaLink.href = guiaBaseUrl(false);
+  updateVerGuiaLink();
 }
 
 function v(id, val) {
@@ -1678,6 +1677,25 @@ async function saveAparencia() {
     theme_color_light: t.light,
     updated_at:        new Date().toISOString()
   });
+  // Atualiza link "Ver Guia" com cache-busting para abrir guia com novo tema
+  const verGuiaLink = document.getElementById('ver-guia-link');
+  if (verGuiaLink) verGuiaLink.href = guiaBaseUrl(true);
+}
+
+function updateVerGuiaLink() {
+  const link = document.getElementById('ver-guia-link');
+  if (!link) return;
+  if (!hostData.slug) {
+    link.href = '#';
+    link.title = 'Defina um slug na seção Geral para visualizar o guia';
+    link.style.opacity = '0.4';
+    link.style.pointerEvents = 'none';
+  } else {
+    link.href = guiaBaseUrl(false);
+    link.title = '';
+    link.style.opacity = '';
+    link.style.pointerEvents = '';
+  }
 }
 
 // ── Save: Geral ───────────────────────────────────────────────────────
@@ -1696,6 +1714,7 @@ async function saveGeral() {
   hostData.owner_name    = g('g-owner');
   hostData.slug          = slug;
   document.getElementById('header-prop').textContent = hostData.property_name || 'Minha Propriedade';
+  updateVerGuiaLink();
   showToast('✓ Salvo com sucesso!');
 }
 
