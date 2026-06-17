@@ -304,6 +304,22 @@ tailwind.config = {
           Redefinir tudo para OK
         </button>
       </div>
+
+      <!-- Passo a passo para diarista -->
+      <div class="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="material-icons-outlined text-primary" style="font-size:18px">format_list_numbered</span>
+          <h3 class="font-bold text-sm text-gray-700">Passo a passo para a diarista</h3>
+        </div>
+        <p class="text-xs text-gray-400 mb-3">Uma instrução por linha. Será enviado numerado na mensagem do WhatsApp.</p>
+        <textarea id="cl-instructions" class="field-input field-textarea text-sm" rows="6"
+          placeholder="Tirar lençóis e colocar na máquina&#10;Limpar banheiro: vaso, pia e box&#10;Limpar cozinha: fogão, pia e bancadas&#10;Repor papel higiênico e sabonete&#10;Passar vassoura e pano úmido&#10;Esvaziar lixeiras"></textarea>
+        <div class="flex justify-end mt-3">
+          <button onclick="saveInstrucoesDiarista()" class="save-btn">
+            <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar instruções
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- === MANUTENÇÃO === -->
@@ -1040,7 +1056,12 @@ let limpezaAddItemTarget = null;
 let limpezaAddGroupMode  = false;
 let limpezaSelGroupIcon  = 'pool';
 
+async function saveInstrucoesDiarista() {
+  await upsertContent({ cleaning_instructions: document.getElementById('cl-instructions').value.trim(), updated_at: new Date().toISOString() });
+}
+
 function loadLimpeza() {
+  v('cl-instructions', content.cleaning_instructions || '');
   limpezaState = (content && content.cleaning_state) ? { ...content.cleaning_state } : {};
   const saved  = content && content.cleaning_groups;
   limpezaCustomGroups = saved ? JSON.parse(JSON.stringify(saved)) : { extra_itens: {}, custom_groups: [] };
@@ -1243,16 +1264,24 @@ function enviarWhatsapp() {
 
   msg += linha + '\n';
   msg += '📋 *PASSO A PASSO — Diarista*\n\n';
-  msg += '1. Retire todas as roupas de cama, fronhas e toalhas sujas.\n';
-  msg += '2. Lave ou troque os itens marcados como *TROCAR / SUBSTITUIR* acima.\n';
-  msg += '3. Limpe o banheiro: vaso sanitário, pia, box e chão.\n';
-  msg += '4. Limpe a cozinha: fogão, pia, bancadas e geladeira (exterior).\n';
-  msg += '5. Cuide dos itens marcados como *PRECISA LIMPAR* acima.\n';
-  msg += '6. Passe vassoura e pano úmido no chão de todos os cômodos.\n';
-  msg += '7. Esvazie o lixo de todos os cômodos.\n';
-  msg += '8. Reponha: papel higiênico, sabonete e shampoo.\n';
-  msg += '9. Verifique almofadas, tapetes e janelas.\n';
-  msg += '10. Deixe a propriedade arejada e organizada para o próximo hóspede.\n';
+  const instrucoes = (content && content.cleaning_instructions || '').trim();
+  if (instrucoes) {
+    instrucoes.split('\n').forEach(function(linha, i) {
+      const l = linha.trim();
+      if (l) msg += (i + 1) + '. ' + l + '\n';
+    });
+  } else {
+    msg += '1. Retire todas as roupas de cama, fronhas e toalhas sujas.\n';
+    msg += '2. Lave ou troque os itens marcados como *TROCAR / SUBSTITUIR* acima.\n';
+    msg += '3. Limpe o banheiro: vaso sanitário, pia, box e chão.\n';
+    msg += '4. Limpe a cozinha: fogão, pia, bancadas e geladeira (exterior).\n';
+    msg += '5. Cuide dos itens marcados como *PRECISA LIMPAR* acima.\n';
+    msg += '6. Passe vassoura e pano úmido no chão de todos os cômodos.\n';
+    msg += '7. Esvazie o lixo de todos os cômodos.\n';
+    msg += '8. Reponha: papel higiênico, sabonete e shampoo.\n';
+    msg += '9. Verifique almofadas, tapetes e janelas.\n';
+    msg += '10. Deixe a propriedade arejada e organizada para o próximo hóspede.\n';
+  }
   msg += linha + '\n_Enviado pelo Zamio Guias_';
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
 }
