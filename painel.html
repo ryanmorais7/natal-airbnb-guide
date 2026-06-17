@@ -890,8 +890,14 @@ function copiarLinkReserva(token) {
 
 // ── Init ─────────────────────────────────────────────────────────────
 async function init() {
-  const { data: { session } } = await sb.auth.getSession();
+  let { data: { session } } = await sb.auth.getSession();
   if (!session) { location.href = 'login.html'; return; }
+  // Renova o token preventivamente se estiver próximo de expirar
+  const expiresAt = session.expires_at ?? 0;
+  if (expiresAt - Date.now() / 1000 < 300) {
+    const { data: refreshed } = await sb.auth.refreshSession();
+    if (refreshed.session) session = refreshed.session;
+  }
   hostId = session.user.id;
 
   const [{ data: h }, { data: c }] = await Promise.all([
@@ -1780,7 +1786,18 @@ async function upsertContent(updates) {
   }
   const { error } = await sb.from('guide_content')
     .upsert({ host_id: hostId, ...content, ...updates });
-  if (error) { showToast('Erro: ' + error.message); return; }
+  if (error) {
+    if (error.message?.includes('JWT') || error.message?.includes('expired') || error.status === 401) {
+      const { error: refreshErr } = await sb.auth.refreshSession();
+      if (refreshErr) { location.href = 'login.html'; return; }
+      const { error: retryErr } = await sb.from('guide_content')
+        .upsert({ host_id: hostId, ...content, ...updates });
+      if (retryErr) { showToast('Erro: ' + retryErr.message); return; }
+    } else {
+      showToast('Erro: ' + error.message);
+      return;
+    }
+  }
   Object.assign(content, updates);
   showToast('✓ Salvo com sucesso!');
 }
