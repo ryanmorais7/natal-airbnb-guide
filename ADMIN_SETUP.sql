@@ -1,4 +1,4 @@
--- Execute no Supabase SQL Editor APÓS ter criado sua conta via login.html
+
 
 -- 1. Adicionar coluna is_admin na tabela hosts
 ALTER TABLE public.hosts ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
