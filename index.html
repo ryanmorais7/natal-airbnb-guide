@@ -1065,9 +1065,12 @@ Tudo que vocÃª precisa para uma chegada tranquila: acesso, Wi-Fi, regras e direÃ
                 if (!hostRes.data) return;
                 host = hostRes.data;
 
+                console.log('[debug] host encontrado:', host.id);
                 var contentRes = await sb.from('guide_content')
                     .select('property_name, wifi_name, wifi_password, address, maps_url, maps_embed, theme_color, theme_color_light, checkin_time, checkout_time, lock_code, lock_code_valid_until, access_type, access_location, access_contact, access_instructions, welcome_message, hero_image_url, rules, restaurantes, mercados, farmacias, atividades, academias, lavanderias, emergencia, room_items')
                     .eq('host_id', host.id).single();
+                console.log('[debug] contentRes.error:', contentRes.error);
+                console.log('[debug] contentRes.data keys:', contentRes.data ? Object.keys(contentRes.data) : null);
                 if (!contentRes.data) return;
                 c = contentRes.data;
             }
