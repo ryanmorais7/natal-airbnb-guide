@@ -61,7 +61,7 @@ tailwind.config = {
     <span id="header-prop" class="text-sm font-semibold text-gray-500 hidden sm:block">Carregando...</span>
   </div>
   <div class="flex items-center gap-3">
-    <a href="index.html" target="_blank"
+    <a id="ver-guia-link" href="index.html" target="_blank"
       class="flex items-center gap-1.5 text-xs font-bold text-primary border-2 border-primary/30 px-3 py-2 rounded-xl hover:bg-primary hover:text-white hover:border-primary transition-all">
       <span class="material-icons-outlined" style="font-size:16px">open_in_new</span>
       <span class="hidden sm:inline">Ver Guia</span>
@@ -79,6 +79,30 @@ tailwind.config = {
   </div>
 </header>
 
+<!-- Banner: lembretes de manutenção vencidos -->
+<div id="manut-alert" class="hidden border-b border-red-200 bg-red-50 px-4 py-2.5">
+  <div class="flex items-center gap-3 max-w-2xl">
+    <span class="material-icons-outlined text-red-500 flex-shrink-0" style="font-size:18px">warning</span>
+    <p class="flex-1 text-sm font-semibold text-red-700">
+      <span class="font-extrabold">Manutenção atrasada:</span>
+      <span id="manut-alert-text"></span>
+    </p>
+    <button onclick="showSection('manutencao')" class="text-xs font-extrabold text-red-700 underline hover:text-red-900 flex-shrink-0 transition-colors">Ver →</button>
+  </div>
+</div>
+
+
+<!-- Banner: Modo Demo -->
+<div id="demo-banner" class="hidden border-b border-amber-200 bg-amber-50 px-4 py-2.5">
+  <div class="flex items-center gap-3">
+    <span class="material-icons-outlined text-amber-500 flex-shrink-0" style="font-size:18px">star</span>
+    <p class="flex-1 text-sm font-semibold text-amber-800">
+      Você está no <strong>Modo Demo</strong> — explore o painel, mas as alterações não são salvas.
+    </p>
+    <a href="planos.html" class="text-xs font-extrabold text-amber-700 bg-amber-200 hover:bg-amber-300 px-3 py-1.5 rounded-full transition-colors flex-shrink-0">Assinar agora →</a>
+  </div>
+</div>
+
 <div class="flex flex-col md:flex-row" style="min-height:calc(100vh - 57px)">
   <!-- Sidebar (desktop) -->
   <aside class="w-52 hidden md:flex flex-col bg-white border-r border-gray-100 py-3 px-2 sticky top-[57px] self-start h-[calc(100vh-57px)] overflow-y-auto flex-shrink-0">
@@ -86,8 +110,14 @@ tailwind.config = {
     <button class="nav-item" onclick="showSection('geral')">
       <span class="material-icons-outlined">tune</span>Geral
     </button>
+    <button class="nav-item" onclick="showSection('reservas')">
+      <span class="material-icons-outlined">vpn_key</span>Reservas
+    </button>
     <button class="nav-item" onclick="showSection('limpeza')">
       <span class="material-icons-outlined">cleaning_services</span>Limpeza
+    </button>
+    <button class="nav-item" onclick="showSection('manutencao')">
+      <span class="material-icons-outlined">build</span>Manutenção
     </button>
     <button class="nav-item" onclick="showSection('aparencia')">
       <span class="material-icons-outlined">palette</span>Aparência
@@ -100,6 +130,9 @@ tailwind.config = {
     </button>
     <button class="nav-item" onclick="showSection('hero')">
       <span class="material-icons-outlined">image</span>Apresentação
+    </button>
+    <button class="nav-item" onclick="showSection('fotos')">
+      <span class="material-icons-outlined">photo_library</span>Fotos
     </button>
     <button class="nav-item" onclick="showSection('wifi')">
       <span class="material-icons-outlined">wifi</span>Wi-Fi
@@ -120,6 +153,9 @@ tailwind.config = {
     <button class="nav-item" onclick="showSection('academias')">
       <span class="material-icons-outlined">fitness_center</span>Academias
     </button>
+    <button class="nav-item" onclick="showSection('lavanderias')">
+      <span class="material-icons-outlined">local_laundry_service</span>Lavanderias
+    </button>
     <button class="nav-item" onclick="showSection('emergencia')">
       <span class="material-icons-outlined">emergency</span>Emergência
     </button>
@@ -132,7 +168,9 @@ tailwind.config = {
   <!-- Mobile nav (horizontal scroll) -->
   <div class="md:hidden bg-white border-b border-gray-100 flex gap-0.5 overflow-x-auto px-2 py-1.5 sticky top-[57px] z-10 w-full" style="scrollbar-width:none">
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('geral')"><span class="material-icons-outlined">tune</span><span class="hidden sm:inline">Geral</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('reservas')"><span class="material-icons-outlined">vpn_key</span><span class="hidden sm:inline">Reservas</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('limpeza')"><span class="material-icons-outlined">cleaning_services</span><span class="hidden sm:inline">Limpeza</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('manutencao')"><span class="material-icons-outlined">build</span><span class="hidden sm:inline">Manutenção</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('aparencia')"><span class="material-icons-outlined">palette</span><span class="hidden sm:inline">Aparência</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('propriedade')"><span class="material-icons-outlined">home</span><span class="hidden sm:inline">Propriedade</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('fechadura')"><span class="material-icons-outlined">key</span><span class="hidden sm:inline">Acesso</span></button>
@@ -143,6 +181,7 @@ tailwind.config = {
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('farmacias')"><span class="material-icons-outlined">local_pharmacy</span><span class="hidden sm:inline">Farmácias</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('atividades')"><span class="material-icons-outlined">beach_access</span><span class="hidden sm:inline">Atividades</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('academias')"><span class="material-icons-outlined">fitness_center</span><span class="hidden sm:inline">Academias</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('lavanderias')"><span class="material-icons-outlined">local_laundry_service</span><span class="hidden sm:inline">Lavanderias</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('emergencia')"><span class="material-icons-outlined">emergency</span><span class="hidden sm:inline">Emergência</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('regras')"><span class="material-icons-outlined">rule</span><span class="hidden sm:inline">Regras</span></button>
   </div>
@@ -172,6 +211,46 @@ tailwind.config = {
     </div>
 
     <!-- === GERAL === -->
+    <!-- ══ RESERVAS ══════════════════════════════════════════════════════ -->
+    <div id="section-reservas" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Reservas</h2>
+      <p class="text-sm text-gray-500 mb-6">Gere um link único para cada hóspede. O link expira automaticamente após o checkout.</p>
+
+      <!-- Formulário novo link -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6">
+        <h3 class="font-bold text-sm text-gray-700 mb-4 flex items-center gap-2">
+          <span class="material-icons-outlined text-primary" style="font-size:18px">add_circle</span>
+          Gerar novo link
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="field-label">Nome do hóspede (opcional)</label>
+            <input id="res-guest-name" class="field-input" type="text" placeholder="Ex: João Silva"/>
+          </div>
+          <div>
+            <label class="field-label">Data e horário do checkout</label>
+            <input id="res-expires-at" class="field-input" type="datetime-local"/>
+          </div>
+        </div>
+        <button onclick="gerarToken()" class="save-btn">
+          <span class="material-icons-outlined" style="font-size:17px">vpn_key</span>
+          Gerar link
+        </button>
+      </div>
+
+      <!-- Lista de tokens -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <h3 class="font-bold text-sm text-gray-700 mb-4 flex items-center gap-2">
+          <span class="material-icons-outlined text-primary" style="font-size:18px">list</span>
+          Links gerados
+        </h3>
+        <div id="res-list">
+          <p class="text-sm text-gray-400 text-center py-6">Nenhum link gerado ainda.</p>
+        </div>
+      </div>
+    </div>
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+
     <div id="section-geral" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Configurações Gerais</h2>
       <p class="text-sm text-gray-500 mb-4 sm:mb-6">Defina o nome da sua propriedade e o link único do guia.</p>
@@ -227,6 +306,31 @@ tailwind.config = {
       </div>
     </div>
 
+    <!-- === MANUTENÇÃO === -->
+    <div id="section-manutencao" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Manutenção</h2>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Lembretes de manutenção preventiva. O painel avisa quando um prazo vencer.</p>
+
+      <!-- Lista de lembretes existentes -->
+      <div id="manut-list" class="space-y-3 mb-5"></div>
+
+      <!-- Atalhos rápidos -->
+      <div class="mb-2">
+        <p class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 mb-3">Atalhos rápidos</p>
+        <div id="manut-shortcuts" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+      </div>
+
+      <!-- Formulário do atalho selecionado -->
+      <div id="manut-shortcut-form" class="hidden"></div>
+
+      <!-- Lembrete livre -->
+      <button onclick="manut_openFree()"
+        class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors mt-4">
+        <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Novo lembrete livre
+      </button>
+      <div id="manut-free-form" class="add-form hidden mt-3"></div>
+    </div>
+
     <!-- === APARÊNCIA === -->
     <div id="section-aparencia" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Aparência</h2>
@@ -263,12 +367,13 @@ tailwind.config = {
         </div>
         <div>
           <label class="field-label">Link Google Maps (para botão "Como Chegar")</label>
-          <input id="p-maps" class="field-input" placeholder="https://maps.google.com/..." type="url"/>
+          <input id="p-maps" class="field-input" placeholder="https://maps.google.com/..." type="url"
+            oninput="autoFillEmbed('p-maps','p-embed','p-embed-hint')"/>
         </div>
         <div>
           <label class="field-label">Google Maps Embed URL (para o mapa no guia)</label>
           <input id="p-embed" class="field-input" placeholder="https://www.google.com/maps/embed?pb=..." type="url"/>
-          <p class="text-xs text-gray-400 mt-1">No Google Maps: Compartilhar → Incorporar um mapa → copie o src do iframe</p>
+          <p id="p-embed-hint" class="text-xs text-gray-400 mt-1">Preenchido automaticamente ao colar o link acima. Edite manualmente se necessário.</p>
         </div>
         <div class="pt-2">
           <button class="save-btn" onclick="savePropriedade()">
@@ -304,6 +409,65 @@ tailwind.config = {
         </div>
         <div class="pt-2">
           <button class="save-btn" onclick="saveHero()">
+            <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- === FOTOS / AMBIENTES === -->
+    <div id="section-fotos" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Itens por Ambiente</h2>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Aparecem ao passar o mouse sobre as fotos do guia. Use Enter ou o botão + para adicionar.</p>
+      <div class="space-y-4">
+
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="material-icons-outlined text-primary text-xl">king_bed</span>
+            <h3 class="font-bold text-gray-800 text-sm">Quarto</h3>
+          </div>
+          <div id="room-bedroom-chips" class="flex flex-wrap gap-2 mb-3 min-h-[32px]"></div>
+          <div class="flex gap-2">
+            <input id="room-bedroom-input" class="field-input flex-1" placeholder="Ex: Cama de casal, TV, Ar-condicionado"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();addRoomItem('bedroom');}"/>
+            <button onclick="addRoomItem('bedroom')" class="px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary-light transition-colors flex-shrink-0">
+              <span class="material-icons-outlined" style="font-size:16px">add</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="material-icons-outlined text-primary text-xl">kitchen</span>
+            <h3 class="font-bold text-gray-800 text-sm">Cozinha</h3>
+          </div>
+          <div id="room-kitchen-chips" class="flex flex-wrap gap-2 mb-3 min-h-[32px]"></div>
+          <div class="flex gap-2">
+            <input id="room-kitchen-input" class="field-input flex-1" placeholder="Ex: Fogão, Geladeira, Micro-ondas"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();addRoomItem('kitchen');}"/>
+            <button onclick="addRoomItem('kitchen')" class="px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary-light transition-colors flex-shrink-0">
+              <span class="material-icons-outlined" style="font-size:16px">add</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="material-icons-outlined text-primary text-xl">shower</span>
+            <h3 class="font-bold text-gray-800 text-sm">Banheiro</h3>
+          </div>
+          <div id="room-bathroom-chips" class="flex flex-wrap gap-2 mb-3 min-h-[32px]"></div>
+          <div class="flex gap-2">
+            <input id="room-bathroom-input" class="field-input flex-1" placeholder="Ex: Secador, Toalhas, Sabonete"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();addRoomItem('bathroom');}"/>
+            <button onclick="addRoomItem('bathroom')" class="px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary-light transition-colors flex-shrink-0">
+              <span class="material-icons-outlined" style="font-size:16px">add</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="pt-1">
+          <button class="save-btn" onclick="saveAmbientes()">
             <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
           </button>
         </div>
@@ -397,6 +561,17 @@ tailwind.config = {
         <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Academia
       </button>
       <div id="form-academias" class="add-form hidden mt-3"></div>
+    </div>
+
+    <!-- Lavanderias -->
+    <div id="section-lavanderias" class="section-panel">
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Lavanderias</h2>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Lavanderias e tinturarias próximas à propriedade.</p>
+      <div id="list-lavanderias"></div>
+      <button onclick="openAddForm('lavanderias')" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors">
+        <span class="material-icons-outlined" style="font-size:18px">add_circle_outline</span>Adicionar Lavanderia
+      </button>
+      <div id="form-lavanderias" class="add-form hidden mt-3"></div>
     </div>
 
     <!-- Emergência -->
@@ -633,7 +808,85 @@ let content  = {};
 let editList  = null;
 let editIndex = -1;
 
-const LIST_KEYS = ['restaurantes','mercados','farmacias','atividades','academias','emergencia'];
+const LIST_KEYS = ['restaurantes','mercados','farmacias','atividades','academias','lavanderias','emergencia'];
+
+// ── Reservas (tokens de hóspede) ─────────────────────────────────────
+const GUIDE_BASE = 'https://guiazamio.vercel.app/index.html';
+
+async function loadReservas() {
+  const { data: tokens } = await sb.from('guest_tokens')
+    .select('id, token, guest_name, expires_at, created_at')
+    .eq('host_id', hostId)
+    .order('created_at', { ascending: false });
+  renderReservas(tokens || []);
+}
+
+function renderReservas(tokens) {
+  const el = document.getElementById('res-list');
+  if (!tokens.length) {
+    el.innerHTML = '<p class="text-sm text-gray-400 text-center py-6">Nenhum link gerado ainda.</p>';
+    return;
+  }
+  const now = new Date();
+  el.innerHTML = tokens.map(t => {
+    const exp     = new Date(t.expires_at);
+    const expired = exp < now;
+    const dateStr = exp.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    const badge   = expired
+      ? '<span class="text-[10px] font-extrabold uppercase bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">Expirado</span>'
+      : '<span class="text-[10px] font-extrabold uppercase bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Ativo</span>';
+    const link = GUIDE_BASE + '?t=' + t.token;
+    return `<div class="flex items-center gap-3 py-3 border-b border-gray-100 last:border-0">
+      <span class="material-icons-outlined text-primary flex-shrink-0" style="font-size:18px">vpn_key</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-bold text-sm text-gray-900">${t.guest_name || 'Hóspede'} ${badge}</p>
+        <p class="text-xs text-gray-400 mt-0.5">Expira: ${dateStr}</p>
+        <p class="text-xs text-primary/70 truncate mt-0.5">${link}</p>
+      </div>
+      <div class="flex items-center gap-1 flex-shrink-0">
+        <button onclick="copiarLinkReserva('${t.token}')" title="Copiar link"
+          class="item-btn p-2 rounded-xl hover:bg-primary/10">
+          <span class="material-icons-outlined" style="font-size:18px">content_copy</span>
+        </button>
+        <button onclick="deletarToken('${t.id}')" title="Revogar link"
+          class="item-btn del p-2 rounded-xl hover:bg-red-50">
+          <span class="material-icons-outlined" style="font-size:18px">delete</span>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function gerarToken() {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
+  const guestName = document.getElementById('res-guest-name').value.trim();
+  const expiresAt = document.getElementById('res-expires-at').value;
+  if (!expiresAt) { showToast('Informe a data de checkout'); return; }
+  const expiresIso = new Date(expiresAt).toISOString();
+  const { error } = await sb.from('guest_tokens').insert({
+    host_id:    hostId,
+    guest_name: guestName || null,
+    expires_at: expiresIso,
+  });
+  if (error) { showToast('Erro ao gerar link'); return; }
+  document.getElementById('res-guest-name').value  = '';
+  document.getElementById('res-expires-at').value  = '';
+  showToast('Link gerado!');
+  await loadReservas();
+}
+
+async function deletarToken(id) {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
+  if (!confirm('Revogar este link? O hóspede perderá acesso imediatamente.')) return;
+  await sb.from('guest_tokens').delete().eq('id', id).eq('host_id', hostId);
+  showToast('Link revogado');
+  await loadReservas();
+}
+
+function copiarLinkReserva(token) {
+  const link = GUIDE_BASE + '?t=' + token;
+  navigator.clipboard.writeText(link).then(() => showToast('Link copiado!'));
+}
 
 // ── Init ─────────────────────────────────────────────────────────────
 async function init() {
@@ -655,9 +908,23 @@ async function init() {
     content = c;
   }
 
+  if (hostData.is_demo) {
+    window.isDemoMode = true;
+    document.getElementById('demo-banner').classList.remove('hidden');
+  }
+
+  const subStatus = hostData.subscription_status;
+  const subBlocked = subStatus && subStatus !== 'authorized' && !hostData.is_demo;
+  if (subBlocked) {
+    document.getElementById('sub-block-modal').classList.remove('hidden');
+  }
+
   document.getElementById('loading-state').style.display = 'none';
   populateForms();
   loadLimpeza();
+  loadManutencao();
+  loadReservas();
+  renderAlertaBanner();
   showSection('geral');
   checkOnboarding();
 }
@@ -686,15 +953,19 @@ function populateForms() {
   selectedThemeId = content.theme_id || 'oliva';
   renderThemePicker();
   // Acesso
-  selectedAccessType = content.access_type || 'fechadura';
+  selectedAccessType = (content.access_type === 'cofre' ? 'outro' : content.access_type) || 'fechadura';
   renderAccessPicker();
   renderAccessFields();
   // Regras
   v('r-rules', content.rules || '');
   // Lists
   LIST_KEYS.forEach(k => renderList(k));
+  // Fotos / Ambientes
+  loadRoomItems();
   // Header
   document.getElementById('header-prop').textContent = hostData.property_name || 'Minha Propriedade';
+  const verGuiaLink = document.getElementById('ver-guia-link');
+  if (verGuiaLink) verGuiaLink.href = guiaBaseUrl(false);
 }
 
 function v(id, val) {
@@ -715,7 +986,8 @@ function showSection(name) {
   document.querySelectorAll('.nav-item').forEach(b => {
     if (b.getAttribute('onclick') === "showSection('" + name + "')") b.classList.add('active');
   });
-  if (name === 'limpeza') renderLimpeza();
+  if (name === 'limpeza')    renderLimpeza();
+  if (name === 'manutencao') renderManutencao();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -751,20 +1023,48 @@ const LIMPEZA_GRUPOS = [
 ];
 
 const LIMPEZA_EST = {
-  ok:       { label: 'OK',       icon: 'check_circle', bg: 'bg-green-100', cor: 'text-green-600' },
-  atencao:  { label: 'Atenção',  icon: 'warning',      bg: 'bg-amber-100', cor: 'text-amber-600' },
-  faltando: { label: 'Faltando', icon: 'cancel',       bg: 'bg-red-100',   cor: 'text-red-600'   },
+  ok:       { label: 'OK',                icon: 'check_circle',      bg: 'bg-green-100', cor: 'text-green-600' },
+  atencao:  { label: 'Precisa Limpar',    icon: 'cleaning_services', bg: 'bg-amber-100', cor: 'text-amber-600' },
+  faltando: { label: 'Trocar/Substituir', icon: 'autorenew',         bg: 'bg-red-100',   cor: 'text-red-600'   },
 };
 const CICLO_LIMP = ['ok', 'atencao', 'faltando'];
-let limpezaState = {};
+let limpezaState        = {};
+let limpezaCustomGroups = { extra_itens: {}, custom_groups: [] };
+let limpezaAddItemTarget = null;
+let limpezaAddGroupMode  = false;
+let limpezaSelGroupIcon  = 'pool';
 
 function loadLimpeza() {
   limpezaState = (content && content.cleaning_state) ? { ...content.cleaning_state } : {};
+  const saved  = content && content.cleaning_groups;
+  limpezaCustomGroups = saved ? JSON.parse(JSON.stringify(saved)) : { extra_itens: {}, custom_groups: [] };
+  if (!limpezaCustomGroups.extra_itens)   limpezaCustomGroups.extra_itens   = {};
+  if (!limpezaCustomGroups.custom_groups) limpezaCustomGroups.custom_groups = [];
 }
 
 async function salvarLimpeza() {
-  if (content) content.cleaning_state = { ...limpezaState };
-  await upsertContent({ cleaning_state: limpezaState });
+  if (content) {
+    content.cleaning_state  = { ...limpezaState };
+    content.cleaning_groups = JSON.parse(JSON.stringify(limpezaCustomGroups));
+  }
+  await upsertContent({ cleaning_state: limpezaState, cleaning_groups: limpezaCustomGroups });
+}
+
+function getAllLimpezaGroups() {
+  const defaults = LIMPEZA_GRUPOS.map(g => ({
+    ...g,
+    isDefault: true,
+    allItens: [
+      ...g.itens.map(i => ({ ...i, isDefault: true })),
+      ...(limpezaCustomGroups.extra_itens[g.id] || []).map(i => ({ ...i, isDefault: false }))
+    ]
+  }));
+  const customs = (limpezaCustomGroups.custom_groups || []).map(cg => ({
+    ...cg,
+    isDefault: false,
+    allItens: (cg.itens || []).map(i => ({ ...i, isDefault: false }))
+  }));
+  return [...defaults, ...customs];
 }
 
 function toggleLimpeza(id) {
@@ -785,31 +1085,96 @@ function renderLimpeza() {
   const summary   = document.getElementById('limpeza-summary');
   if (!container) return;
 
+  // Preserve any text typed in the add-item input across re-renders
+  const savedInput = limpezaAddItemTarget
+    ? (document.getElementById('limp-new-item-input')?.value || '') : '';
+
   let nOk = 0, nAt = 0, nFalt = 0;
+  const allGroups = getAllLimpezaGroups();
+  const LIMP_ICONS = ['pool','yard','garage','deck','balcony','local_laundry_service','local_parking','outdoor_grill','spa','hot_tub'];
   let html = '';
 
-  for (const g of LIMPEZA_GRUPOS) {
+  for (const g of allGroups) {
+    const isCG = g.isDefault ? 0 : 1;
     html += '<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">';
+    // Group header
     html += '<div class="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-100">';
     html += '<span class="material-icons-outlined text-gray-400" style="font-size:18px">' + g.icon + '<\/span>';
-    html += '<span class="text-xs font-extrabold text-gray-500 uppercase tracking-wider">' + g.label + '<\/span>';
-    html += '<\/div><div class="divide-y divide-gray-50">';
-
-    for (const item of g.itens) {
-      const est  = limpezaState[item.id] || 'ok';
-      const e    = LIMPEZA_EST[est];
+    html += '<span class="text-xs font-extrabold text-gray-500 uppercase tracking-wider flex-1">' + escHtml(g.label) + '<\/span>';
+    html += '<button onclick="limp_toggleAddItem(\'' + g.id + '\')" class="flex items-center gap-0.5 text-xs font-bold text-primary hover:opacity-70 transition-opacity">'
+      + '<span class="material-icons-outlined" style="font-size:14px">add<\/span>Item<\/button>';
+    if (!g.isDefault) {
+      html += '<button onclick="limp_removeGroup(\'' + g.id + '\')" class="ml-2 text-gray-300 hover:text-red-500 transition-colors" title="Remover grupo">'
+        + '<span class="material-icons-outlined" style="font-size:16px">delete_outline<\/span><\/button>';
+    }
+    html += '<\/div>';
+    // Items
+    html += '<div class="divide-y divide-gray-50">';
+    for (const item of g.allItens) {
+      const est = limpezaState[item.id] || 'ok';
+      const e   = LIMPEZA_EST[est];
       if (est === 'ok') nOk++; else if (est === 'atencao') nAt++; else nFalt++;
-
-      html += '<div class="flex items-center gap-3 px-4 py-3.5 cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors select-none" onclick="toggleLimpeza(\'' + item.id + '\')">';
+      html += '<div class="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors select-none">';
+      html += '<div class="flex-1 flex items-center gap-3 cursor-pointer active:bg-gray-100 rounded-lg -mx-1 px-1 py-0.5" onclick="toggleLimpeza(\'' + item.id + '\')">';
       html += '<div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ' + e.bg + ' ' + e.cor + '">';
       html += '<span class="material-icons-outlined" style="font-size:16px">' + e.icon + '<\/span><\/div>';
-      html += '<span class="flex-1 text-sm font-semibold text-gray-700">' + item.label + '<\/span>';
-      html += '<span class="text-xs font-bold ' + e.cor + '">' + e.label + '<\/span>';
+      html += '<span class="flex-1 text-sm font-semibold text-gray-700">' + escHtml(item.label) + '<\/span>';
+      html += '<span class="text-xs font-bold ' + e.cor + '">' + e.label + '<\/span><\/div>';
+      if (!item.isDefault) {
+        html += '<button onclick="limp_removeItem(\'' + g.id + '\',\'' + item.id + '\',' + isCG + ')" class="item-btn del ml-1" title="Remover">'
+          + '<span class="material-icons-outlined" style="font-size:15px">close<\/span><\/button>';
+      }
       html += '<\/div>';
+    }
+    // Inline add-item form
+    if (limpezaAddItemTarget === g.id) {
+      html += '<div class="px-4 py-3 bg-primary/5 border-t border-primary/10">';
+      html += '<div class="flex gap-2 items-center">';
+      html += '<input id="limp-new-item-input" type="text" placeholder="Nome do item..." class="field-input flex-1 py-2 text-sm"/>';
+      html += '<button onclick="limp_saveItem(\'' + g.id + '\',' + isCG + ')" class="save-btn py-2 px-3 text-xs">'
+        + '<span class="material-icons-outlined" style="font-size:15px">check<\/span>Add<\/button>';
+      html += '<button onclick="limp_toggleAddItem(null)" class="text-gray-300 hover:text-gray-500 transition-colors">'
+        + '<span class="material-icons-outlined" style="font-size:20px">close<\/span><\/button>';
+      html += '<\/div><\/div>';
     }
     html += '<\/div><\/div>';
   }
+
+  // Add custom group section
+  if (!limpezaAddGroupMode) {
+    html += '<button onclick="limp_toggleAddGroup()" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors mt-2">'
+      + '<span class="material-icons-outlined" style="font-size:18px">add_circle_outline<\/span>Adicionar grupo personalizado<\/button>';
+  } else {
+    html += '<div class="bg-primary/5 border-2 border-dashed border-primary/30 rounded-2xl p-4 mt-2">';
+    html += '<p class="text-xs font-extrabold uppercase tracking-widest text-primary/70 mb-3">Novo Grupo<\/p>';
+    html += '<div class="space-y-3">';
+    html += '<div><label class="field-label">Nome do grupo<\/label>'
+      + '<input id="limp-new-group-name" class="field-input" placeholder="Ex: Área da Piscina"\/><\/div>';
+    html += '<div><label class="field-label">Ícone<\/label><div class="flex flex-wrap gap-2 mt-1">';
+    for (const ic of LIMP_ICONS) {
+      const sel = (limpezaSelGroupIcon === ic);
+      html += '<button onclick="limp_selectGroupIcon(\'' + ic + '\')" id="limp-icon-' + ic + '" '
+        + 'class="flex flex-col items-center gap-0.5 p-2 rounded-xl border-2 transition-all text-center w-14 '
+        + (sel ? 'border-primary text-primary bg-primary/5' : 'border-gray-200 text-gray-500 hover:border-primary hover:text-primary') + '">'
+        + '<span class="material-icons-outlined" style="font-size:20px">' + ic + '<\/span>'
+        + '<span style="font-size:8px;line-height:1.1;word-break:break-word">' + ic.replace(/_/g,' ') + '<\/span>'
+        + '<\/button>';
+    }
+    html += '<\/div><\/div>';
+    html += '<div class="flex gap-2">';
+    html += '<button onclick="limp_saveGroup()" class="save-btn text-xs py-2">'
+      + '<span class="material-icons-outlined" style="font-size:15px">add<\/span>Criar grupo<\/button>';
+    html += '<button onclick="limp_toggleAddGroup()" style="background:#f3f4f6;color:#6b7280;font-weight:700;font-size:13px;padding:8px 16px;border-radius:12px;border:none;cursor:pointer;">Cancelar<\/button>';
+    html += '<\/div><\/div><\/div>';
+  }
+
   container.innerHTML = html;
+
+  // Restore add-item input value + focus
+  if (limpezaAddItemTarget) {
+    const inp = document.getElementById('limp-new-item-input');
+    if (inp) { inp.value = savedInput; inp.focus(); }
+  }
 
   // Barra de resumo
   let sumHtml = '';
@@ -819,25 +1184,26 @@ function renderLimpeza() {
       + 'Tudo em ordem! Todos os itens estão OK.<\/div>';
   } else {
     sumHtml = '<div class="flex flex-wrap gap-2 mb-4">';
-    if (nAt   > 0) sumHtml += '<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-100 text-amber-700 rounded-xl text-xs font-bold"><span class="material-icons-outlined" style="font-size:14px">warning<\/span>' + nAt   + ' Atenção<\/span>';
-    if (nFalt > 0) sumHtml += '<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-700 rounded-xl text-xs font-bold"><span class="material-icons-outlined" style="font-size:14px">cancel<\/span>' + nFalt + ' Faltando<\/span>';
+    if (nAt   > 0) sumHtml += '<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-100 text-amber-700 rounded-xl text-xs font-bold"><span class="material-icons-outlined" style="font-size:14px">cleaning_services<\/span>' + nAt + ' Precisa Limpar<\/span>';
+    if (nFalt > 0) sumHtml += '<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-700 rounded-xl text-xs font-bold"><span class="material-icons-outlined" style="font-size:14px">autorenew<\/span>' + nFalt + ' Trocar\/Substituir<\/span>';
     sumHtml += '<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-green-100 text-green-700 rounded-xl text-xs font-bold"><span class="material-icons-outlined" style="font-size:14px">check_circle<\/span>' + nOk + ' OK<\/span><\/div>';
   }
   summary.innerHTML = sumHtml;
 }
 
-const GRUPO_EMOJI = { cama: '🛏', banheiro: '🛅', cozinha: '🍳', geral: '🏠' };
+const GRUPO_EMOJI = { cama: '🛏', banheiro: '🚿', cozinha: '🍳', geral: '🏠' };
 
 function enviarWhatsapp() {
   const prop = (hostData && hostData.property_name) ? hostData.property_name : 'Minha Propriedade';
   const hoje = new Date().toLocaleDateString('pt-BR');
+  const allGroups = getAllLimpezaGroups();
 
-  const atencao = [], faltando = [];
-  for (const g of LIMPEZA_GRUPOS) {
-    for (const item of g.itens) {
+  const precisaLimpar = [], trocarSubst = [];
+  for (const g of allGroups) {
+    for (const item of g.allItens) {
       const est = limpezaState[item.id] || 'ok';
-      if (est === 'atencao')  atencao.push({ g, item });
-      if (est === 'faltando') faltando.push({ g, item });
+      if (est === 'atencao')  precisaLimpar.push({ g, item });
+      if (est === 'faltando') trocarSubst.push({ g, item });
     }
   }
 
@@ -846,22 +1212,22 @@ function enviarWhatsapp() {
           + '🏠 ' + prop + '  •  📅 ' + hoje + '\n'
           + linha + '\n\n';
 
-  if (atencao.length === 0 && faltando.length === 0) {
+  if (precisaLimpar.length === 0 && trocarSubst.length === 0) {
     msg += '✅ Tudo em ordem! Todos os itens estão OK.\n';
   } else {
-    if (faltando.length > 0) {
-      msg += '🔴 FALTANDO / RASGADO (' + faltando.length + ')\n';
+    if (trocarSubst.length > 0) {
+      msg += '🔴 TROCAR / SUBSTITUIR (' + trocarSubst.length + ')\n';
       let curG = '';
-      for (const { g, item } of faltando) {
+      for (const { g, item } of trocarSubst) {
         if (g.label !== curG) { curG = g.label; msg += '\n' + (GRUPO_EMOJI[g.id] || '▶') + ' ' + g.label + '\n'; }
         msg += '   • ' + item.label + '\n';
       }
       msg += '\n';
     }
-    if (atencao.length > 0) {
-      msg += '🟡 PRECISA LIMPAR / TROCAR (' + atencao.length + ')\n';
+    if (precisaLimpar.length > 0) {
+      msg += '🟡 PRECISA LIMPAR (' + precisaLimpar.length + ')\n';
       let curG = '';
-      for (const { g, item } of atencao) {
+      for (const { g, item } of precisaLimpar) {
         if (g.label !== curG) { curG = g.label; msg += '\n' + (GRUPO_EMOJI[g.id] || '▶') + ' ' + g.label + '\n'; }
         msg += '   • ' + item.label + '\n';
       }
@@ -869,8 +1235,337 @@ function enviarWhatsapp() {
     }
   }
 
+  msg += linha + '\n';
+  msg += '📋 *PASSO A PASSO — Diarista*\n\n';
+  msg += '1. Retire todas as roupas de cama, fronhas e toalhas sujas.\n';
+  msg += '2. Lave ou troque os itens marcados como *TROCAR / SUBSTITUIR* acima.\n';
+  msg += '3. Limpe o banheiro: vaso sanitário, pia, box e chão.\n';
+  msg += '4. Limpe a cozinha: fogão, pia, bancadas e geladeira (exterior).\n';
+  msg += '5. Cuide dos itens marcados como *PRECISA LIMPAR* acima.\n';
+  msg += '6. Passe vassoura e pano úmido no chão de todos os cômodos.\n';
+  msg += '7. Esvazie o lixo de todos os cômodos.\n';
+  msg += '8. Reponha: papel higiênico, sabonete e shampoo.\n';
+  msg += '9. Verifique almofadas, tapetes e janelas.\n';
+  msg += '10. Deixe a propriedade arejada e organizada para o próximo hóspede.\n';
   msg += linha + '\n_Enviado pelo Zamio Guias_';
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+// ── Manutenção ────────────────────────────────────────────────────────
+let maintenanceReminders = [];
+let manutActiveShortcut  = null;
+let manutSelEnxoval      = -1;
+
+const MANUT_SHORTCUTS = [
+  { id:'ac',          icon:'ac_unit',              label:'Ar-condicionado',    desc:'Limpeza dos filtros',        months:6,  hasLastDone:true  },
+  { id:'dedetizacao', icon:'pest_control',          label:'Dedetização',        desc:'Controle de pragas',         months:12, hasLastDone:false },
+  { id:'pintura',     icon:'format_paint',          label:'Renovar Pintura',    desc:'Paredes internas/externas',  months:0,  hasLastDone:false },
+  { id:'enxoval',     icon:'bed',                   label:'Trocar Enxoval',     desc:'Roupas de cama e banho',     months:0,  hasLastDone:false,
+    subOptions:['Lençol de casal','Lençol de solteiro','Edredom / Cobertor','Toalha de banho','Toalha de rosto','Fronha'] },
+  { id:'filtro',      icon:'water_drop',            label:'Filtro de Água',     desc:'Purificador / torneira',     months:6,  hasLastDone:true  },
+  { id:'chuveiro',    icon:'shower',                label:'Chuveiro Elétrico',  desc:'Revisão e resistência',      months:12, hasLastDone:false },
+  { id:'gas',         icon:'local_fire_department', label:'Gás de Cozinha',     desc:'Botijão e instalação',       months:0,  hasLastDone:false },
+];
+
+function addMonths(date, n) {
+  const d = new Date(date); d.setMonth(d.getMonth() + n); return d;
+}
+
+function loadManutencao() {
+  maintenanceReminders = (content && content.maintenance_reminders)
+    ? JSON.parse(JSON.stringify(content.maintenance_reminders)) : [];
+}
+
+async function saveManutencao() {
+  if (content) content.maintenance_reminders = [...maintenanceReminders];
+  await upsertContent({ maintenance_reminders: maintenanceReminders });
+}
+
+function renderAlertaBanner() {
+  const today  = new Date(); today.setHours(0,0,0,0);
+  const vencidos = maintenanceReminders.filter(r =>
+    !r.completed && r.due_date && new Date(r.due_date + 'T00:00:00') <= today
+  );
+  const banner = document.getElementById('manut-alert');
+  if (!banner) return;
+  if (vencidos.length === 0) { banner.classList.add('hidden'); return; }
+  banner.classList.remove('hidden');
+  document.getElementById('manut-alert-text').textContent =
+    ' ' + vencidos.map(r => r.title).join(', ');
+}
+
+function renderManutencao() {
+  renderManutList();
+  renderManutShortcuts();
+  document.getElementById('manut-shortcut-form').classList.add('hidden');
+  manutActiveShortcut = null;
+}
+
+function renderManutList() {
+  const container = document.getElementById('manut-list');
+  if (!container) return;
+  if (maintenanceReminders.length === 0) {
+    container.innerHTML = '<p class="text-sm text-gray-400 mb-2">Nenhum lembrete ainda. Use os atalhos abaixo para criar.</p>';
+    return;
+  }
+  const today = new Date(); today.setHours(0,0,0,0);
+  container.innerHTML = maintenanceReminders.map((r, i) => {
+    const due  = r.due_date ? new Date(r.due_date + 'T00:00:00') : null;
+    const days = due ? Math.round((due - today) / 86400000) : null;
+    let urgCls, urgLabel;
+    if (r.completed) {
+      urgCls = 'bg-gray-100 text-gray-400'; urgLabel = '✓ Concluído';
+    } else if (days === null) {
+      urgCls = 'bg-blue-50 text-blue-600'; urgLabel = 'Sem prazo definido';
+    } else if (days < 0) {
+      urgCls = 'bg-red-100 text-red-700'; urgLabel = '⚠ Atrasado ' + Math.abs(days) + 'd';
+    } else if (days <= 30) {
+      urgCls = 'bg-amber-100 text-amber-700'; urgLabel = 'Vence em ' + days + 'd';
+    } else {
+      urgCls = 'bg-green-100 text-green-700'; urgLabel = due.toLocaleDateString('pt-BR');
+    }
+    return `<div class="flex items-start gap-3 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm ${r.completed ? 'opacity-60' : ''}">
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-bold text-gray-800 ${r.completed ? 'line-through' : ''}">${escHtml(r.title)}</p>
+        <span class="inline-block mt-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full ${urgCls}">${urgLabel}</span>
+      </div>
+      <div class="flex items-center gap-1 flex-shrink-0">
+        ${!r.completed ? `<button onclick="manut_done(${i})" title="Marcar como feito" class="item-btn hover:text-green-600">
+          <span class="material-icons-outlined" style="font-size:18px">check_circle</span></button>` : ''}
+        <button onclick="manut_delete(${i})" title="Remover" class="item-btn del">
+          <span class="material-icons-outlined" style="font-size:18px">delete_outline</span></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderManutShortcuts() {
+  const c = document.getElementById('manut-shortcuts');
+  if (!c) return;
+  c.innerHTML = MANUT_SHORTCUTS.map(s => `
+    <button onclick="manut_openShortcut('${s.id}')"
+      class="flex flex-col items-center gap-1.5 p-3 bg-white rounded-xl border-2 text-center transition-all shadow-sm ${manutActiveShortcut === s.id ? 'border-primary bg-primary/5' : 'border-gray-100 hover:border-gray-300'}">
+      <span class="material-icons-outlined text-gray-500" style="font-size:22px">${s.icon}</span>
+      <span class="text-xs font-bold text-gray-700 leading-tight">${s.label}</span>
+      <span class="text-[10px] text-gray-400 leading-tight">${s.desc}</span>
+    </button>`).join('');
+}
+
+function manut_openShortcut(id) {
+  const form = document.getElementById('manut-shortcut-form');
+  if (manutActiveShortcut === id) {
+    manutActiveShortcut = null; form.classList.add('hidden'); form.innerHTML = '';
+    renderManutShortcuts(); return;
+  }
+  manutActiveShortcut = id;
+  manutSelEnxoval = -1;
+  renderManutShortcuts();
+  const s = MANUT_SHORTCUTS.find(x => x.id === id);
+  if (!s) return;
+
+  let inner = '<div class="add-form mt-3"><p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-3">' + s.label + '<\/p>';
+
+  if (s.subOptions) {
+    inner += '<label class="field-label">Qual peça?<\/label><div class="flex flex-wrap gap-2 mb-3">';
+    s.subOptions.forEach((opt, i) => {
+      inner += '<button type="button" onclick="manut_selectEnxoval(' + i + ')" id="enxoval-opt-' + i + '" '
+        + 'class="px-3 py-1.5 rounded-full border-2 text-xs font-bold transition-all border-gray-200 text-gray-600 hover:border-primary hover:text-primary">' + opt + '<\/button>';
+    });
+    inner += '<\/div><label class="field-label">Data estimada para troca<\/label>';
+    inner += '<input id="manut-sc-date" type="date" class="field-input mb-3"\/>';
+  } else if (s.hasLastDone) {
+    inner += '<label class="field-label">Quando foi feito pela última vez?<\/label>'
+      + '<input id="manut-sc-lastdone" type="date" class="field-input mb-1" oninput="manut_calcDue(' + s.months + ')"\\/>'
+      + '<p class="text-xs text-gray-400 mb-3">O próximo lembrete será em ' + s.months + ' meses a partir desta data.<\/p>'
+      + '<label class="field-label">Data do próximo lembrete<\/label>'
+      + '<input id="manut-sc-date" type="date" class="field-input mb-3"\/>';
+  } else {
+    const suggested = s.months > 0 ? addMonths(new Date(), s.months).toISOString().split('T')[0] : '';
+    inner += '<label class="field-label">Data do lembrete<\/label>'
+      + '<input id="manut-sc-date" type="date" value="' + suggested + '" class="field-input mb-3"\/>';
+  }
+
+  inner += '<div class="flex gap-2">'
+    + '<button onclick="manut_saveShortcut(\'' + s.id + '\')" class="save-btn text-xs py-2">'
+    + '<span class="material-icons-outlined" style="font-size:15px">add<\/span>Criar lembrete<\/button>'
+    + '<button onclick="manut_openShortcut(\'' + s.id + '\')" style="background:#f3f4f6;color:#6b7280;font-weight:700;font-size:13px;padding:8px 16px;border-radius:12px;border:none;cursor:pointer;">Cancelar<\/button>'
+    + '<\/div><\/div>';
+
+  form.innerHTML = inner;
+  form.classList.remove('hidden');
+  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function manut_selectEnxoval(i) {
+  manutSelEnxoval = i;
+  document.querySelectorAll('[id^="enxoval-opt-"]').forEach((btn, idx) => {
+    if (idx === i) {
+      btn.classList.add('border-primary','text-primary','bg-primary/5');
+      btn.classList.remove('border-gray-200','text-gray-600');
+    } else {
+      btn.classList.remove('border-primary','text-primary','bg-primary/5');
+      btn.classList.add('border-gray-200','text-gray-600');
+    }
+  });
+}
+
+function manut_calcDue(months) {
+  const lastVal = document.getElementById('manut-sc-lastdone')?.value;
+  if (!lastVal) return;
+  const due = addMonths(new Date(lastVal + 'T00:00:00'), months).toISOString().split('T')[0];
+  const dueEl = document.getElementById('manut-sc-date');
+  if (dueEl) dueEl.value = due;
+}
+
+function manut_saveShortcut(type) {
+  const s = MANUT_SHORTCUTS.find(x => x.id === type);
+  if (!s) return;
+  let title = s.label;
+  const due_date       = document.getElementById('manut-sc-date')?.value || null;
+  const last_done_date = document.getElementById('manut-sc-lastdone')?.value || null;
+  if (type === 'enxoval') {
+    if (manutSelEnxoval < 0) { showToast('⚠ Selecione a peça do enxoval.'); return; }
+    title = 'Trocar Enxoval — ' + s.subOptions[manutSelEnxoval];
+    manutSelEnxoval = -1;
+  }
+  maintenanceReminders.push({ id:'mr_'+Date.now(), title, type, due_date, last_done_date, completed:false, created_at:new Date().toISOString() });
+  manutActiveShortcut = null;
+  document.getElementById('manut-shortcut-form').classList.add('hidden');
+  saveManutencao();
+  renderManutencao();
+  renderAlertaBanner();
+  showToast('✓ Lembrete criado!');
+}
+
+function manut_openFree() {
+  const form = document.getElementById('manut-free-form');
+  form.innerHTML = `
+    <p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-3">Novo Lembrete<\/p>
+    <div class="space-y-3">
+      <div>
+        <label class="field-label">Título *<\/label>
+        <input id="manut-free-title" class="field-input" placeholder="Ex: Levar ventilador para manutenção"\/>
+      <\/div>
+      <div>
+        <label class="field-label">Data do lembrete<\/label>
+        <input id="manut-free-date" type="date" class="field-input"\/>
+      <\/div>
+    <\/div>
+    <div class="flex gap-2 mt-4">
+      <button onclick="manut_saveFree()" class="save-btn">
+        <span class="material-icons-outlined" style="font-size:16px">check<\/span>Salvar
+      <\/button>
+      <button onclick="document.getElementById('manut-free-form').classList.add('hidden')"
+        style="background:#f3f4f6;color:#6b7280;font-weight:700;font-size:13px;padding:10px 18px;border-radius:12px;border:none;cursor:pointer;">
+        Cancelar
+      <\/button>
+    <\/div>`;
+  form.classList.remove('hidden');
+  setTimeout(() => form.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+}
+
+function manut_saveFree() {
+  const title = document.getElementById('manut-free-title')?.value.trim();
+  if (!title) { showToast('⚠ Título é obrigatório.'); return; }
+  maintenanceReminders.push({
+    id:'mr_'+Date.now(), title, type:'avulso',
+    due_date:      document.getElementById('manut-free-date')?.value || null,
+    last_done_date: null, completed:false, created_at:new Date().toISOString()
+  });
+  document.getElementById('manut-free-form').classList.add('hidden');
+  saveManutencao();
+  renderManutList();
+  renderAlertaBanner();
+  showToast('✓ Lembrete criado!');
+}
+
+function manut_done(i) {
+  maintenanceReminders[i].completed = true;
+  saveManutencao();
+  renderManutList();
+  renderAlertaBanner();
+}
+
+function manut_delete(i) {
+  if (!confirm('Remover este lembrete?')) return;
+  maintenanceReminders.splice(i, 1);
+  saveManutencao();
+  renderManutList();
+  renderAlertaBanner();
+}
+
+// ── Limpeza: gerenciamento de itens/grupos customizados ───────────────
+function limp_toggleAddItem(groupId) {
+  limpezaAddItemTarget = (limpezaAddItemTarget === groupId) ? null : groupId;
+  limpezaAddGroupMode  = false;
+  renderLimpeza();
+}
+
+function limp_toggleAddGroup() {
+  limpezaAddGroupMode  = !limpezaAddGroupMode;
+  limpezaAddItemTarget = null;
+  limpezaSelGroupIcon  = 'pool';
+  renderLimpeza();
+}
+
+function limp_selectGroupIcon(ic) {
+  limpezaSelGroupIcon = ic;
+  document.querySelectorAll('[id^="limp-icon-"]').forEach(btn => {
+    btn.className = btn.className
+      .replace('border-primary text-primary bg-primary/5', 'border-gray-200 text-gray-500 hover:border-primary hover:text-primary');
+  });
+  const sel = document.getElementById('limp-icon-' + ic);
+  if (sel) sel.className = sel.className
+    .replace('border-gray-200 text-gray-500 hover:border-primary hover:text-primary', 'border-primary text-primary bg-primary/5');
+}
+
+function limp_saveItem(groupId, isCustomGroup) {
+  const inp   = document.getElementById('limp-new-item-input');
+  const label = inp ? inp.value.trim() : '';
+  if (!label) { showToast('⚠ Digite o nome do item.'); return; }
+  const newItem = { id: 'ci_' + Date.now(), label };
+  if (isCustomGroup) {
+    const cg = limpezaCustomGroups.custom_groups.find(g => g.id === groupId);
+    if (cg) cg.itens = [...(cg.itens || []), newItem];
+  } else {
+    if (!limpezaCustomGroups.extra_itens[groupId]) limpezaCustomGroups.extra_itens[groupId] = [];
+    limpezaCustomGroups.extra_itens[groupId].push(newItem);
+  }
+  limpezaAddItemTarget = null;
+  salvarLimpeza();
+  renderLimpeza();
+}
+
+function limp_removeItem(groupId, itemId, isCustomGroup) {
+  if (isCustomGroup) {
+    const cg = limpezaCustomGroups.custom_groups.find(g => g.id === groupId);
+    if (cg) cg.itens = (cg.itens || []).filter(i => i.id !== itemId);
+  } else {
+    limpezaCustomGroups.extra_itens[groupId] =
+      (limpezaCustomGroups.extra_itens[groupId] || []).filter(i => i.id !== itemId);
+  }
+  delete limpezaState[itemId];
+  salvarLimpeza();
+  renderLimpeza();
+}
+
+function limp_saveGroup() {
+  const name = (document.getElementById('limp-new-group-name')?.value || '').trim();
+  if (!name) { showToast('⚠ Digite o nome do grupo.'); return; }
+  const newGroup = { id: 'cg_' + Date.now(), label: name, icon: limpezaSelGroupIcon || 'home_work', itens: [] };
+  limpezaCustomGroups.custom_groups.push(newGroup);
+  limpezaAddGroupMode = false;
+  salvarLimpeza();
+  renderLimpeza();
+}
+
+function limp_removeGroup(groupId) {
+  if (!confirm('Remover este grupo e todos os seus itens?')) return;
+  const cg = limpezaCustomGroups.custom_groups.find(g => g.id === groupId);
+  if (cg) (cg.itens || []).forEach(i => delete limpezaState[i.id]);
+  limpezaCustomGroups.custom_groups = limpezaCustomGroups.custom_groups.filter(g => g.id !== groupId);
+  salvarLimpeza();
+  renderLimpeza();
 }
 
 // ── Aparência / Temas ─────────────────────────────────────────────────
@@ -936,6 +1631,46 @@ async function saveGeral() {
   showToast('✓ Salvo com sucesso!');
 }
 
+// ── Maps: conversão automática link → embed ───────────────────────────
+function mapsUrlToEmbed(url) {
+  if (!url) return '';
+  url = url.trim();
+  if (url.includes('output=embed') || url.includes('/maps/embed')) return url;
+
+  // Extrair coordenadas @lat,lng
+  var coord = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (coord) return 'https://www.google.com/maps?q=' + coord[1] + ',' + coord[2] + '&output=embed';
+
+  // Parâmetros q= ou query=
+  try {
+    var u = new URL(url);
+    var q = u.searchParams.get('q') || u.searchParams.get('query');
+    if (q) return 'https://www.google.com/maps?q=' + encodeURIComponent(q) + '&output=embed';
+  } catch(e) {}
+
+  // Nome do lugar na rota /maps/place/NAME/
+  var place = url.match(/\/maps\/place\/([^/@?]+)/);
+  if (place) return 'https://www.google.com/maps?q=' + encodeURIComponent(decodeURIComponent(place[1].replace(/\+/g,' '))) + '&output=embed';
+
+  return '';
+}
+
+function autoFillEmbed(mapsId, embedId, hintId) {
+  const mapsVal  = document.getElementById(mapsId)?.value || '';
+  const embedEl  = document.getElementById(embedId);
+  const hintEl   = document.getElementById(hintId);
+  if (!embedEl) return;
+  const generated = mapsUrlToEmbed(mapsVal);
+  if (generated) {
+    embedEl.value = generated;
+    if (hintEl) { hintEl.textContent = '✓ URL de embed gerada automaticamente. Edite manualmente se necessário.'; hintEl.classList.add('text-green-600'); hintEl.classList.remove('text-gray-400'); }
+  } else if (mapsVal) {
+    if (hintEl) { hintEl.textContent = 'Não foi possível gerar o embed automaticamente. Cole a URL de embed manualmente.'; hintEl.classList.add('text-amber-600'); hintEl.classList.remove('text-gray-400','text-green-600'); }
+  } else {
+    if (hintEl) { hintEl.textContent = 'Preenchido automaticamente ao colar o link acima. Edite manualmente se necessário.'; hintEl.className = 'text-xs text-gray-400 mt-1'; }
+  }
+}
+
 // ── Save: Propriedade ─────────────────────────────────────────────────
 async function savePropriedade() {
   const updates = {
@@ -973,6 +1708,54 @@ document.addEventListener('DOMContentLoaded', () => {
   if (inp) inp.addEventListener('blur', previewHeroImage);
 });
 
+// ── Fotos / Itens por Ambiente ────────────────────────────────────────
+var roomItemsData = { bedroom: [], kitchen: [], bathroom: [] };
+
+function loadRoomItems() {
+  const ri = content.room_items || {};
+  roomItemsData = {
+    bedroom:  Array.isArray(ri.bedroom)  ? [...ri.bedroom]  : [],
+    kitchen:  Array.isArray(ri.kitchen)  ? [...ri.kitchen]  : [],
+    bathroom: Array.isArray(ri.bathroom) ? [...ri.bathroom] : [],
+  };
+  renderRoomChips('bedroom');
+  renderRoomChips('kitchen');
+  renderRoomChips('bathroom');
+}
+
+function renderRoomChips(room) {
+  const el = document.getElementById('room-' + room + '-chips');
+  if (!el) return;
+  const items = roomItemsData[room] || [];
+  el.innerHTML = items.length
+    ? items.map((item, i) =>
+        `<span class="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full">
+          ${item}
+          <button onclick="removeRoomItem('${room}',${i})" class="ml-0.5 text-primary/40 hover:text-primary transition-colors text-base leading-none">&times;</button>
+        </span>`
+      ).join('')
+    : '<p class="text-xs text-gray-400 italic">Nenhum item adicionado.</p>';
+}
+
+function addRoomItem(room) {
+  const input = document.getElementById('room-' + room + '-input');
+  const val = (input?.value || '').trim();
+  if (!val) return;
+  if (!roomItemsData[room]) roomItemsData[room] = [];
+  roomItemsData[room].push(val);
+  input.value = '';
+  renderRoomChips(room);
+}
+
+function removeRoomItem(room, idx) {
+  roomItemsData[room].splice(idx, 1);
+  renderRoomChips(room);
+}
+
+async function saveAmbientes() {
+  await upsertContent({ room_items: roomItemsData, updated_at: new Date().toISOString() });
+}
+
 // ── Save: Wi-Fi ───────────────────────────────────────────────────────
 async function saveWifi() {
   const updates = {
@@ -991,6 +1774,10 @@ async function saveRegras() {
 
 // ── Upsert helper ─────────────────────────────────────────────────────
 async function upsertContent(updates) {
+  if (window.isDemoMode) {
+    document.getElementById('demo-modal').classList.remove('hidden');
+    return;
+  }
   const { error } = await sb.from('guide_content')
     .upsert({ host_id: hostId, ...content, ...updates });
   if (error) { showToast('Erro: ' + error.message); return; }
@@ -1157,10 +1944,9 @@ async function uploadHeroImage(input) {
 
 // ── Acesso ────────────────────────────────────────────────────────────
 const ACCESS_TIPOS = [
-  { id: 'fechadura', label: 'Fechadura eletrônica', icon: 'lock' },
-  { id: 'cofre',     label: 'Cofre de chaves',      icon: 'lock_open' },
-  { id: 'chave',     label: 'Chave física',          icon: 'key' },
-  { id: 'portaria',  label: 'Portaria / Recepção',   icon: 'security' },
+  { id: 'fechadura', label: 'Fechadura eletrônica', icon: 'lock'       },
+  { id: 'chave',     label: 'Chave física',          icon: 'key'        },
+  { id: 'portaria',  label: 'Portaria / Recepção',   icon: 'security'   },
   { id: 'outro',     label: 'Outro',                 icon: 'more_horiz' },
 ];
 let selectedAccessType = 'fechadura';
@@ -1209,12 +1995,6 @@ function renderAccessFields() {
     h += _fField('Válido até', 'f-valid', 'date', '');
     h += '<div id="f-status" class="hidden p-3 rounded-xl text-sm font-bold"><\/div>';
     h += _fTextarea('Instruções de entrada', 'f-instructions', 'Ex: Suba pela escada lateral\nPressione a fechadura para ativar o teclado\nDigite o código e puxe a porta por 2 segundos', hint);
-  } else if (t === 'cofre') {
-    h += _fField('Código do Cofre', 'f-code', 'text', 'Ex: 1234', 'field-input font-mono text-xl tracking-widest');
-    h += _fField('Localização do Cofre', 'f-location', 'text', 'Ex: Na entrada, à esquerda da porta', '');
-    h += _fField('Válido até', 'f-valid', 'date', '');
-    h += '<div id="f-status" class="hidden p-3 rounded-xl text-sm font-bold"><\/div>';
-    h += _fTextarea('Instruções de entrada', 'f-instructions', 'Ex: Localize o cofre ao lado da porta\nDigite o código e abra\nPegue a chave e acesse', hint);
   } else if (t === 'chave') {
     h += _fField('Onde retirar a chave', 'f-location', 'text', 'Ex: Na portaria, com o síndico...', '');
     h += _fField('Contato', 'f-contact', 'tel', 'Ex: (84) 99999-9999', '');
@@ -1270,7 +2050,7 @@ async function saveAcesso() {
     access_instructions: g('f-instructions'),
     updated_at:          new Date().toISOString(),
   };
-  if (selectedAccessType === 'fechadura' || selectedAccessType === 'cofre') {
+  if (selectedAccessType === 'fechadura') {
     updates.lock_code             = g('f-code');
     updates.lock_code_valid_until = g('f-valid') || null;
   }
@@ -1279,8 +2059,17 @@ async function saveAcesso() {
 }
 
 // ── Share ──────────────────────────────────────────────────────────────
+function guiaBaseUrl(withVersion) {
+  const slug = hostData.slug || '';
+  const base = location.href.replace(/painel\.html.*$/, '');
+  let url = base + 'index.html' + (slug ? '?h=' + encodeURIComponent(slug) : '');
+  if (withVersion) url += (slug ? '&' : '?') + 'v=' + Date.now();
+  return url;
+}
+
 function shareGuia() {
-  const url = location.href.replace('painel.html', 'index.html');
+  if (!hostData.slug) { showToast('⚠ Defina um slug nas Configurações Gerais antes de compartilhar.'); return; }
+  const url = guiaBaseUrl(true);
   if (navigator.share) {
     navigator.share({ title: 'Guia do Hóspede', text: 'Acesse o guia completo da sua estadia:', url });
   } else {
@@ -1533,5 +2322,38 @@ async function obUploadHeroImage(input) {
 
 init();
 </script>
+
+<!-- Modal: Assinatura inativa (bloqueante, sem fechar) -->
+<div id="sub-block-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+    <div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+      <span class="material-icons-outlined text-red-500" style="font-size:30px">credit_card_off</span>
+    </div>
+    <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2">Acesso suspenso</h3>
+    <p class="text-sm text-gray-500 leading-relaxed mb-6">O pagamento da sua assinatura não foi aprovado. Reative agora para continuar usando o painel e manter o guia disponível para seus hóspedes.</p>
+    <a href="planos.html" class="block w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 rounded-xl transition-colors mb-3 text-sm shadow-lg shadow-red-500/25">
+      Reativar assinatura →
+    </a>
+    <p class="text-xs text-gray-400">Dúvidas? Fale com o suporte.</p>
+  </div>
+</div>
+
+<!-- Modal: Modo Demo -->
+<div id="demo-modal" class="fixed inset-0 bg-black/50 z-[200] flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+    <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+      <span class="material-icons-outlined text-primary" style="font-size:30px">lock</span>
+    </div>
+    <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2">Função Exclusiva</h3>
+    <p class="text-sm text-gray-500 leading-relaxed mb-6">No modo demo as alterações não são salvas. Assine um plano para criar seu guia personalizado e publicar para os hóspedes.</p>
+    <a href="planos.html" class="block w-full bg-primary text-white font-bold py-3 rounded-xl hover:bg-primary-light transition-colors mb-3 text-sm">
+      Ver Planos →
+    </a>
+    <button onclick="document.getElementById('demo-modal').classList.add('hidden')"
+      class="text-sm text-gray-400 hover:text-gray-600 transition-colors">
+      Continuar explorando
+    </button>
+  </div>
+</div>
 </body>
 </html>

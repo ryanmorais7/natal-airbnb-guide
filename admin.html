@@ -168,6 +168,27 @@ tailwind.config = {
         <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Slug (link)</label>
         <input id="m-slug" type="text" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')"/>
       </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Status da Assinatura</label>
+          <select id="m-sub-status" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+            <option value="">— sem assinatura —</option>
+            <option value="authorized">Ativa</option>
+            <option value="paused">Pausada</option>
+            <option value="cancelled">Cancelada</option>
+          </select>
+        </div>
+        <div class="flex items-end pb-0.5">
+          <label class="flex items-center gap-2.5 cursor-pointer select-none">
+            <div class="relative">
+              <input id="m-is-demo" type="checkbox" class="sr-only peer"/>
+              <div class="w-10 h-6 bg-gray-200 rounded-full peer-checked:bg-amber-400 transition-colors"></div>
+              <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+            </div>
+            <span class="text-xs font-extrabold text-gray-500 uppercase tracking-wider">Modo Demo</span>
+          </label>
+        </div>
+      </div>
 
       <!-- Propriedade -->
       <p class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 pt-1">Propriedade</p>
@@ -187,10 +208,11 @@ tailwind.config = {
       </div>
       <div>
         <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Link Google Maps</label>
-        <input id="m-maps" type="url" placeholder="https://maps.google.com/..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        <input id="m-maps" type="url" placeholder="https://maps.google.com/..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          oninput="adminAutoFillEmbed()"/>
       </div>
       <div>
-        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Google Maps Embed URL</label>
+        <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Google Maps Embed URL <span id="m-embed-hint" class="normal-case font-normal text-gray-400">(auto-preenchido)</span></label>
         <input id="m-embed" type="url" placeholder="https://www.google.com/maps/embed?pb=..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
       </div>
 
@@ -229,7 +251,6 @@ tailwind.config = {
         <select id="m-access-type" onchange="renderAdminAccessFields()"
           class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
           <option value="fechadura">Fechadura eletrônica</option>
-          <option value="cofre">Cofre de chaves</option>
           <option value="chave">Chave física</option>
           <option value="portaria">Portaria / Recepção</option>
           <option value="outro">Outro</option>
@@ -255,6 +276,24 @@ tailwind.config = {
       <p class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 pt-1">Regras da Casa</p>
       <div>
         <textarea id="m-rules" rows="5" placeholder="Proibido fumar dentro da casa&#10;Check-out até 11h&#10;Não é permitido animais" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
+      </div>
+
+      <!-- Itens por Ambiente -->
+      <p class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 pt-1">Itens por Ambiente</p>
+      <p class="text-xs text-gray-400 -mt-1">Itens separados por vírgula. Aparecem no tooltip das fotos.</p>
+      <div class="space-y-2">
+        <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Quarto</label>
+          <input id="m-room-bedroom" type="text" placeholder="Cama de casal, TV, Ar-condicionado" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        </div>
+        <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Cozinha</label>
+          <input id="m-room-kitchen" type="text" placeholder="Fogão, Geladeira, Micro-ondas" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        </div>
+        <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Banheiro</label>
+          <input id="m-room-bathroom" type="text" placeholder="Secador, Toalhas, Sabonete" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"/>
+        </div>
       </div>
 
     </div>
@@ -556,6 +595,39 @@ function gerarCartaoAdmin(hostId) {
 }
 
 // ── Admin Acesso ──────────────────────────────────────────────────────
+// ── Maps: conversão automática link → embed ───────────────────────────
+function mapsUrlToEmbed(url) {
+  if (!url) return '';
+  url = url.trim();
+  if (url.includes('output=embed') || url.includes('/maps/embed')) return url;
+  var coord = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (coord) return 'https://www.google.com/maps?q=' + coord[1] + ',' + coord[2] + '&output=embed';
+  try {
+    var u = new URL(url);
+    var q = u.searchParams.get('q') || u.searchParams.get('query');
+    if (q) return 'https://www.google.com/maps?q=' + encodeURIComponent(q) + '&output=embed';
+  } catch(e) {}
+  var place = url.match(/\/maps\/place\/([^/@?]+)/);
+  if (place) return 'https://www.google.com/maps?q=' + encodeURIComponent(decodeURIComponent(place[1].replace(/\+/g,' '))) + '&output=embed';
+  return '';
+}
+
+function adminAutoFillEmbed() {
+  const mapsVal = (document.getElementById('m-maps')?.value || '').trim();
+  const embedEl = document.getElementById('m-embed');
+  const hintEl  = document.getElementById('m-embed-hint');
+  if (!embedEl) return;
+  const generated = mapsUrlToEmbed(mapsVal);
+  if (generated) {
+    embedEl.value = generated;
+    if (hintEl) { hintEl.textContent = '(✓ gerado automaticamente)'; hintEl.style.color = '#16a34a'; }
+  } else if (mapsVal) {
+    if (hintEl) { hintEl.textContent = '(cole manualmente)'; hintEl.style.color = '#d97706'; }
+  } else {
+    if (hintEl) { hintEl.textContent = '(auto-preenchido)'; hintEl.style.color = ''; }
+  }
+}
+
 function renderAdminAccessFields() {
   const type = document.getElementById('m-access-type').value;
   const c    = document.getElementById('m-access-fields');
@@ -575,11 +647,6 @@ function renderAdminAccessFields() {
       + inp('Válido até', 'm-lockvalid', 'date', '')
       + '<\/div>';
     h += ta('Instruções de entrada', 'm-access-instructions', 'Ex: Suba pela escada\nPressione a fechadura\nDigite o código e puxe', hint);
-  } else if (type === 'cofre') {
-    h += inp('Código do Cofre', 'm-lockcode', 'text', 'Ex: 1234', 'w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary');
-    h += inp('Localização do Cofre', 'm-access-location', 'text', 'Ex: Na entrada, à esquerda da porta');
-    h += inp('Válido até', 'm-lockvalid', 'date', '');
-    h += ta('Instruções de entrada', 'm-access-instructions', 'Ex: Localize o cofre\nDigite o código\nPegue a chave e acesse', hint);
   } else if (type === 'chave') {
     h += inp('Onde retirar a chave', 'm-access-location', 'text', 'Ex: Na portaria, com o síndico...');
     h += inp('Contato', 'm-access-contact', 'tel', 'Ex: (84) 99999-9999');
@@ -613,24 +680,41 @@ const ADMIN_LIMPEZA_GRUPOS = [
   ]},
 ];
 const ADMIN_LIMP_EST = {
-  ok:       { label: 'OK',       icon: 'check_circle', bg: 'bg-green-100', cor: 'text-green-600' },
-  atencao:  { label: 'Atenção',  icon: 'warning',      bg: 'bg-amber-100', cor: 'text-amber-600' },
-  faltando: { label: 'Faltando', icon: 'cancel',       bg: 'bg-red-100',   cor: 'text-red-600'   },
+  ok:       { label: 'OK',                icon: 'check_circle',      bg: 'bg-green-100', cor: 'text-green-600' },
+  atencao:  { label: 'Precisa Limpar',    icon: 'cleaning_services', bg: 'bg-amber-100', cor: 'text-amber-600' },
+  faltando: { label: 'Trocar/Substituir', icon: 'autorenew',         bg: 'bg-red-100',   cor: 'text-red-600'   },
 };
 const ADMIN_CICLO = ['ok', 'atencao', 'faltando'];
-let adminLimpezaState = {};
+let adminLimpezaState        = {};
+let adminLimpezaCustomGroups = { extra_itens: {}, custom_groups: [] };
+
+function adminGetAllLimpezaGroups() {
+  const defaults = ADMIN_LIMPEZA_GRUPOS.map(g => ({
+    ...g,
+    allItens: [
+      ...g.itens,
+      ...(adminLimpezaCustomGroups.extra_itens[g.id] || [])
+    ]
+  }));
+  const customs = (adminLimpezaCustomGroups.custom_groups || []).map(cg => ({
+    ...cg,
+    allItens: cg.itens || []
+  }));
+  return [...defaults, ...customs];
+}
 
 function renderAdminLimpeza() {
   const c = document.getElementById('m-limpeza-groups');
   if (!c) return;
+  const allGroups = adminGetAllLimpezaGroups();
   let h = '';
-  for (const g of ADMIN_LIMPEZA_GRUPOS) {
+  for (const g of allGroups) {
     h += '<div class="bg-gray-50 rounded-xl border border-gray-100 overflow-hidden">';
     h += '<div class="flex items-center gap-1.5 px-3 py-2 border-b border-gray-100">';
     h += '<span class="material-icons-outlined text-gray-400" style="font-size:15px">' + g.icon + '<\/span>';
     h += '<span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">' + g.label + '<\/span><\/div>';
     h += '<div>';
-    for (const item of g.itens) {
+    for (const item of g.allItens) {
       const est = adminLimpezaState[item.id] || 'ok';
       const e   = ADMIN_LIMP_EST[est];
       h += '<div class="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-gray-100 transition-colors select-none border-b border-gray-100 last:border-0" onclick="toggleAdminLimpeza(\'' + item.id + '\')">';
@@ -695,8 +779,10 @@ function openEdit(hostId) {
   document.getElementById('m-email').value      = h.email         || '—';
   document.getElementById('m-phone').value      = h.phone         || '—';
   document.getElementById('m-propname').value   = c.property_name || h.property_name || '';
-  document.getElementById('m-owner').value     = h.owner_name    || '';
-  document.getElementById('m-slug').value      = h.slug          || '';
+  document.getElementById('m-owner').value          = h.owner_name          || '';
+  document.getElementById('m-slug').value           = h.slug               || '';
+  document.getElementById('m-sub-status').value     = h.subscription_status || '';
+  document.getElementById('m-is-demo').checked      = !!h.is_demo;
   document.getElementById('m-address').value   = c.address       || '';
   document.getElementById('m-checkin').value   = c.checkin_time  || '13:00';
   document.getElementById('m-checkout').value  = c.checkout_time || '11:00';
@@ -707,21 +793,28 @@ function openEdit(hostId) {
   document.getElementById('m-wname').value     = c.wifi_name        || '';
   document.getElementById('m-wpass').value     = c.wifi_password    || '';
   document.getElementById('m-wqr').value       = c.wifi_qr_url      || '';
-  document.getElementById('m-access-type').value = c.access_type || 'fechadura';
+  const at = (c.access_type === 'cofre') ? 'outro' : (c.access_type || 'fechadura');
+  document.getElementById('m-access-type').value = at;
   renderAdminAccessFields();
-  const at = c.access_type || 'fechadura';
-  if (at === 'fechadura' || at === 'cofre') {
+  if (at === 'fechadura') {
     const lc = document.getElementById('m-lockcode');
     const lv = document.getElementById('m-lockvalid');
     if (lc) lc.value = c.lock_code || '';
     if (lv) lv.value = c.lock_code_valid_until || '';
   }
-  if (at === 'cofre' || at === 'chave') { const el = document.getElementById('m-access-location'); if (el) el.value = c.access_location || ''; }
+  if (at === 'chave') { const el = document.getElementById('m-access-location'); if (el) el.value = c.access_location || ''; }
   if (at === 'chave' || at === 'portaria') { const el = document.getElementById('m-access-contact'); if (el) el.value = c.access_contact || ''; }
   { const el = document.getElementById('m-access-instructions'); if (el) el.value = c.access_instructions || ''; }
-  adminLimpezaState = c.cleaning_state ? { ...c.cleaning_state } : {};
+  adminLimpezaState        = c.cleaning_state  ? { ...c.cleaning_state }              : {};
+  adminLimpezaCustomGroups = c.cleaning_groups ? JSON.parse(JSON.stringify(c.cleaning_groups)) : { extra_itens: {}, custom_groups: [] };
+  if (!adminLimpezaCustomGroups.extra_itens)   adminLimpezaCustomGroups.extra_itens   = {};
+  if (!adminLimpezaCustomGroups.custom_groups) adminLimpezaCustomGroups.custom_groups = [];
   renderAdminLimpeza();
   document.getElementById('m-rules').value = c.rules || '';
+  const ri = c.room_items || {};
+  document.getElementById('m-room-bedroom').value = (ri.bedroom  || []).join(', ');
+  document.getElementById('m-room-kitchen').value  = (ri.kitchen  || []).join(', ');
+  document.getElementById('m-room-bathroom').value = (ri.bathroom || []).join(', ');
   adminSelectedTheme = c.theme_id || 'oliva';
   renderAdminThemePicker();
 
@@ -757,7 +850,13 @@ async function saveModal() {
     access_contact:        (document.getElementById('m-access-contact')?.value || '').trim(),
     access_instructions:   (document.getElementById('m-access-instructions')?.value || '').trim(),
     cleaning_state:        adminLimpezaState,
+    cleaning_groups:       adminLimpezaCustomGroups,
     rules:                 document.getElementById('m-rules').value.trim(),
+    room_items: {
+      bedroom:  document.getElementById('m-room-bedroom').value.split(',').map(s => s.trim()).filter(Boolean),
+      kitchen:  document.getElementById('m-room-kitchen').value.split(',').map(s => s.trim()).filter(Boolean),
+      bathroom: document.getElementById('m-room-bathroom').value.split(',').map(s => s.trim()).filter(Boolean),
+    },
     theme_id:              document.getElementById('m-theme-id').value || 'oliva',
     theme_color:           document.getElementById('m-theme-color').value || '#4A6741',
     theme_color_light:     document.getElementById('m-theme-light').value || '#6B8E61',
@@ -768,10 +867,14 @@ async function saveModal() {
   if (error) { alert('Erro ao salvar: ' + error.message); return; }
 
   // Update hosts table (name, slug, property_name)
+  const subStatus = document.getElementById('m-sub-status').value;
   await sb.from('hosts').update({
-    property_name: updates.property_name,
-    owner_name:    document.getElementById('m-owner').value.trim(),
-    slug:          document.getElementById('m-slug').value.trim(),
+    property_name:       updates.property_name,
+    owner_name:          document.getElementById('m-owner').value.trim(),
+    slug:                document.getElementById('m-slug').value.trim(),
+    subscription_status: subStatus || null,
+    plan_active:         subStatus === 'authorized',
+    is_demo:             document.getElementById('m-is-demo').checked,
   }).eq('id', editingHostId);
 
   const host = allHosts.find(h => h.id === editingHostId);
