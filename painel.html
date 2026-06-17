@@ -1784,14 +1784,14 @@ async function upsertContent(updates) {
     document.getElementById('demo-modal').classList.remove('hidden');
     return;
   }
-  const { error } = await sb.from('guide_content')
-    .upsert({ host_id: hostId, ...content, ...updates });
+  // Usa .update() em vez de .upsert() para evitar sobrescrever campos não relacionados
+  const doUpdate = () => sb.from('guide_content').update(updates).eq('host_id', hostId);
+  const { error } = await doUpdate();
   if (error) {
     if (error.message?.includes('JWT') || error.message?.includes('expired') || error.status === 401) {
       const { error: refreshErr } = await sb.auth.refreshSession();
       if (refreshErr) { location.href = 'login.html'; return; }
-      const { error: retryErr } = await sb.from('guide_content')
-        .upsert({ host_id: hostId, ...content, ...updates });
+      const { error: retryErr } = await doUpdate();
       if (retryErr) { showToast('Erro: ' + retryErr.message); return; }
     } else {
       showToast('Erro: ' + error.message);

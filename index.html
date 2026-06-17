@@ -1145,11 +1145,10 @@ Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire�
                 });
             }
 
-            if (c.theme_color) {
-                var r = document.documentElement;
-                r.style.setProperty('--p',  c.theme_color);
-                r.style.setProperty('--pl', c.theme_color_light || c.theme_color);
-            }
+            // Aplica tema sempre, com fallback para oliva padrão
+            var r = document.documentElement;
+            r.style.setProperty('--p',  c.theme_color       || '#4A6741');
+            r.style.setProperty('--pl', c.theme_color_light || c.theme_color || '#6B8E61');
 
             var name = c.property_name || host.property_name || 'Zamio';
             window._dynPropName = name;
