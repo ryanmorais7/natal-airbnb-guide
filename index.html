@@ -2,6 +2,9 @@
 <html lang="pt-BR"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
 <title>Guia de Boas-Vindas</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -120,7 +123,13 @@
 </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-text-dark dark:text-text-light transition-colors duration-300 font-sans min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-white scroll-smooth">
-<nav class="relative z-10 w-full p-6 flex justify-between items-center max-w-7xl mx-auto">
+<nav class="relative z-10 w-full p-6 flex justify-end items-center max-w-7xl mx-auto">
+<div class="flex items-center gap-1.5 bg-white/80 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-sm border border-primary/10" id="lang-picker">
+  <button onclick="_setLang('pt')" data-lang="pt" class="lang-btn w-7 h-7 rounded-full flex items-center justify-center text-sm transition-all hover:scale-110" title="Português">🇧🇷</button>
+  <span class="inline-block w-px h-4 bg-primary/20"></span>
+  <button onclick="_setLang('en')" data-lang="en" class="lang-btn w-7 h-7 rounded-full flex items-center justify-center text-sm transition-all hover:scale-110" title="English">🇺🇸</button>
+  <span class="inline-block w-px h-4 bg-primary/20"></span>
+  <button onclick="_setLang('es')" data-lang="es" class="lang-btn w-7 h-7 rounded-full flex items-center justify-center text-sm transition-all hover:scale-110" title="Español">🇪🇸</button>
 </div>
 </nav>
 <main class="relative z-10 max-w-7xl mx-auto px-6 pb-20 pt-4">
@@ -137,33 +146,33 @@
 
 <!-- badge topo esquerdo -->
 <div class="absolute top-12 md:top-6 left-6 md:left-14 z-10">
-<span class="text-xs font-bold uppercase tracking-[0.35em] text-primary-light border border-primary-light/50 px-4 py-2 rounded-sm backdrop-blur-sm bg-black/20">Guia do Hóspede</span>
+<span class="text-xs font-bold uppercase tracking-[0.35em] text-primary-light border border-primary-light/50 px-4 py-2 rounded-sm backdrop-blur-sm bg-black/20" data-i18n="badge.guest_guide">Guia do Hóspede</span>
 </div>
 
 <!-- conteúdo principal — embaixo-esquerda estilo Netflix -->
 <div class="relative z-10 flex flex-col justify-end px-6 md:px-14 pb-20 md:pb-28" style="min-height:96vh">
 <h1 id="dyn-hero-title" class="font-serif font-bold text-white leading-none mb-4 text-2xl sm:text-4xl lg:text-5xl xl:text-[4rem]" style="text-shadow:0 6px 50px rgba(0,0,0,0.55)">Bem-vindo ao Zamio</h1>
-<p class="text-white/80 text-base md:text-lg leading-relaxed max-w-md mb-8">
+<p class="text-white/80 text-base md:text-lg leading-relaxed max-w-md mb-8" data-i18n="hero.tagline">
 Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e direções reunidos aqui.
 </p>
 <div class="flex flex-wrap gap-3 items-center">
 <a href="#guia" class="inline-flex items-center gap-2 bg-white text-primary-light font-bold px-8 py-3 rounded-full font-sans text-sm md:text-base hover:bg-white/90 transition-colors shadow-lg">
 <span class="material-icons-outlined text-xl">play_arrow</span>
-Acessar Guia
+<span data-i18n="hero.cta">Acessar Guia</span>
 </a>
 </div>
 </div>
 
 <!-- scroll hint -->
 <div class="absolute bottom-28 right-8 md:right-14 z-10 flex flex-col items-center gap-1 text-white/30 pointer-events-none">
-<span class="text-[9px] uppercase tracking-widest">rolar</span>
+<span class="text-[9px] uppercase tracking-widest" data-i18n="hero.scroll_hint">rolar</span>
 <span class="material-icons-outlined animate-bounce text-sm">keyboard_arrow_down</span>
 </div>
 </header>
 <section class="mt-10 max-w-3xl mx-auto text-center">
-<p class="font-script text-4xl md:text-5xl text-primary/80 mb-6">- Boas-Vindas -</p>
+<p class="font-script text-4xl md:text-5xl text-primary/80 mb-6" data-i18n="welcome.heading">- Boas-Vindas -</p>
 <div class="inline-block bg-primary text-white px-8 py-3 rounded-full shadow-lg">
-<p class="font-sans text-sm md:text-base font-medium tracking-wide">
+<p class="font-sans text-sm md:text-base font-medium tracking-wide" data-i18n="welcome.tagline">
                     Preparamos este guia para tornar a sua estadia mais confortável e tranquila.
                 </p>
 </div>
@@ -171,29 +180,29 @@ Acessar Guia
 <section class="mt-12 w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4" id="guia">
 <div class="group bg-card-light/70 dark:bg-card-dark/70 rounded-[2rem] p-6 shadow-soft border border-primary/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-16px_rgba(74,103,65,0.5)]">
 <span class="material-icons-outlined text-primary text-4xl mb-3 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110 group-hover:rotate-[-4deg]">schedule</span>
-<h3 class="font-serif text-2xl text-primary font-bold mb-2">Check-in / Check-out</h3>
-<p class="text-sm text-text-dark/75 dark:text-text-light/75 leading-relaxed">Check-in 13:00 e check-out 11:00. A chegada é pela porta com fechadura eletrônica e o código de acesso é informado neste guia.</p>
+<h3 class="font-serif text-2xl text-primary font-bold mb-2" data-i18n="card.checkin.title">Check-in / Check-out</h3>
+<p class="text-sm text-text-dark/75 dark:text-text-light/75 leading-relaxed" data-i18n="card.checkin.desc">Check-in 13:00 e check-out 11:00. A chegada é pela porta com fechadura eletrônica e o código de acesso é informado neste guia.</p>
 </div>
 <div class="group bg-card-light/70 dark:bg-card-dark/70 rounded-[2rem] p-6 shadow-soft border border-primary/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-16px_rgba(74,103,65,0.5)]">
 <span class="material-icons-outlined text-primary text-4xl mb-3 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110 group-hover:rotate-[-4deg]">wifi</span>
-<h3 class="font-serif text-2xl text-primary font-bold mb-2">Wi-Fi</h3>
-<p class="text-sm text-text-dark/75 dark:text-text-light/75 leading-relaxed">Internet de alta velocidade disponível em toda a propriedade, Rede e senha logo abaixo.</p>
+<h3 class="font-serif text-2xl text-primary font-bold mb-2" data-i18n="card.wifi.title">Wi-Fi</h3>
+<p class="text-sm text-text-dark/75 dark:text-text-light/75 leading-relaxed" data-i18n="card.wifi.desc">Internet de alta velocidade disponível em toda a propriedade, Rede e senha logo abaixo.</p>
 </div>
 <div class="group bg-card-light/70 dark:bg-card-dark/70 rounded-[2rem] p-6 shadow-soft border border-primary/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-16px_rgba(74,103,65,0.5)]">
 <span class="material-icons-outlined text-primary text-4xl mb-3 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110 group-hover:rotate-[-4deg]">directions_car</span>
-<h3 class="font-serif text-2xl text-primary font-bold mb-2">Estacionamento</h3>
-<p class="text-sm text-text-dark/75 dark:text-text-light/75 leading-relaxed">Não há vaga privativa de garagem. Os veículos podem ser estacionados em frente ao imóvel, na área pública disponível.</p>
+<h3 class="font-serif text-2xl text-primary font-bold mb-2" data-i18n="card.parking.title">Estacionamento</h3>
+<p class="text-sm text-text-dark/75 dark:text-text-light/75 leading-relaxed" data-i18n="card.parking.desc">Não há vaga privativa de garagem. Os veículos podem ser estacionados em frente ao imóvel, na área pública disponível.</p>
 </div>
 <div class="group bg-card-light/70 dark:bg-card-dark/70 rounded-[2rem] p-6 shadow-soft border border-primary/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-16px_rgba(74,103,65,0.5)]">
 <span class="material-icons-outlined text-primary text-4xl mb-3 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110 group-hover:rotate-[-4deg]">support_agent</span>
-<h3 class="font-serif text-2xl text-primary font-bold mb-2">Suporte</h3>
-<p class="text-sm text-text-dark/75 dark:text-text-light/75 leading-relaxed">Se precisar de ajuda, o anfitrião responde rápido. Tudo que importa está reunido neste guia, sem precisar navegar por várias páginas.</p>
+<h3 class="font-serif text-2xl text-primary font-bold mb-2" data-i18n="card.support.title">Suporte</h3>
+<p class="text-sm text-text-dark/75 dark:text-text-light/75 leading-relaxed" data-i18n="card.support.desc">Se precisar de ajuda, o anfitrião responde rápido. Tudo que importa está reunido neste guia, sem precisar navegar por várias páginas.</p>
 </div>
 </section>
 <section class="mt-12 w-full fotos-zamio">
 <div class="flex items-end justify-between gap-4 mb-5">
 <div>
-<p class="text-sm uppercase tracking-[0.35em] text-primary/50 dark:text-primary-light/70 mb-2">Conheça mais do nosso espaço</p>
+<p class="text-sm uppercase tracking-[0.35em] text-primary/50 dark:text-primary-light/70 mb-2" data-i18n="photos.subtitle">Conheça mais do nosso espaço</p>
 <h2 id="dyn-fotos-title" class="font-serif text-3xl md:text-4xl text-primary dark:text-primary-light font-bold">Fotos do Zamio</h2>
 </div>
 </div>
@@ -201,24 +210,24 @@ Acessar Guia
 <article class="relative overflow-hidden rounded-[2rem] border border-primary/10 shadow-soft bg-card-light dark:bg-card-dark min-h-[340px] md:min-h-[420px]">
 <div class="absolute inset-0 album-slot" id="album-bedroom"></div>
 <div class="absolute inset-0 bg-gradient-to-t from-black/25 via-black/5 to-transparent"></div>
-<div class="absolute top-5 left-5 z-10 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md text-xs md:text-sm uppercase tracking-[0.28em] text-white/90">Quarto</div>
+<div class="absolute top-5 left-5 z-10 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md text-xs md:text-sm uppercase tracking-[0.28em] text-white/90" data-i18n="photos.room.bedroom">Quarto</div>
 </article>
 <article class="relative overflow-hidden rounded-[2rem] border border-primary/10 shadow-soft bg-card-light dark:bg-card-dark min-h-[340px] md:min-h-[420px]">
 <div class="absolute inset-0 album-slot" id="album-kitchen"></div>
 <div class="absolute inset-0 bg-gradient-to-t from-black/25 via-black/5 to-transparent"></div>
-<div class="absolute top-5 left-5 z-10 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md text-xs md:text-sm uppercase tracking-[0.28em] text-white/90">Cozinha</div>
+<div class="absolute top-5 left-5 z-10 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md text-xs md:text-sm uppercase tracking-[0.28em] text-white/90" data-i18n="photos.room.kitchen">Cozinha</div>
 </article>
 <article class="relative overflow-hidden rounded-[2rem] border border-primary/10 shadow-soft bg-card-light dark:bg-card-dark min-h-[340px] md:min-h-[420px]">
 <div class="absolute inset-0 album-slot" id="album-bathroom"></div>
 <div class="absolute inset-0 bg-gradient-to-t from-black/25 via-black/5 to-transparent"></div>
-<div class="absolute top-5 left-5 z-10 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md text-xs md:text-sm uppercase tracking-[0.28em] text-white/90">Banheiro</div>
+<div class="absolute top-5 left-5 z-10 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md text-xs md:text-sm uppercase tracking-[0.28em] text-white/90" data-i18n="photos.room.bathroom">Banheiro</div>
 </article>
 </div>
 </section>
 <section class="mt-16 w-full">
 <div class="mb-5">
-<p class="text-sm uppercase tracking-[0.35em] text-primary/50 dark:text-primary-light/70 mb-2">Tutorial de entrada</p>
-<h2 class="font-serif text-3xl md:text-4xl text-primary dark:text-primary-light font-bold">Como entrar na casa</h2>
+<p class="text-sm uppercase tracking-[0.35em] text-primary/50 dark:text-primary-light/70 mb-2" data-i18n="video.subtitle">Tutorial de entrada</p>
+<h2 class="font-serif text-3xl md:text-4xl text-primary dark:text-primary-light font-bold" data-i18n="video.title">Como entrar na casa</h2>
 </div>
 <div class="relative rounded-[2rem] overflow-hidden border border-primary/10 shadow-soft bg-card-light dark:bg-card-dark" style="min-height: 340px;">
 <div id="video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center gap-5 p-8 text-center" style="background:linear-gradient(135deg,#f0f4ef 0%,#e9eed9 100%)">
@@ -226,8 +235,8 @@ Acessar Guia
     <span class="material-icons-outlined text-primary/50" style="font-size:2.5rem">play_circle</span>
   </div>
   <div>
-    <p class="font-serif text-2xl text-primary font-bold mb-2">Tutorial em vídeo</p>
-    <p class="font-sans text-sm leading-relaxed max-w-xs" style="color:#2D3B2A;opacity:.5">Em breve disponível. Confira as instruções de acesso passo a passo logo abaixo.</p>
+    <p class="font-serif text-2xl text-primary font-bold mb-2" data-i18n="video.placeholder.title">Tutorial em vídeo</p>
+    <p class="font-sans text-sm leading-relaxed max-w-xs" style="color:#2D3B2A;opacity:.5" data-i18n="video.placeholder.desc">Em breve disponível. Confira as instruções de acesso passo a passo logo abaixo.</p>
   </div>
 </div>
 <!-- VÍDEO: substitua o src pelo link de embed do YouTube -->
@@ -237,10 +246,10 @@ Acessar Guia
 </section>
 <section class="mt-16 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
 <div class="bg-white/70 dark:bg-card-dark/50 rounded-[2rem] p-8 border border-primary/10 shadow-soft">
-<h2 class="font-serif text-3xl text-primary font-bold mb-5">Check-in e acesso</h2>
+<h2 class="font-serif text-3xl text-primary font-bold mb-5" data-i18n="access.title">Check-in e acesso</h2>
 <div class="grid grid-cols-2 gap-4 mb-6">
 <div class="bg-card-light dark:bg-card-dark rounded-2xl p-5">
-<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-1">Horário</p>
+<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-1" data-i18n="access.time_label">Horário</p>
 <p id="dyn-checkin-time" class="font-serif text-2xl font-bold text-primary">13:00 / 11:00</p>
 </div>
 <div id="dyn-code-card" class="bg-primary text-white rounded-2xl p-5">
@@ -251,67 +260,67 @@ Acessar Guia
 <div id="dyn-access-info" class="space-y-3 text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed"></div>
 </div>
 <div class="bg-white/70 dark:bg-card-dark/50 rounded-[2rem] p-8 border border-primary/10 shadow-soft">
-<h2 class="font-serif text-3xl text-primary font-bold mb-5">Wi-Fi e suporte</h2>
+<h2 class="font-serif text-3xl text-primary font-bold mb-5" data-i18n="wifi.title">Wi-Fi e suporte</h2>
 <div class="space-y-4">
 <div class="bg-card-light dark:bg-card-dark rounded-2xl p-5">
-<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-1">Rede</p>
+<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-1" data-i18n="wifi.network_label">Rede</p>
 <p id="dyn-wifi-name" class="font-serif text-2xl font-bold text-primary">••••••</p>
 </div>
 <div class="bg-primary/5 dark:bg-primary/10 rounded-2xl p-5 border border-primary/10">
-<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-1">Senha</p>
+<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-1" data-i18n="wifi.password_label">Senha</p>
 <div class="flex items-center justify-between gap-3">
   <p id="dyn-wifi-pass" class="font-mono text-3xl font-bold text-primary">••••••••</p>
   <button onclick="copyWifiPass()" id="btn-copy-wifi" class="flex items-center gap-1.5 text-xs font-bold text-primary border border-primary/20 px-3 py-2 rounded-xl hover:bg-primary hover:text-white transition-colors flex-shrink-0">
-    <span class="material-icons-outlined text-base">content_copy</span>Copiar
+    <span class="material-icons-outlined text-base">content_copy</span><span data-i18n="wifi.copy_btn">Copiar</span>
   </button>
 </div>
 </div>
 <div class="bg-card-light dark:bg-card-dark rounded-2xl p-5">
-<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-3">QR Code Wi-Fi</p>
+<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-3" data-i18n="wifi.qr_label">QR Code Wi-Fi</p>
 <!-- QR CODE: adicione a imagem do QR code descomentando a linha abaixo e substituindo o src -->
 <!-- <img src="assets/qrcode-wifi.png" alt="QR Code Wi-Fi" class="mx-auto w-40 h-40 rounded-xl" /> -->
 <div class="flex flex-col items-center justify-center border-2 border-dashed border-primary/20 rounded-xl py-6 gap-2 text-primary/30">
 <span class="material-icons-outlined" style="font-size: 3rem;">qr_code_2</span>
-<p class="text-xs text-center px-4">Substitua pela imagem do QR code (ver comentário no HTML)</p>
+<p class="text-xs text-center px-4" data-i18n="wifi.qr_placeholder">Substitua pela imagem do QR code (ver comentário no HTML)</p>
 </div>
 </div>
 <div class="bg-card-light dark:bg-card-dark rounded-2xl p-5">
-<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-2">Contato</p>
-<p class="text-sm md:text-base text-text-dark/80 dark:text-text-light/80">Fale com o anfitrião sempre que precisar de ajuda. A resposta costuma ser rápida e o suporte está preparado para tirar dúvidas do check-in ao check-out.</p>
+<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-2" data-i18n="wifi.contact_label">Contato</p>
+<p class="text-sm md:text-base text-text-dark/80 dark:text-text-light/80" data-i18n="wifi.contact_desc">Fale com o anfitrião sempre que precisar de ajuda. A resposta costuma ser rápida e o suporte está preparado para tirar dúvidas do check-in ao check-out.</p>
 </div>
 </div>
 </div>
 </section>
 <section class="mt-16 w-full bg-card-light/50 dark:bg-card-dark/50 rounded-[2.5rem] p-8 md:p-10 border border-primary/10 shadow-soft">
-<h2 class="font-serif text-3xl md:text-4xl text-primary font-bold mb-6">Regras da casa</h2>
+<h2 class="font-serif text-3xl md:text-4xl text-primary font-bold mb-6" data-i18n="rules.title">Regras da casa</h2>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 <div class="bg-white/70 dark:bg-background-dark/50 rounded-2xl p-6 border border-primary/10">
-<h3 class="font-serif text-2xl text-primary font-bold mb-3">Geral e segurança</h3>
+<h3 class="font-serif text-2xl text-primary font-bold mb-3" data-i18n="rules.general.title">Geral e segurança</h3>
 <ul class="space-y-3 text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed">
-<li>• Tranque portas e janelas ao sair.</li>
-<li>• Desligue ar-condicionado e luzes quando não estiver em casa.</li>
-<li>• Número máximo de hóspedes: 2 pessoas.</li>
+<li data-i18n="rules.general.item1">• Tranque portas e janelas ao sair.</li>
+<li data-i18n="rules.general.item2">• Desligue ar-condicionado e luzes quando não estiver em casa.</li>
+<li data-i18n="rules.general.item3">• Número máximo de hóspedes: 2 pessoas.</li>
 </ul>
 </div>
 <div class="bg-white/70 dark:bg-background-dark/50 rounded-2xl p-6 border border-primary/10">
-<h3 class="font-serif text-2xl text-primary font-bold mb-3">Lixo e Organização</h3>
+<h3 class="font-serif text-2xl text-primary font-bold mb-3" data-i18n="rules.trash.title">Lixo e Organização</h3>
 <ul class="space-y-3 text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed">
-<li>• Ao final da estadia, pedimos a gentileza de retirar o lixo da cozinha e do banheiro🌿.</li>
-<li>• Antes de sair, confira portas, janelas, luzes e ar-condicionado para deixar tudo organizado para o próximo hóspede.</li>
-<li>• Obrigado pela colaboração e por cuidar do espaço.</li>
+<li data-i18n="rules.trash.item1">• Ao final da estadia, pedimos a gentileza de retirar o lixo da cozinha e do banheiro🌿.</li>
+<li data-i18n="rules.trash.item2">• Antes de sair, confira portas, janelas, luzes e ar-condicionado para deixar tudo organizado para o próximo hóspede.</li>
+<li data-i18n="rules.trash.item3">• Obrigado pela colaboração e por cuidar do espaço.</li>
 </ul>
 </div>
 </div>
 </section>
 <section class="mt-16 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
 <div class="bg-white/70 dark:bg-card-dark/50 rounded-[2rem] p-8 border border-primary/10 shadow-soft">
-<h2 class="font-serif text-3xl text-primary font-bold mb-4">Comodidades e extras</h2>
-<p class="text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed mb-4">A casa oferece cozinha equipada, Wi-Fi rápido, roupa de cama, toalhas, secador, itens de banho e TV.</p>
-<p class="text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed">Se precisar de algo extra, o anfitrião pode orientar sobre os itens disponíveis e como usar cada espaço com tranquilidade.</p>
+<h2 class="font-serif text-3xl text-primary font-bold mb-4" data-i18n="amenities.title">Comodidades e extras</h2>
+<p class="text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed mb-4" data-i18n="amenities.desc1">A casa oferece cozinha equipada, Wi-Fi rápido, roupa de cama, toalhas, secador, itens de banho e TV.</p>
+<p class="text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed" data-i18n="amenities.desc2">Se precisar de algo extra, o anfitrião pode orientar sobre os itens disponíveis e como usar cada espaço com tranquilidade.</p>
 </div>
 <div class="bg-primary text-white rounded-[2rem] p-8 border border-primary/10 shadow-soft relative overflow-hidden">
 <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
-<h2 class="font-serif text-3xl font-bold mb-4">Feedback e avaliação</h2>
+<h2 class="font-serif text-3xl font-bold mb-4" data-i18n="feedback.title">Feedback e avaliação</h2>
 <div class="flex items-center gap-3 mb-5">
 <div class="flex gap-0.5">
 <span class="star-anim material-icons-outlined text-yellow-300 text-2xl" style="animation-delay:0s">star</span>
@@ -322,13 +331,13 @@ Acessar Guia
 </div>
 <span class="font-sans text-white/50 text-sm tracking-wide">5.0</span>
 </div>
-<p class="text-sm md:text-base text-white/90 leading-relaxed mb-4">Depois da estadia, sua avaliação ajuda a manter o padrão de acolhimento e melhora a experiência para os próximos hóspedes.</p>
-<p class="text-sm md:text-base text-white/90 leading-relaxed">Se algo não saiu como esperado, o ideal é avisar o anfitrião imediatamente para que a situação seja resolvida ainda durante a estadia.</p>
+<p class="text-sm md:text-base text-white/90 leading-relaxed mb-4" data-i18n="feedback.desc1">Depois da estadia, sua avaliação ajuda a manter o padrão de acolhimento e melhora a experiência para os próximos hóspedes.</p>
+<p class="text-sm md:text-base text-white/90 leading-relaxed" data-i18n="feedback.desc2">Se algo não saiu como esperado, o ideal é avisar o anfitrião imediatamente para que a situação seja resolvida ainda durante a estadia.</p>
 </div>
 </section>
 <section class="mt-16 w-full bg-card-light/50 dark:bg-card-dark/50 rounded-[2.5rem] overflow-hidden border border-primary/10 shadow-soft">
 <div class="p-8 md:p-10">
-<h2 class="font-serif text-3xl md:text-4xl text-primary font-bold mb-6">Direções e localização</h2>
+<h2 class="font-serif text-3xl md:text-4xl text-primary font-bold mb-6" data-i18n="directions.title">Direções e localização</h2>
 </div>
 <div class="flex flex-col lg:flex-row">
 <div class="p-8 lg:p-12 lg:w-1/3 flex flex-col justify-center bg-card-light/30 dark:bg-black/10">
@@ -337,14 +346,14 @@ Acessar Guia
 </div>
 <h3 id="dyn-prop-name" class="font-serif text-2xl text-primary dark:text-primary-light mb-2">Zamio</h3>
 <address class="font-sans text-lg text-text-dark dark:text-text-light not-italic mb-8 leading-relaxed opacity-90">
-<span id="dyn-address">Carregando endereço...</span>
+<span id="dyn-address" data-i18n="directions.loading">Carregando endereço...</span>
 </address>
 <div class="flex flex-col gap-3">
 <a id="dyn-maps-link" href="#" target="_blank" class="w-full py-3 px-6 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-colors shadow-md flex items-center justify-center gap-2">
-<span class="material-icons-outlined text-sm">map</span> Abrir no Maps
+<span class="material-icons-outlined text-sm">map</span> <span data-i18n="directions.open_maps">Abrir no Maps</span>
 </a>
 <button onclick="navigator.clipboard.writeText(window._dynAddress||'')" class="w-full py-3 px-6 bg-white dark:bg-card-dark border-2 border-primary/20 text-primary dark:text-primary-light rounded-xl font-bold hover:bg-primary/5 transition-colors flex items-center justify-center gap-2">
-<span class="material-icons-outlined text-sm">content_copy</span> Copiar Endereço
+<span class="material-icons-outlined text-sm">content_copy</span> <span data-i18n="directions.copy_address">Copiar Endereço</span>
 </button>
 </div>
 </div>
@@ -357,7 +366,7 @@ Acessar Guia
 <section id="clima-section" class="mt-16 w-full" style="display:none">
 <div class="mb-6 flex items-end justify-between gap-4 flex-wrap">
 <div>
-<p class="font-script text-3xl text-primary/70 mb-1">Como estará o tempo?</p>
+<p class="font-script text-3xl text-primary/70 mb-1" data-i18n="clima.subtitle">Como estará o tempo?</p>
 <h2 class="font-serif text-3xl md:text-4xl text-primary dark:text-primary-light font-bold">Clima em Natal</h2>
 </div>
 <div class="flex items-center gap-2 text-sm text-text-dark/50 dark:text-text-light/50">
@@ -442,33 +451,37 @@ Acessar Guia
 
 <section id="explore-section" class="mt-16 w-full" style="display:none">
 <div class="mb-6">
-<p class="font-script text-3xl text-primary/70 mb-1">Tudo perto de você</p>
-<h2 class="font-serif text-3xl md:text-4xl text-primary dark:text-primary-light font-bold">Explore a Região</h2>
+<p class="font-script text-3xl text-primary/70 mb-1" data-i18n="explore.script">Tudo perto de você</p>
+<h2 class="font-serif text-3xl md:text-4xl text-primary dark:text-primary-light font-bold" data-i18n="explore.title">Explore a Região</h2>
 </div>
-<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8" id="explore-tabs">
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-8" id="explore-tabs">
 <button onclick="switchTab('comer')" id="tab-comer" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-orange-50 text-orange-700 border-2 border-orange-200 hover:-translate-y-1 hover:shadow-md">
 <span class="material-icons-outlined text-3xl">restaurant</span>
-<span class="text-xs font-bold">Onde Comer</span>
+<span class="text-xs font-bold" data-i18n="tab.comer">Onde Comer</span>
 </button>
 <button onclick="switchTab('mercado')" id="tab-mercado" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-green-50 text-green-700 border-2 border-green-200 hover:-translate-y-1 hover:shadow-md">
 <span class="material-icons-outlined text-3xl">shopping_cart</span>
-<span class="text-xs font-bold">Mercado</span>
+<span class="text-xs font-bold" data-i18n="tab.mercado">Mercado</span>
 </button>
 <button onclick="switchTab('farmacia')" id="tab-farmacia" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-blue-50 text-blue-700 border-2 border-blue-200 hover:-translate-y-1 hover:shadow-md">
 <span class="material-icons-outlined text-3xl">local_pharmacy</span>
-<span class="text-xs font-bold">Farmácias</span>
+<span class="text-xs font-bold" data-i18n="tab.farmacia">Farmácias</span>
 </button>
 <button onclick="switchTab('fazer')" id="tab-fazer" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-cyan-50 text-cyan-700 border-2 border-cyan-200 hover:-translate-y-1 hover:shadow-md">
 <span class="material-icons-outlined text-3xl">explore</span>
-<span class="text-xs font-bold">O que Fazer</span>
+<span class="text-xs font-bold" data-i18n="tab.fazer">O que Fazer</span>
 </button>
 <button onclick="switchTab('academias')" id="tab-academias" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-violet-50 text-violet-700 border-2 border-violet-200 hover:-translate-y-1 hover:shadow-md">
 <span class="material-icons-outlined text-3xl">fitness_center</span>
-<span class="text-xs font-bold">Academias</span>
+<span class="text-xs font-bold" data-i18n="tab.academias">Academias</span>
+</button>
+<button onclick="switchTab('lavanderias')" id="tab-lavanderias" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-indigo-50 text-indigo-700 border-2 border-indigo-200 hover:-translate-y-1 hover:shadow-md">
+<span class="material-icons-outlined text-3xl">local_laundry_service</span>
+<span class="text-xs font-bold" data-i18n="tab.lavanderias">Lavanderias</span>
 </button>
 <button onclick="switchTab('emergencia')" id="tab-emergencia" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-red-50 text-red-700 border-2 border-red-200 hover:-translate-y-1 hover:shadow-md">
 <span class="material-icons-outlined text-3xl">emergency</span>
-<span class="text-xs font-bold">Emergência</span>
+<span class="text-xs font-bold" data-i18n="tab.emergencia">Emergência</span>
 </button>
 </div>
 
@@ -724,6 +737,7 @@ Acessar Guia
 </div>
 </div>
 </div>
+<div id="panel-lavanderias" class="tab-panel hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 <div id="panel-emergencia" class="tab-panel hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 <div class="bg-red-50 dark:bg-red-900/20 rounded-2xl p-6 border border-red-200 dark:border-red-800/40 hover:-translate-y-1 transition-transform duration-200">
 <div class="flex items-center gap-3 mb-2">
@@ -768,8 +782,72 @@ Acessar Guia
 </div>
 </section>
 <footer class="text-center py-8 opacity-60 text-sm font-sans z-10 relative mt-16">
-        © 2026 <span id="dyn-footer">Casa Verde Zamio</span>. Tenha uma ótima estadia!
+        © 2026 <span id="dyn-footer">Casa Verde Zamio</span>. <span data-i18n="footer.enjoy">Tenha uma ótima estadia!</span>
     </footer>
+
+    <!-- i18n engine -->
+    <script>
+    (function() {
+        var LANGS = ['pt', 'en', 'es'];
+        var _lang = (localStorage.getItem('guia-lang') || (navigator.language || 'pt').split('-')[0]).toLowerCase();
+        if (!LANGS.includes(_lang)) _lang = 'pt';
+        var _data = {};
+
+        window._t = function(key, fallback) {
+            return _data[key] || fallback || key;
+        };
+
+        window._applyI18n = function() {
+            document.querySelectorAll('[data-i18n]').forEach(function(el) {
+                var key = el.getAttribute('data-i18n');
+                if (_data[key]) el.textContent = _data[key];
+            });
+            document.querySelectorAll('.lang-btn').forEach(function(b) {
+                var active = b.dataset.lang === _lang;
+                b.classList.toggle('ring-2', active);
+                b.classList.toggle('ring-primary', active);
+                b.classList.toggle('opacity-60', !active);
+            });
+        };
+
+        window._reApplyDynamic = function() {
+            var name = window._dynPropName;
+            if (name) {
+                var heroEl = document.getElementById('dyn-hero-title');
+                if (heroEl) heroEl.textContent = window._t('hero.welcome_to', 'Bem-vindo ao') + ' ' + name;
+                var fotosEl = document.getElementById('dyn-fotos-title');
+                if (fotosEl) fotosEl.textContent = window._t('photos.title_of', 'Fotos do') + ' ' + name;
+            }
+            var codeLabelEl = document.getElementById('dyn-code-label');
+            if (codeLabelEl && window._dynAccessType) {
+                codeLabelEl.textContent = window._dynAccessType === 'cofre'
+                    ? window._t('access.code_label_safe', 'Código do cofre')
+                    : window._t('access.code_label', 'Código');
+            }
+            var copyBtn = document.getElementById('btn-copy-wifi');
+            if (copyBtn) {
+                copyBtn.innerHTML = '<span class="material-icons-outlined text-base">content_copy<\/span><span data-i18n="wifi.copy_btn">' + window._t('wifi.copy_btn', 'Copiar') + '<\/span>';
+            }
+            window._applyI18n();
+        };
+
+        window._setLang = function(lang) {
+            if (!LANGS.includes(lang)) lang = 'pt';
+            _lang = lang;
+            localStorage.setItem('guia-lang', lang);
+            fetch('i18n/' + lang + '.json')
+                .then(function(r) { return r.json(); })
+                .then(function(d) {
+                    _data = d;
+                    window._reApplyDynamic();
+                })
+                .catch(function() { window._applyI18n(); });
+        };
+
+        window._setLang(_lang);
+    })();
+    </script>
+
 <script>
         const albumGroups = [
             {
@@ -890,8 +968,9 @@ Acessar Guia
             mercado:   { base: ['bg-green-50','text-green-700','border-green-200'],   active: ['bg-green-600','text-white','border-green-600','shadow-lg'] },
             farmacia:  { base: ['bg-blue-50','text-blue-700','border-blue-200'],      active: ['bg-blue-600','text-white','border-blue-600','shadow-lg'] },
             fazer:     { base: ['bg-cyan-50','text-cyan-700','border-cyan-200'],      active: ['bg-cyan-600','text-white','border-cyan-600','shadow-lg'] },
-            academias: { base: ['bg-violet-50','text-violet-700','border-violet-200'],active: ['bg-violet-600','text-white','border-violet-600','shadow-lg'] },
-            emergencia:{ base: ['bg-red-50','text-red-700','border-red-200'],         active: ['bg-red-600','text-white','border-red-600','shadow-lg'] },
+            academias:   { base: ['bg-violet-50','text-violet-700','border-violet-200'], active: ['bg-violet-600','text-white','border-violet-600','shadow-lg'] },
+            lavanderias: { base: ['bg-indigo-50','text-indigo-700','border-indigo-200'],active: ['bg-indigo-600','text-white','border-indigo-600','shadow-lg'] },
+            emergencia:  { base: ['bg-red-50','text-red-700','border-red-200'],         active: ['bg-red-600','text-white','border-red-600','shadow-lg'] },
         };
         function switchTab(name) {
             document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.add('hidden'); });
@@ -918,12 +997,29 @@ Acessar Guia
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
     (function() {
-        // ── CONFIG: defina o slug do seu guia aqui (o mesmo que você configurou no painel) ──
-        var OWNER_SLUG = new URLSearchParams(location.search).get('h') || 'zamio';
+        var _params    = new URLSearchParams(location.search);
+        var TOKEN      = _params.get('t');
+        var OWNER_SLUG = _params.get('h') || 'zamio';
 
         var SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
         var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
         var sb = window.supabase.createClient(SB_URL, SB_KEY);
+
+        function showAccessError(type) {
+            var icon  = document.getElementById('access-error-icon');
+            var title = document.getElementById('access-error-title');
+            var msg   = document.getElementById('access-error-msg');
+            if (type === 'expired') {
+                if (icon)  icon.textContent  = 'event_busy';
+                if (title) title.textContent = 'Acesso expirado';
+                if (msg)   msg.textContent   = 'O link do guia expirou após o checkout. Obrigado pela visita e até a próxima!';
+            } else {
+                if (icon)  icon.textContent  = 'link_off';
+                if (title) title.textContent = 'Link inválido';
+                if (msg)   msg.textContent   = 'Este link não é válido. Peça um novo link ao anfitrião.';
+            }
+            document.getElementById('access-error-screen').classList.remove('hidden');
+        }
 
         function setText(id, val) {
             var el = document.getElementById(id);
@@ -946,15 +1042,108 @@ Acessar Guia
         }
 
         async function loadDynamic() {
-            var hostRes = await sb.from('hosts').select('id, property_name').eq('slug', OWNER_SLUG).single();
-            if (!hostRes.data) return;
-            var host = hostRes.data;
+            var host, c;
 
-            var contentRes = await sb.from('guide_content')
-                .select('property_name, wifi_name, wifi_password, address, maps_url, maps_embed, theme_color, theme_color_light, checkin_time, checkout_time, lock_code, access_type, access_location, access_contact, access_instructions')
-                .eq('host_id', host.id).single();
-            if (!contentRes.data) return;
-            var c = contentRes.data;
+            if (TOKEN) {
+                // Acesso via link de hóspede com token
+                var res;
+                try {
+                    res = await fetch(SB_URL + '/functions/v1/guide-data?t=' + encodeURIComponent(TOKEN), {
+                        headers: { 'Authorization': 'Bearer ' + SB_KEY }
+                    });
+                } catch (e) {
+                    showAccessError('invalid');
+                    return;
+                }
+                var data = await res.json();
+                if (!data.ok) { showAccessError(data.error || 'invalid'); return; }
+                host = data.host;
+                c    = data.content;
+            } else {
+                // Acesso via slug (preview do anfitrião / demo)
+                var hostRes = await sb.from('hosts').select('id, property_name').eq('slug', OWNER_SLUG).single();
+                if (!hostRes.data) return;
+                host = hostRes.data;
+
+                var contentRes = await sb.from('guide_content')
+                    .select('property_name, wifi_name, wifi_password, address, maps_url, maps_embed, theme_color, theme_color_light, checkin_time, checkout_time, lock_code, lock_code_valid_until, access_type, access_location, access_contact, access_instructions, welcome_message, hero_image_url, rules, restaurantes, mercados, farmacias, atividades, academias, lavanderias, emergencia, room_items')
+                    .eq('host_id', host.id).single();
+                if (!contentRes.data) return;
+                c = contentRes.data;
+            }
+
+            function _esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+            function _renderListPanel(panelId, items) {
+                if (!items || !items.length) return;
+                var panel = document.getElementById(panelId);
+                if (!panel) return;
+                panel.innerHTML = items.map(function(item) {
+                    var catBadge = item.category
+                        ? '<span class="bg-primary/10 text-primary text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">' + _esc(item.category) + '<\/span>'
+                        : '';
+                    var desc  = item.description
+                        ? '<p class="text-sm opacity-70 mb-4 flex-1">' + _esc(item.description) + '<\/p>' : '';
+                    var time  = item.time
+                        ? '<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car<\/span> ' + _esc(item.time) + '<\/div>'
+                        : '<div><\/div>';
+                    var mapsBtn = item.maps_url
+                        ? '<a href="' + _esc(item.maps_url) + '" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary\/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map<\/span> Maps<\/a>'
+                        : '';
+                    return '<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary\/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">'
+                        + '<div class="flex items-start justify-between mb-3 gap-2">'
+                        + '<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">' + _esc(item.name) + '<\/h4>'
+                        + catBadge + '<\/div>'
+                        + desc
+                        + '<div class="flex items-center justify-between pt-3 border-t border-primary\/10 mt-auto">' + time + mapsBtn + '<\/div>'
+                        + '<\/div>';
+                }).join('');
+            }
+            _renderListPanel('panel-comer',       c.restaurantes);
+            _renderListPanel('panel-mercado',      c.mercados);
+            _renderListPanel('panel-farmacia',     c.farmacias);
+            _renderListPanel('panel-fazer',        c.atividades);
+            _renderListPanel('panel-academias',    c.academias);
+            _renderListPanel('panel-lavanderias',  c.lavanderias);
+            if (c.emergencia && c.emergencia.length) {
+                var ep = document.getElementById('panel-emergencia');
+                if (ep) ep.innerHTML = c.emergencia.map(function(item) {
+                    var tel = item.maps_url || '';
+                    var telLink = tel ? '<a href="' + _esc(tel) + '" class="font-bold text-red-600 dark:text-red-400 hover:text-red-800 transition-colors text-sm">' + _esc(tel) + '<\/a>' : '';
+                    return '<div class="bg-red-50 dark:bg-red-900\/20 rounded-2xl p-6 border border-red-200 dark:border-red-800\/40 hover:-translate-y-1 transition-transform duration-200">'
+                        + '<div class="flex items-center gap-3 mb-2"><span class="material-icons-outlined text-red-500 text-2xl">emergency<\/span>'
+                        + '<h4 class="font-serif text-lg font-bold text-red-700 dark:text-red-400">' + _esc(item.name) + '<\/h4><\/div>'
+                        + (item.description ? '<p class="text-sm opacity-70 mb-3">' + _esc(item.description) + '<\/p>' : '')
+                        + telLink
+                        + '<\/div>';
+                }).join('');
+            }
+
+            // Room items overlay on photo articles
+            if (c.room_items) {
+                var _roomSlots = [
+                    { id: 'album-bedroom',  key: 'bedroom'  },
+                    { id: 'album-kitchen',  key: 'kitchen'  },
+                    { id: 'album-bathroom', key: 'bathroom' },
+                ];
+                _roomSlots.forEach(function(slot) {
+                    var items = c.room_items[slot.key] || [];
+                    if (!items.length) return;
+                    var slotEl = document.getElementById(slot.id);
+                    if (!slotEl) return;
+                    var article = slotEl.closest('article');
+                    if (!article) return;
+                    article.classList.add('group');
+                    var overlay = document.createElement('div');
+                    overlay.className = 'absolute inset-x-0 bottom-0 z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out bg-black/72 backdrop-blur-sm p-5 rounded-b-[2rem]';
+                    overlay.innerHTML = '<p class="text-[10px] uppercase tracking-widest text-white/50 mb-2.5" data-i18n="photos.items_label">Itens disponíveis<\/p>'
+                        + '<ul class="grid grid-cols-2 gap-y-1.5 gap-x-4">'
+                        + items.map(function(item) {
+                            return '<li class="text-white/85 text-xs flex items-center gap-1"><span class="material-icons-outlined text-primary-light" style="font-size:11px">check_circle<\/span>' + _esc(item) + '<\/li>';
+                          }).join('')
+                        + '<\/ul>';
+                    article.appendChild(overlay);
+                });
+            }
 
             if (c.theme_color) {
                 var r = document.documentElement;
@@ -963,9 +1152,10 @@ Acessar Guia
             }
 
             var name = c.property_name || host.property_name || 'Zamio';
+            window._dynPropName = name;
 
-            setText('dyn-hero-title',  'Bem-vindo ao ' + name);
-            setText('dyn-fotos-title', 'Fotos do ' + name);
+            setText('dyn-hero-title',  (window._t ? window._t('hero.welcome_to', 'Bem-vindo ao') : 'Bem-vindo ao') + ' ' + name);
+            setText('dyn-fotos-title', (window._t ? window._t('photos.title_of', 'Fotos do') : 'Fotos do') + ' ' + name);
             setText('dyn-prop-name',   name);
             setText('dyn-footer',      name);
             setText('dyn-wifi-name',   c.wifi_name     || '');
@@ -974,11 +1164,14 @@ Acessar Guia
             // Check-in / acesso
             setText('dyn-checkin-time', (c.checkin_time || '13:00') + ' / ' + (c.checkout_time || '11:00'));
             var accessType = c.access_type || 'fechadura';
+            window._dynAccessType = accessType;
             var codeCard   = document.getElementById('dyn-code-card');
             var accessInfo = document.getElementById('dyn-access-info');
 
             if (accessType === 'fechadura' || accessType === 'cofre') {
-                setText('dyn-code-label', accessType === 'cofre' ? 'Código do cofre' : 'Código');
+                setText('dyn-code-label', accessType === 'cofre'
+                    ? (window._t ? window._t('access.code_label_safe', 'Código do cofre') : 'Código do cofre')
+                    : (window._t ? window._t('access.code_label', 'Código') : 'Código'));
                 setText('dyn-code-value', c.lock_code || '—');
                 if (codeCard) codeCard.style.display = '';
             } else {
@@ -991,17 +1184,17 @@ Acessar Guia
                     if (c.access_instructions) {
                         infoHtml = renderAccessLines(c.access_instructions);
                     } else {
-                        infoHtml = '<p class="text-sm text-text-dark/70 leading-relaxed">Digite o código acima na fechadura eletrônica e aguarde o bipe para destrancar.</p>';
+                        infoHtml = '<p class="text-sm text-text-dark/70 leading-relaxed">' + (window._t ? window._t('access.default_instruction', 'Digite o código acima na fechadura eletrônica e aguarde o bipe para destrancar.') : 'Digite o código acima na fechadura eletrônica e aguarde o bipe para destrancar.') + '<\/p>';
                     }
                 } else if (accessType === 'cofre') {
-                    if (c.access_location) infoHtml += infoCard('Localização do cofre', 'lock_open', c.access_location);
+                    if (c.access_location) infoHtml += infoCard(window._t ? window._t('access.safe_location', 'Localização do cofre') : 'Localização do cofre', 'lock_open', c.access_location);
                     if (c.access_instructions) infoHtml += '<div class="mt-2">' + renderAccessLines(c.access_instructions) + '<\/div>';
                 } else if (accessType === 'chave') {
-                    if (c.access_location) infoHtml += infoCard('Onde retirar a chave', 'key', c.access_location);
-                    if (c.access_contact)  infoHtml += infoCard('Contato', 'phone', c.access_contact);
+                    if (c.access_location) infoHtml += infoCard(window._t ? window._t('access.key_location', 'Onde retirar a chave') : 'Onde retirar a chave', 'key', c.access_location);
+                    if (c.access_contact)  infoHtml += infoCard(window._t ? window._t('access.contact', 'Contato') : 'Contato', 'phone', c.access_contact);
                 } else if (accessType === 'portaria') {
                     if (c.access_instructions) infoHtml += renderAccessLines(c.access_instructions);
-                    if (c.access_contact)      infoHtml += infoCard('Contato da portaria', 'phone', c.access_contact);
+                    if (c.access_contact)      infoHtml += infoCard(window._t ? window._t('access.lobby_contact', 'Contato da portaria') : 'Contato da portaria', 'phone', c.access_contact);
                 } else {
                     if (c.access_instructions) infoHtml += renderAccessLines(c.access_instructions);
                 }
@@ -1009,7 +1202,8 @@ Acessar Guia
             }
 
             if (c.address) {
-                setText('dyn-address', c.address);
+                var addrEl = document.getElementById('dyn-address');
+                if (addrEl) { addrEl.textContent = c.address; addrEl.removeAttribute('data-i18n'); }
                 window._dynAddress = c.address;
             }
             if (c.maps_url) {
@@ -1020,6 +1214,8 @@ Acessar Guia
                 var embed = document.getElementById('dyn-maps-embed');
                 if (embed) embed.src = c.maps_embed;
             }
+
+            if (window._reApplyDynamic) window._reApplyDynamic();
         }
 
         loadDynamic();
@@ -1030,12 +1226,23 @@ Acessar Guia
       var pass = document.getElementById('dyn-wifi-pass').textContent;
       navigator.clipboard.writeText(pass).then(function() {
         var btn = document.getElementById('btn-copy-wifi');
-        btn.innerHTML = '<span class="material-icons-outlined text-base">check</span>Copiado!';
+        btn.innerHTML = '<span class="material-icons-outlined text-base">check<\/span>' + (window._t ? window._t('wifi.copied_btn', 'Copiado!') : 'Copiado!');
         setTimeout(function() {
-          btn.innerHTML = '<span class="material-icons-outlined text-base">content_copy</span>Copiar';
+          btn.innerHTML = '<span class="material-icons-outlined text-base">content_copy<\/span><span data-i18n="wifi.copy_btn">' + (window._t ? window._t('wifi.copy_btn', 'Copiar') : 'Copiar') + '<\/span>';
         }, 2000);
       });
     }
 
     </script>
+
+<!-- Tela de acesso expirado / inválido (cobre tudo) -->
+<div id="access-error-screen" class="hidden fixed inset-0 z-[999] bg-white flex flex-col items-center justify-center p-8 text-center">
+  <div class="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+    <span id="access-error-icon" class="material-icons-outlined text-primary" style="font-size:44px">event_busy</span>
+  </div>
+  <h1 id="access-error-title" class="font-serif text-3xl text-gray-900 mb-3">Acesso expirado</h1>
+  <p id="access-error-msg" class="text-gray-500 max-w-xs leading-relaxed">
+    O link do guia expirou após o checkout. Obrigado pela visita e até a próxima!
+  </p>
+</div>
 </body></html>
