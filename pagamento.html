@@ -260,21 +260,33 @@ async function confirmarPagamento() {
 
   let token;
   try {
-    token = await mp.createCardToken({
-      cardNumber:           numero,
-      cardholderName:       nome,
-      cardExpirationMonth:  mes,
-      cardExpirationYear:   '20' + ano,
-      securityCode:         cvv,
-      identificationType:   'CPF',
-      identificationNumber: cpf,
-    });
+    const tokenRes = await fetch(
+      'https://api.mercadopago.com/v1/card_tokens?public_key=' + MP_PUBLIC_KEY,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          card_number:      numero,
+          security_code:    cvv,
+          expiration_month: parseInt(mes, 10),
+          expiration_year:  parseInt('20' + ano, 10),
+          cardholder: {
+            name: nome,
+            identification: { type: 'CPF', number: cpf },
+          },
+        }),
+      }
+    );
+    token = await tokenRes.json();
   } catch (e) {
     showError('Não foi possível validar o cartão. Verifique os dados.');
     return;
   }
 
-  if (!token?.id) { showError('Erro ao gerar token do cartão.'); return; }
+  if (!token?.id) {
+    showError('Erro ao gerar token do cartão: ' + (token?.message || 'verifique os dados.'));
+    return;
+  }
 
   let result;
   try {
