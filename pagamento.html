@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://sdk.mercadopago.com/js/v2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 tailwind.config = {
@@ -23,9 +22,6 @@ tailwind.config = {
 body { font-family: 'Nunito Sans', sans-serif; }
 @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
 .spin { animation: spin .8s linear infinite; display:inline-block; }
-.field-label { display:block; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#6b7280; margin-bottom:6px; }
-.field-input { width:100%; padding:12px 16px; border-radius:12px; border:1.5px solid #e5e7eb; font-size:14px; outline:none; background:#f9fafb; transition:all .15s; box-sizing:border-box; font-family:'Nunito Sans',sans-serif; }
-.field-input:focus { border-color:#4A6741; box-shadow:0 0 0 3px rgba(74,103,65,.12); background:#fff; }
 </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-stone-100 to-stone-50 flex flex-col items-center justify-center p-4 py-10">
@@ -98,7 +94,7 @@ body { font-family: 'Nunito Sans', sans-serif; }
     </div>
   </div>
 
-  <!-- Formulário -->
+  <!-- Confirmação -->
   <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4 mb-4">
 
     <div id="error-msg" class="hidden p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-center gap-2">
@@ -106,44 +102,14 @@ body { font-family: 'Nunito Sans', sans-serif; }
       <span id="error-text"></span>
     </div>
 
-    <div>
-      <label class="field-label">Nome no cartão</label>
-      <input id="p-nome" type="text" placeholder="Como está escrito no cartão"
-        autocomplete="cc-name" class="field-input"/>
-    </div>
+    <p class="text-sm text-gray-500 leading-relaxed">
+      Você será redirecionado para o ambiente seguro do Mercado Pago para informar os dados do cartão e confirmar a assinatura. Nenhum dado de pagamento é coletado pelo Zamio Guias.
+    </p>
 
-    <div>
-      <label class="field-label">CPF do titular</label>
-      <input id="p-cpf" type="text" placeholder="000.000.000-00"
-        maxlength="14" oninput="maskCPF(this)" autocomplete="off" class="field-input"/>
-    </div>
-
-    <div>
-      <label class="field-label">Número do cartão</label>
-      <div class="relative">
-        <input id="p-numero" type="text" placeholder="0000 0000 0000 0000"
-          autocomplete="cc-number" maxlength="19" oninput="maskCard(this)" class="field-input pr-10"/>
-        <span id="card-icon" class="material-icons-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-300" style="font-size:20px">credit_card</span>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <label class="field-label">Validade</label>
-        <input id="p-validade" type="text" placeholder="MM/AA"
-          autocomplete="cc-exp" maxlength="5" oninput="maskExpiry(this)" class="field-input"/>
-      </div>
-      <div>
-        <label class="field-label">CVV</label>
-        <input id="p-cvv" type="password" placeholder="•••"
-          autocomplete="cc-csc" maxlength="4" class="field-input"/>
-      </div>
-    </div>
-
-    <button id="btn-pagar" onclick="confirmarPagamento()"
+    <button id="btn-pagar" onclick="continuar()"
       class="w-full bg-primary text-white font-bold py-4 rounded-2xl hover:bg-primary-light active:scale-[.98] transition-all flex items-center justify-center gap-2 text-sm shadow-xl shadow-primary/25 mt-2">
       <span class="material-icons-outlined text-base">lock</span>
-      Começar 7 dias grátis
+      Continuar para pagamento seguro
     </button>
 
   </div>
@@ -162,27 +128,21 @@ body { font-family: 'Nunito Sans', sans-serif; }
 
 </div>
 
-<!-- Overlay de sucesso -->
-<div id="overlay-sucesso" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+<!-- Overlay de redirecionamento -->
+<div id="overlay-redirect" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
   <div class="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl">
-    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-      <span class="material-icons-outlined text-green-600" style="font-size:32px">check_circle</span>
+    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+      <span class="material-icons-outlined text-primary spin" style="font-size:32px">refresh</span>
     </div>
-    <h2 class="font-serif text-2xl text-gray-900 mb-2">Assinatura ativada!</h2>
-    <p id="overlay-msg" class="text-sm text-gray-500 mb-6">Seus 7 dias grátis começam agora. Bem-vindo ao Zamio Guias!</p>
-    <div class="flex items-center justify-center gap-1.5 text-sm text-primary font-bold">
-      <span class="material-icons-outlined text-base spin">refresh</span>
-      Acessando o painel...
-    </div>
+    <h2 class="font-serif text-2xl text-gray-900 mb-2">Quase lá!</h2>
+    <p class="text-sm text-gray-500">Te enviando para o ambiente seguro do Mercado Pago...</p>
   </div>
 </div>
 
 <script>
-const MP_PUBLIC_KEY = 'TEST-c47e3ad4-8d2a-4205-a895-e3a40a84deda';
 const SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
-const mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
 
 const isInvite   = sessionStorage.getItem('zreg_invite') === '1';
 const email      = sessionStorage.getItem('zreg_email');
@@ -214,30 +174,6 @@ if (!email || !planoId) location.href = isInvite ? 'login.html' : 'cadastro.html
 document.getElementById('resumo-nome').textContent  = 'Plano ' + (planoNome || '') + ' · ' + (planoPeriodo === 'anual' ? 'Anual' : 'Mensal');
 document.getElementById('resumo-preco').textContent = 'R$ ' + (planoPreco || '');
 
-const precoNum = parseFloat((planoPreco || '34.90').replace(',', '.'));
-
-// Máscaras
-function maskCard(el) {
-  let v = el.value.replace(/\D/g, '').slice(0, 16);
-  el.value = v.replace(/(\d{4})(?=\d)/g, '$1 ');
-  const icon = document.getElementById('card-icon');
-  if (v.startsWith('4')) icon.textContent = 'credit_card';
-  else if (v.startsWith('5') || v.startsWith('2')) icon.textContent = 'credit_card';
-  else icon.textContent = 'credit_card';
-}
-function maskExpiry(el) {
-  let v = el.value.replace(/\D/g, '').slice(0, 4);
-  if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
-  el.value = v;
-}
-function maskCPF(el) {
-  let v = el.value.replace(/\D/g, '').slice(0, 11);
-  if (v.length > 9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
-  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
-  else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,3})/, '$1.$2');
-  el.value = v;
-}
-
 function showError(msg) {
   document.getElementById('error-text').textContent = msg;
   document.getElementById('error-msg').classList.remove('hidden');
@@ -246,73 +182,64 @@ function showError(msg) {
 function resetBtn() {
   const btn = document.getElementById('btn-pagar');
   btn.disabled = false;
-  btn.innerHTML = '<span class="material-icons-outlined text-base">lock</span> Confirmar pagamento';
+  btn.innerHTML = '<span class="material-icons-outlined text-base">lock</span> Continuar para pagamento seguro';
 }
 
-async function confirmarPagamento() {
-  const nome     = document.getElementById('p-nome').value.trim();
-  const cpf      = document.getElementById('p-cpf').value.replace(/\D/g, '');
-  const numero   = document.getElementById('p-numero').value.replace(/\s/g, '');
-  const validade = document.getElementById('p-validade').value.trim();
-  const cvv      = document.getElementById('p-cvv').value.trim();
-
+async function continuar() {
   document.getElementById('error-msg').classList.add('hidden');
-
-  if (!nome)               { showError('Informe o nome no cartão.'); return; }
-  if (cpf.length !== 11)   { showError('Informe um CPF válido (11 dígitos).'); return; }
-  if (numero.length < 15)  { showError('Número de cartão inválido.'); return; }
-  if (validade.length < 5) { showError('Informe a validade (MM/AA).'); return; }
-  if (cvv.length < 3)      { showError('CVV inválido.'); return; }
-
   const btn = document.getElementById('btn-pagar');
   btn.disabled = true;
-  btn.innerHTML = '<span class="material-icons-outlined text-base spin">refresh</span> Processando...';
+  btn.innerHTML = '<span class="material-icons-outlined text-base spin">refresh</span> Preparando...';
 
-  const [mes, ano] = validade.split('/');
+  let userId;
 
-  let token;
   try {
-    const tokenRes = await fetch(
-      'https://api.mercadopago.com/v1/card_tokens?public_key=' + MP_PUBLIC_KEY,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          card_number:      numero,
-          security_code:    cvv,
-          expiration_month: parseInt(mes, 10),
-          expiration_year:  parseInt('20' + ano, 10),
-          cardholder: {
-            name: nome,
-            identification: { type: 'CPF', number: cpf },
-          },
-        }),
+    if (isInvite) {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { showError('Sessão expirada. Peça ao administrador um novo convite.'); return; }
+      userId = session.user.id;
+    } else {
+      const { data, error } = await sb.auth.signUp({
+        email, password: senha,
+        options: { emailRedirectTo: 'https://guiazamio.vercel.app/painel.html' }
+      });
+      if (error) {
+        if (error.message.includes('already registered')) {
+          const { data: loginData, error: loginError } = await sb.auth.signInWithPassword({ email, password: senha });
+          if (loginError) { showError('Este e-mail já possui uma conta. Tente fazer login.'); return; }
+          userId = loginData.user?.id;
+        } else {
+          showError('Erro ao criar conta: ' + error.message);
+          return;
+        }
+      } else {
+        await new Promise(r => setTimeout(r, 1200));
+        userId = data.user?.id;
       }
-    );
-    token = await tokenRes.json();
+    }
   } catch (e) {
-    showError('Não foi possível validar o cartão. Verifique os dados.');
+    showError('Erro de conexão. Tente novamente.');
     return;
   }
 
-  if (!token?.id) {
-    showError('Erro ao gerar token do cartão: ' + (token?.message || 'verifique os dados.'));
-    return;
-  }
+  if (!userId) { showError('Não foi possível identificar sua conta. Tente novamente.'); return; }
+
+  const planoUpd = {
+    plan_id:             planoId,
+    plan_name:           planoNome + ' ' + (planoPeriodo === 'anual' ? '(Anual)' : '(Mensal)'),
+    plan_active:         false,
+    plan_started_at:     new Date().toISOString(),
+    subscription_status: 'pending',
+  };
+  if (celular) planoUpd.phone = celular;
+  await sb.from('hosts').update(planoUpd).eq('id', userId);
 
   let result;
   try {
-    const res = await fetch(SB_URL + '/functions/v1/assinar', {
+    const res = await fetch(SB_URL + '/functions/v1/criar-assinatura', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
-      body: JSON.stringify({
-        cardToken: token.id,
-        email,
-        cpf,
-        planoId,
-        planoPeriodo,
-        withTrial,
-      }),
+      body: JSON.stringify({ email, planoId, planoPeriodo, withTrial, hostId: userId }),
     });
     result = await res.json();
   } catch (e) {
@@ -320,62 +247,24 @@ async function confirmarPagamento() {
     return;
   }
 
-  if (!result.ok) {
-    showError((result.message || 'Não foi possível ativar a assinatura.') + (result.detail ? ' [' + result.detail + ']' : ''));
+  if (!result.ok || !result.initPoint) {
+    showError(result.message || 'Não foi possível iniciar o pagamento.');
     return;
   }
 
-  await criarConta(result.subscriptionId, result.trialEndsAt);
-}
-
-async function criarConta(subscriptionId, trialEndsAt) {
-  let userId;
-
-  if (isInvite) {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) { showError('Sessão expirada. Peça ao administrador um novo convite.'); return; }
-    userId = session.user.id;
-  } else {
-    const { data, error } = await sb.auth.signUp({
-      email, password: senha,
-      options: { emailRedirectTo: 'https://guiazamio.vercel.app/painel.html' }
-    });
-    if (error) {
-      showError(error.message.includes('already registered')
-        ? 'Este e-mail já possui uma conta. Tente fazer login.'
-        : 'Erro ao criar conta: ' + error.message);
-      return;
-    }
-    await new Promise(r => setTimeout(r, 1200));
-    userId = data.user?.id;
-  }
-
-  if (userId) {
-    const upd = {
-      plan_id:             planoId,
-      plan_name:           planoNome + ' ' + (planoPeriodo === 'anual' ? '(Anual)' : '(Mensal)'),
-      plan_active:         true,
-      plan_started_at:     new Date().toISOString(),
-      subscription_id:     subscriptionId     || null,
-      subscription_status: 'authorized',
-      trial_ends_at:       trialEndsAt        || null,
-    };
-    if (celular) upd.phone = celular;
-    await sb.from('hosts').update(upd).eq('id', userId);
-  }
+  await sb.from('hosts').update({
+    subscription_id: result.subscriptionId,
+    trial_ends_at:   result.trialEndsAt || null,
+  }).eq('id', userId);
 
   ['zreg_email','zreg_senha','zreg_celular','zreg_plano_id','zreg_plano_nome','zreg_plano_preco','zreg_plano_periodo','zreg_invite']
     .forEach(k => sessionStorage.removeItem(k));
 
-  const el = document.getElementById('overlay-msg');
-  if (el) el.textContent = withTrial
-    ? 'Seus 7 dias grátis começam agora. Bem-vindo ao Zamio Guias!'
-    : 'Assinatura ativada com sucesso. Bem-vindo ao Zamio Guias!';
-  document.getElementById('overlay-sucesso').classList.remove('hidden');
-  setTimeout(() => location.href = 'painel.html', 2500);
+  document.getElementById('overlay-redirect').classList.remove('hidden');
+  location.href = result.initPoint;
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Enter') confirmarPagamento(); });
+document.addEventListener('keydown', e => { if (e.key === 'Enter') continuar(); });
 </script>
 </body>
 </html>
