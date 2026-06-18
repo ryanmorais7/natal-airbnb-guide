@@ -1399,13 +1399,13 @@ let manutSelEnxoval      = -1;
 
 const MANUT_SHORTCUTS = [
   { id:'ac',          icon:'ac_unit',              label:'Ar-condicionado',    desc:'Limpeza dos filtros',        months:6,  hasLastDone:true  },
-  { id:'dedetizacao', icon:'pest_control',          label:'Dedetização',        desc:'Controle de pragas',         months:12, hasLastDone:false },
-  { id:'pintura',     icon:'format_paint',          label:'Renovar Pintura',    desc:'Paredes internas/externas',  months:0,  hasLastDone:false },
+  { id:'dedetizacao', icon:'pest_control',          label:'Dedetização',        desc:'Controle de pragas',         months:12, hasLastDone:true  },
+  { id:'pintura',     icon:'format_paint',          label:'Renovar Pintura',    desc:'Paredes internas/externas',  months:24, hasLastDone:true  },
   { id:'enxoval',     icon:'bed',                   label:'Trocar Enxoval',     desc:'Roupas de cama e banho',     months:0,  hasLastDone:false,
     subOptions:['Lençol de casal','Lençol de solteiro','Edredom / Cobertor','Toalha de banho','Toalha de rosto','Fronha'] },
   { id:'filtro',      icon:'water_drop',            label:'Filtro de Água',     desc:'Purificador / torneira',     months:6,  hasLastDone:true  },
-  { id:'chuveiro',    icon:'shower',                label:'Chuveiro Elétrico',  desc:'Revisão e resistência',      months:12, hasLastDone:false },
-  { id:'gas',         icon:'local_fire_department', label:'Gás de Cozinha',     desc:'Botijão e instalação',       months:0,  hasLastDone:false },
+  { id:'chuveiro',    icon:'shower',                label:'Chuveiro Elétrico',  desc:'Revisão e resistência',      months:12, hasLastDone:true  },
+  { id:'gas',         icon:'local_fire_department', label:'Gás de Cozinha',     desc:'Botijão e instalação',       months:12, hasLastDone:true  },
 ];
 
 function addMonths(date, n) {
