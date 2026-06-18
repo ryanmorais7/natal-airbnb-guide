@@ -130,14 +130,6 @@
 </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-text-dark dark:text-text-light transition-colors duration-300 font-sans min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-white scroll-smooth">
-<nav class="relative z-10 w-full p-6 flex justify-end items-center max-w-7xl mx-auto">
-<div class="flex items-center gap-1 bg-white shadow-lg rounded-full px-3 py-2 border border-primary/25 ring-1 ring-black/5" id="lang-picker">
-  <span class="material-icons-outlined text-primary mr-1" style="font-size:17px">language</span>
-  <button onclick="_setLang('pt')" data-lang="pt" class="lang-btn w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-150 hover:scale-110 hover:bg-primary/10" title="Português">🇧🇷</button>
-  <button onclick="_setLang('en')" data-lang="en" class="lang-btn w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-150 hover:scale-110 hover:bg-primary/10" title="English">🇺🇸</button>
-  <button onclick="_setLang('es')" data-lang="es" class="lang-btn w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-150 hover:scale-110 hover:bg-primary/10" title="Español">🇪🇸</button>
-</div>
-</nav>
 <main class="relative z-10 max-w-7xl mx-auto px-6 pb-20 pt-4">
 <header class="relative overflow-hidden -mx-6 md:-mx-8 lg:-mx-12" style="min-height:96vh">
 <div class="absolute inset-0">
@@ -153,6 +145,14 @@
 <!-- badge topo esquerdo -->
 <div class="absolute top-12 md:top-6 left-6 md:left-14 z-10">
 <span class="text-xs font-bold uppercase tracking-[0.35em] text-primary-light border border-primary-light/50 px-4 py-2 rounded-sm backdrop-blur-sm bg-black/20" data-i18n="badge.guest_guide">Guia do Hóspede</span>
+</div>
+
+<!-- seletor de idioma topo direito -->
+<div class="absolute top-12 md:top-6 right-6 md:right-14 z-10 flex items-center gap-1 bg-white/90 backdrop-blur-sm shadow-lg rounded-full px-3 py-2 border border-primary/25 ring-1 ring-black/5" id="lang-picker">
+  <span class="material-icons-outlined text-primary mr-1" style="font-size:17px">language</span>
+  <button onclick="_setLang('pt')" data-lang="pt" class="lang-btn w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-150 hover:scale-110 hover:bg-primary/10" title="Português">🇧🇷</button>
+  <button onclick="_setLang('en')" data-lang="en" class="lang-btn w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-150 hover:scale-110 hover:bg-primary/10" title="English">🇺🇸</button>
+  <button onclick="_setLang('es')" data-lang="es" class="lang-btn w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-150 hover:scale-110 hover:bg-primary/10" title="Español">🇪🇸</button>
 </div>
 
 <!-- conteúdo principal — embaixo-esquerda estilo Netflix -->
