@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Painel — Zamio Guias</title>
+<title>Painel — AirGuia</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -56,7 +56,7 @@ tailwind.config = {
     <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
       <span class="material-icons-outlined text-white" style="font-size:18px">cottage</span>
     </div>
-    <span class="font-bold text-gray-900 text-sm hidden sm:block">Zamio Guias</span>
+    <span class="font-bold text-gray-900 text-sm hidden sm:block">AirGuia</span>
     <span class="text-gray-300 hidden sm:block">·</span>
     <span id="header-prop" class="text-sm font-semibold text-gray-500 hidden sm:block">Carregando...</span>
   </div>
@@ -733,7 +733,7 @@ tailwind.config = {
           <div class="w-7 h-7 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
             <span class="material-icons-outlined text-white" style="font-size:15px">cottage</span>
           </div>
-          <span class="text-sm font-bold text-gray-700">Zamio Guias</span>
+          <span class="text-sm font-bold text-gray-700">AirGuia</span>
         </div>
         <button onclick="skipOnboarding()" class="text-xs text-gray-300 hover:text-gray-400 font-bold transition-colors">Pular configuração</button>
       </div>
@@ -1388,7 +1388,7 @@ function enviarWhatsapp() {
     msg += '9. Verifique almofadas, tapetes e janelas.\n';
     msg += '10. Deixe a propriedade arejada e organizada para o próximo hóspede.\n';
   }
-  msg += linha + '\n_Enviado pelo Zamio Guias_';
+  msg += linha + '\n_Enviado pelo AirGuia_';
   window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
 }
 
@@ -2489,7 +2489,7 @@ function gerarCartao() {
     + '<div class="wifi-row"><p class="wifi-lbl">Rede · Network<\/p><p class="wifi-val">' + (wifiName || '—') + '<\/p><\/div>'
     + '<div class="wifi-row"><p class="wifi-lbl">Senha · Password<\/p><p class="wifi-pass">' + (wifiPass || '—') + '<\/p><\/div>'
     + '<\/div>'
-    + '<p class="footer">Gerado por Zamio Guias<\/p>'
+    + '<p class="footer">Gerado por AirGuia<\/p>'
     + '<\/div><\/body><\/html>';
 
   const win = window.open('', '_blank', 'width=520,height=750');

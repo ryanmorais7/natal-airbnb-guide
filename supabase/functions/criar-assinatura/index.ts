@@ -44,7 +44,7 @@ serve(async (req) => {
 
     // Sem card_token_id + status "pending" => MP retorna init_point (checkout hospedado)
     const body: Record<string, unknown> = {
-      reason:             `Zamio Guias – Plano ${planKey} (${periodo})`,
+      reason:             `AirGuia – Plano ${planKey} (${periodo})`,
       external_reference: String(hostId),
       payer_email:        email,
       auto_recurring:     autoRecurring,
