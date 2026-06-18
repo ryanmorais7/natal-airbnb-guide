@@ -51,9 +51,13 @@ serve(async (req) => {
 
     const { data: host } = await sb
       .from("hosts")
-      .select("id, property_name")
+      .select("id, property_name, subscription_status, is_demo, is_admin")
       .eq("id", gt.host_id)
       .single();
+
+    if (host && host.subscription_status && host.subscription_status !== "authorized" && !host.is_demo && !host.is_admin) {
+      return json({ ok: false, error: "inactive" }, 403);
+    }
 
     const { data: media } = await sb
       .from("room_media")
@@ -64,7 +68,7 @@ serve(async (req) => {
     return json({
       ok:        true,
       content:   { ...(content ?? {}), room_media: media ?? [] },
-      host:      host    ?? {},
+      host:      { id: host?.id, property_name: host?.property_name },
       guestName: gt.guest_name ?? null,
     });
 

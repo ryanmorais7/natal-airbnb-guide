@@ -1060,6 +1060,10 @@ Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire�
                 if (icon)  icon.textContent  = 'event_busy';
                 if (title) title.textContent = 'Acesso expirado';
                 if (msg)   msg.textContent   = 'O link do guia expirou após o checkout. Obrigado pela visita e até a próxima!';
+            } else if (type === 'inactive') {
+                if (icon)  icon.textContent  = 'pause_circle';
+                if (title) title.textContent = 'Guia indisponível';
+                if (msg)   msg.textContent   = 'Este guia não está disponível no momento. Peça ao anfitrião para verificar o acesso.';
             } else {
                 if (icon)  icon.textContent  = 'link_off';
                 if (title) title.textContent = 'Link inválido';
@@ -1108,9 +1112,13 @@ Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire�
                 c    = data.content;
             } else if (OWNER_SLUG) {
                 // Acesso via slug (preview do anfitrião / demo)
-                var hostRes = await sb.from('hosts').select('id, property_name').eq('slug', OWNER_SLUG).single();
+                var hostRes = await sb.from('hosts').select('id, property_name, subscription_status, is_demo, is_admin').eq('slug', OWNER_SLUG).single();
                 if (!hostRes.data) { showAccessError('invalid'); return; }
                 host = hostRes.data;
+                if (host.subscription_status && host.subscription_status !== 'authorized' && !host.is_demo && !host.is_admin) {
+                    showAccessError('inactive');
+                    return;
+                }
 
                 var contentRes = await sb.from('guide_content')
                     .select('property_name, wifi_name, wifi_password, address, maps_url, maps_embed, theme_color, theme_color_light, checkin_time, checkout_time, lock_code, lock_code_valid_until, access_type, access_location, access_contact, access_instructions, welcome_message, hero_image_url, rules, restaurantes, mercados, farmacias, atividades, academias, lavanderias, emergencia, room_items')
