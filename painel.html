@@ -1953,9 +1953,15 @@ function renderRoomMedia(room) {
 function updateRoomMediaUsage() {
   const all = [...roomMediaData.bedroom, ...roomMediaData.kitchen, ...roomMediaData.bathroom, ...roomMediaData.entrada];
   const totalBytes = all.reduce((sum, i) => sum + (i.size_bytes || 0), 0);
-  const pct = Math.min(100, Math.round((totalBytes / ROOM_TOTAL_MAX) * 100));
+  const isAdmin = hostData.is_admin === true;
   const label = document.getElementById('room-media-usage-label');
   const bar = document.getElementById('room-media-usage-bar');
+  if (isAdmin) {
+    if (label) label.textContent = (totalBytes / 1024 / 1024).toFixed(1) + ' MB · armazenamento ilimitado';
+    if (bar) { bar.style.width = '100%'; bar.className = 'h-full rounded-full transition-all bg-primary'; }
+    return;
+  }
+  const pct = Math.min(100, Math.round((totalBytes / ROOM_TOTAL_MAX) * 100));
   if (label) label.textContent = (totalBytes / 1024 / 1024).toFixed(1) + ' MB / 35 MB';
   if (bar) {
     bar.style.width = pct + '%';
@@ -2006,13 +2012,14 @@ async function uploadRoomMedia(input, room, type) {
     statusEl.className = 'text-xs font-bold mt-1.5 ' + (ok ? 'text-green-600' : 'text-red-500');
     statusEl.classList.remove('hidden');
   };
+  const isAdmin = hostData.is_admin === true;
 
-  if (type === 'image' && (roomMediaData[room] || []).filter(i => i.type === 'image').length >= ROOM_MAX_PHOTOS) {
+  if (!isAdmin && type === 'image' && (roomMediaData[room] || []).filter(i => i.type === 'image').length >= ROOM_MAX_PHOTOS) {
     showStatus('⚠ Limite de 10 fotos atingido neste ambiente.', false);
     input.value = '';
     return;
   }
-  if (type === 'video' && (roomMediaData[room] || []).some(i => i.type === 'video')) {
+  if (!isAdmin && type === 'video' && (roomMediaData[room] || []).some(i => i.type === 'video')) {
     showStatus('⚠ Já existe 1 vídeo neste ambiente. Remova-o antes de enviar outro.', false);
     input.value = '';
     return;
@@ -2022,7 +2029,7 @@ async function uploadRoomMedia(input, room, type) {
     .reduce((sum, i) => sum + (i.size_bytes || 0), 0);
 
   let uploadFile = file;
-  if (type === 'image') {
+  if (type === 'image' && !isAdmin) {
     showStatus('Otimizando imagem...', true);
     try {
       uploadFile = await compressRoomImage(file, ROOM_PHOTO_MAX);
@@ -2036,7 +2043,7 @@ async function uploadRoomMedia(input, room, type) {
       input.value = '';
       return;
     }
-  } else {
+  } else if (type === 'video' && !isAdmin) {
     if (file.size > ROOM_VIDEO_MAX) {
       showStatus('⚠ Vídeo muito grande (máx 20MB).', false);
       input.value = '';
@@ -2044,7 +2051,7 @@ async function uploadRoomMedia(input, room, type) {
     }
   }
 
-  if (allBytes + uploadFile.size > ROOM_TOTAL_MAX) {
+  if (!isAdmin && allBytes + uploadFile.size > ROOM_TOTAL_MAX) {
     showStatus('⚠ Limite total de 35MB de armazenamento atingido.', false);
     input.value = '';
     return;
