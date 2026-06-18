@@ -1022,6 +1022,18 @@ async function init() {
   const subBlocked = subStatus && subStatus !== 'authorized' && !hostData.is_demo;
   if (subBlocked) {
     document.getElementById('sub-block-modal').classList.remove('hidden');
+    if (subStatus === 'pending') {
+      document.getElementById('sub-block-icon-wrap').className = 'w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4';
+      document.getElementById('sub-block-icon').className = 'material-icons-outlined text-primary';
+      document.getElementById('sub-block-icon').textContent = 'hourglass_top';
+      document.getElementById('sub-block-title').textContent = 'Confirmando pagamento';
+      document.getElementById('sub-block-text').textContent = 'Estamos aguardando a confirmação do Mercado Pago. Isso costuma levar só alguns instantes — assim que o pagamento for aprovado, o painel libera automaticamente.';
+      document.getElementById('sub-block-action').textContent = 'Atualizar';
+      document.getElementById('sub-block-action').removeAttribute('href');
+      document.getElementById('sub-block-action').classList.remove('bg-red-500', 'hover:bg-red-600', 'shadow-red-500/25');
+      document.getElementById('sub-block-action').classList.add('bg-primary', 'hover:bg-primary-light', 'shadow-primary/25');
+      document.getElementById('sub-block-action').onclick = () => location.reload();
+    }
   }
 
   document.getElementById('loading-state').style.display = 'none';
@@ -2633,12 +2645,12 @@ init();
 <!-- Modal: Assinatura inativa (bloqueante, sem fechar) -->
 <div id="sub-block-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[300] flex items-center justify-center p-4 hidden">
   <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
-    <div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-      <span class="material-icons-outlined text-red-500" style="font-size:30px">credit_card_off</span>
+    <div id="sub-block-icon-wrap" class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+      <span id="sub-block-icon" class="material-icons-outlined text-red-500" style="font-size:30px">credit_card_off</span>
     </div>
-    <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2">Acesso suspenso</h3>
-    <p class="text-sm text-gray-500 leading-relaxed mb-6">O pagamento da sua assinatura não foi aprovado. Reative agora para continuar usando o painel e manter o guia disponível para seus hóspedes.</p>
-    <a href="planos.html" class="block w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 rounded-xl transition-colors mb-3 text-sm shadow-lg shadow-red-500/25">
+    <h3 id="sub-block-title" class="font-serif text-2xl font-bold text-gray-900 mb-2">Acesso suspenso</h3>
+    <p id="sub-block-text" class="text-sm text-gray-500 leading-relaxed mb-6">O pagamento da sua assinatura não foi aprovado. Reative agora para continuar usando o painel e manter o guia disponível para seus hóspedes.</p>
+    <a id="sub-block-action" href="planos.html" class="block w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 rounded-xl transition-colors mb-3 text-sm shadow-lg shadow-red-500/25">
       Reativar assinatura →
     </a>
     <p class="text-xs text-gray-400">Dúvidas? Fale com o suporte.</p>

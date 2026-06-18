@@ -59,7 +59,7 @@ async function updateHostBySubscription(subscriptionId: string, status: string) 
   const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
   const upd: Record<string, unknown> = { subscription_status: status };
-  if (status === "cancelled" || status === "expired") upd.plan_active = false;
+  if (status === "cancelled" || status === "expired" || status === "paused") upd.plan_active = false;
   if (status === "authorized") upd.plan_active = true;
 
   await sb.from("hosts").update(upd).eq("subscription_id", subscriptionId);
