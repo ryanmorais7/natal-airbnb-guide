@@ -55,9 +55,15 @@ serve(async (req) => {
       .eq("id", gt.host_id)
       .single();
 
+    const { data: media } = await sb
+      .from("room_media")
+      .select("room, type, url, position")
+      .eq("host_id", gt.host_id)
+      .order("position", { ascending: true });
+
     return json({
       ok:        true,
-      content:   content ?? {},
+      content:   { ...(content ?? {}), room_media: media ?? [] },
       host:      host    ?? {},
       guestName: gt.guest_name ?? null,
     });

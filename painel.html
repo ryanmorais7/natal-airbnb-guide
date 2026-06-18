@@ -450,6 +450,18 @@ tailwind.config = {
     <div id="section-fotos" class="section-panel">
       <h2 class="font-serif text-2xl text-gray-900 mb-1">Itens por Ambiente</h2>
       <p class="text-sm text-gray-500 mb-4 sm:mb-6">Aparecem ao passar o mouse sobre as fotos do guia. Use Enter ou o botão + para adicionar.</p>
+
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 mb-4">
+        <div class="flex items-center justify-between text-xs font-bold text-gray-600 mb-1.5">
+          <span>Armazenamento usado</span>
+          <span id="room-media-usage-label">0 MB / 35 MB</span>
+        </div>
+        <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+          <div id="room-media-usage-bar" class="h-full bg-primary rounded-full transition-all" style="width:0%"></div>
+        </div>
+        <p class="text-xs text-gray-400 mt-1.5">Até 10 fotos (1,5MB cada) + 1 vídeo (até 20MB) por ambiente, no total da conta.</p>
+      </div>
+
       <div class="space-y-4">
 
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
@@ -464,6 +476,21 @@ tailwind.config = {
             <button onclick="addRoomItem('bedroom')" class="px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary-light transition-colors flex-shrink-0">
               <span class="material-icons-outlined" style="font-size:16px">add</span>
             </button>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-100">
+            <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Fotos e vídeo</span>
+            <div id="room-bedroom-media" class="grid grid-cols-4 sm:grid-cols-6 gap-2 mt-2 mb-2"></div>
+            <div class="flex gap-2">
+              <label class="flex-1 flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl py-2.5 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
+                <span class="material-icons-outlined" style="font-size:16px">add_photo_alternate</span>Foto
+                <input type="file" accept="image/*" class="hidden" onchange="uploadRoomMedia(this,'bedroom','image')"/>
+              </label>
+              <label class="flex-1 flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl py-2.5 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
+                <span class="material-icons-outlined" style="font-size:16px">videocam</span>Vídeo
+                <input type="file" accept="video/*" class="hidden" onchange="uploadRoomMedia(this,'bedroom','video')"/>
+              </label>
+            </div>
+            <p id="room-bedroom-media-status" class="text-xs font-bold hidden mt-1.5"></p>
           </div>
         </div>
 
@@ -480,6 +507,21 @@ tailwind.config = {
               <span class="material-icons-outlined" style="font-size:16px">add</span>
             </button>
           </div>
+          <div class="mt-3 pt-3 border-t border-gray-100">
+            <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Fotos e vídeo</span>
+            <div id="room-kitchen-media" class="grid grid-cols-4 sm:grid-cols-6 gap-2 mt-2 mb-2"></div>
+            <div class="flex gap-2">
+              <label class="flex-1 flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl py-2.5 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
+                <span class="material-icons-outlined" style="font-size:16px">add_photo_alternate</span>Foto
+                <input type="file" accept="image/*" class="hidden" onchange="uploadRoomMedia(this,'kitchen','image')"/>
+              </label>
+              <label class="flex-1 flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl py-2.5 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
+                <span class="material-icons-outlined" style="font-size:16px">videocam</span>Vídeo
+                <input type="file" accept="video/*" class="hidden" onchange="uploadRoomMedia(this,'kitchen','video')"/>
+              </label>
+            </div>
+            <p id="room-kitchen-media-status" class="text-xs font-bold hidden mt-1.5"></p>
+          </div>
         </div>
 
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
@@ -494,6 +536,21 @@ tailwind.config = {
             <button onclick="addRoomItem('bathroom')" class="px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary-light transition-colors flex-shrink-0">
               <span class="material-icons-outlined" style="font-size:16px">add</span>
             </button>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-100">
+            <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Fotos e vídeo</span>
+            <div id="room-bathroom-media" class="grid grid-cols-4 sm:grid-cols-6 gap-2 mt-2 mb-2"></div>
+            <div class="flex gap-2">
+              <label class="flex-1 flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl py-2.5 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
+                <span class="material-icons-outlined" style="font-size:16px">add_photo_alternate</span>Foto
+                <input type="file" accept="image/*" class="hidden" onchange="uploadRoomMedia(this,'bathroom','image')"/>
+              </label>
+              <label class="flex-1 flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl py-2.5 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
+                <span class="material-icons-outlined" style="font-size:16px">videocam</span>Vídeo
+                <input type="file" accept="video/*" class="hidden" onchange="uploadRoomMedia(this,'bathroom','video')"/>
+              </label>
+            </div>
+            <p id="room-bathroom-media-status" class="text-xs font-bold hidden mt-1.5"></p>
           </div>
         </div>
 
@@ -1010,6 +1067,7 @@ function populateForms() {
   LIST_KEYS.forEach(k => renderList(k));
   // Fotos / Ambientes
   loadRoomItems();
+  loadRoomMedia();
   // Header
   document.getElementById('header-prop').textContent = hostData.property_name || 'Minha Propriedade';
   updateVerGuiaLink();
@@ -1841,6 +1899,189 @@ function removeRoomItem(room, idx) {
 
 async function saveAmbientes() {
   await upsertContent({ room_items: roomItemsData, updated_at: new Date().toISOString() });
+}
+
+// ── Fotos / Vídeo por Ambiente (room_media + limite de 35MB) ──────────
+var ROOM_MEDIA_BUCKET = 'room-media';
+var ROOM_PHOTO_MAX  = 1.5 * 1024 * 1024;
+var ROOM_VIDEO_MAX  = 20  * 1024 * 1024;
+var ROOM_TOTAL_MAX  = 35  * 1024 * 1024;
+var ROOM_MAX_PHOTOS = 10;
+var roomMediaData = { bedroom: [], kitchen: [], bathroom: [] };
+
+async function loadRoomMedia() {
+  const { data, error } = await sb.from('room_media').select('*').eq('host_id', hostId).order('position', { ascending: true });
+  if (error) { console.error(error); return; }
+  roomMediaData = { bedroom: [], kitchen: [], bathroom: [] };
+  (data || []).forEach(item => { if (roomMediaData[item.room]) roomMediaData[item.room].push(item); });
+  ['bedroom', 'kitchen', 'bathroom'].forEach(renderRoomMedia);
+  updateRoomMediaUsage();
+}
+
+function renderRoomMedia(room) {
+  const el = document.getElementById('room-' + room + '-media');
+  if (!el) return;
+  const items = roomMediaData[room] || [];
+  el.innerHTML = items.map(item => `
+    <div class="relative group aspect-square rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
+      ${item.type === 'video'
+        ? `<video src="${item.url}" class="w-full h-full object-cover" muted></video><span class="material-icons-outlined absolute bottom-1 left-1 text-white" style="font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,.6)">play_circle</span>`
+        : `<img src="${item.url}" class="w-full h-full object-cover"/>`}
+      <button onclick="deleteRoomMedia('${item.id}')" class="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+        <span class="material-icons-outlined" style="font-size:12px">close</span>
+      </button>
+    </div>
+  `).join('');
+}
+
+function updateRoomMediaUsage() {
+  const all = [...roomMediaData.bedroom, ...roomMediaData.kitchen, ...roomMediaData.bathroom];
+  const totalBytes = all.reduce((sum, i) => sum + (i.size_bytes || 0), 0);
+  const pct = Math.min(100, Math.round((totalBytes / ROOM_TOTAL_MAX) * 100));
+  const label = document.getElementById('room-media-usage-label');
+  const bar = document.getElementById('room-media-usage-bar');
+  if (label) label.textContent = (totalBytes / 1024 / 1024).toFixed(1) + ' MB / 35 MB';
+  if (bar) {
+    bar.style.width = pct + '%';
+    bar.className = 'h-full rounded-full transition-all ' + (pct >= 95 ? 'bg-red-500' : pct >= 75 ? 'bg-amber-500' : 'bg-primary');
+  }
+}
+
+function compressRoomImage(file, maxBytes) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = e => { img.src = e.target.result; };
+    reader.onerror = () => reject(new Error('Falha ao ler arquivo.'));
+    img.onload = () => {
+      let width = img.width, height = img.height;
+      const MAX_DIM = 1600;
+      if (width > MAX_DIM || height > MAX_DIM) {
+        const scale = MAX_DIM / Math.max(width, height);
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      let quality = 0.85;
+      const tryCompress = () => {
+        canvas.toBlob(blob => {
+          if (!blob) { reject(new Error('Falha ao processar imagem.')); return; }
+          if (blob.size <= maxBytes || quality <= 0.4) resolve(blob);
+          else { quality -= 0.1; tryCompress(); }
+        }, 'image/jpeg', quality);
+      };
+      tryCompress();
+    };
+    img.onerror = () => reject(new Error('Arquivo de imagem inválido.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadRoomMedia(input, room, type) {
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('room-' + room + '-media-status');
+  const showStatus = (msg, ok) => {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.className = 'text-xs font-bold mt-1.5 ' + (ok ? 'text-green-600' : 'text-red-500');
+    statusEl.classList.remove('hidden');
+  };
+
+  if (type === 'image' && (roomMediaData[room] || []).filter(i => i.type === 'image').length >= ROOM_MAX_PHOTOS) {
+    showStatus('⚠ Limite de 10 fotos atingido neste ambiente.', false);
+    input.value = '';
+    return;
+  }
+  if (type === 'video' && (roomMediaData[room] || []).some(i => i.type === 'video')) {
+    showStatus('⚠ Já existe 1 vídeo neste ambiente. Remova-o antes de enviar outro.', false);
+    input.value = '';
+    return;
+  }
+
+  const allBytes = [...roomMediaData.bedroom, ...roomMediaData.kitchen, ...roomMediaData.bathroom]
+    .reduce((sum, i) => sum + (i.size_bytes || 0), 0);
+
+  let uploadFile = file;
+  if (type === 'image') {
+    showStatus('Otimizando imagem...', true);
+    try {
+      uploadFile = await compressRoomImage(file, ROOM_PHOTO_MAX);
+    } catch (e) {
+      showStatus('Erro ao processar imagem: ' + e.message, false);
+      input.value = '';
+      return;
+    }
+    if (uploadFile.size > ROOM_PHOTO_MAX) {
+      showStatus('⚠ Foto muito grande mesmo após compressão (máx 1,5MB).', false);
+      input.value = '';
+      return;
+    }
+  } else {
+    if (file.size > ROOM_VIDEO_MAX) {
+      showStatus('⚠ Vídeo muito grande (máx 20MB).', false);
+      input.value = '';
+      return;
+    }
+  }
+
+  if (allBytes + uploadFile.size > ROOM_TOTAL_MAX) {
+    showStatus('⚠ Limite total de 35MB de armazenamento atingido.', false);
+    input.value = '';
+    return;
+  }
+
+  showStatus('Enviando...', true);
+  const ext = type === 'image' ? 'jpg' : (file.name.split('.').pop() || 'mp4');
+  const path = `${hostId}/${room}/${Date.now()}.${ext}`;
+  const { error: upErr } = await sb.storage.from(ROOM_MEDIA_BUCKET).upload(path, uploadFile, { upsert: true });
+  if (upErr) {
+    showStatus('Erro no upload: ' + upErr.message, false);
+    input.value = '';
+    return;
+  }
+  const { data: pub } = sb.storage.from(ROOM_MEDIA_BUCKET).getPublicUrl(path);
+
+  const { data: row, error: insErr } = await sb.from('room_media').insert({
+    host_id: hostId,
+    room: room,
+    type: type,
+    storage_path: path,
+    url: pub.publicUrl,
+    size_bytes: uploadFile.size,
+    position: (roomMediaData[room] || []).length,
+  }).select().single();
+
+  if (insErr) {
+    await sb.storage.from(ROOM_MEDIA_BUCKET).remove([path]);
+    showStatus('⚠ ' + insErr.message, false);
+    input.value = '';
+    return;
+  }
+
+  roomMediaData[room].push(row);
+  renderRoomMedia(room);
+  updateRoomMediaUsage();
+  showStatus('✓ Enviado com sucesso!', true);
+  input.value = '';
+}
+
+async function deleteRoomMedia(id) {
+  let found = null, room = null;
+  for (const r of ['bedroom', 'kitchen', 'bathroom']) {
+    const idx = (roomMediaData[r] || []).findIndex(i => i.id === id);
+    if (idx !== -1) { found = roomMediaData[r][idx]; room = r; break; }
+  }
+  if (!found) return;
+  if (!confirm('Remover este item da galeria?')) return;
+  await sb.storage.from(ROOM_MEDIA_BUCKET).remove([found.storage_path]);
+  await sb.from('room_media').delete().eq('id', id);
+  roomMediaData[room] = roomMediaData[room].filter(i => i.id !== id);
+  renderRoomMedia(room);
+  updateRoomMediaUsage();
 }
 
 // ── Save: Wi-Fi ───────────────────────────────────────────────────────
