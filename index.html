@@ -1046,7 +1046,7 @@ Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire�
     (function() {
         var _params    = new URLSearchParams(location.search);
         var TOKEN      = _params.get('t');
-        var OWNER_SLUG = _params.get('h') || 'zamio';
+        var OWNER_SLUG = _params.get('h') || null;
 
         var SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
         var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
@@ -1106,22 +1106,26 @@ Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire�
                 if (!data.ok) { showAccessError(data.error || 'invalid'); return; }
                 host = data.host;
                 c    = data.content;
-            } else {
+            } else if (OWNER_SLUG) {
                 // Acesso via slug (preview do anfitrião / demo)
                 var hostRes = await sb.from('hosts').select('id, property_name').eq('slug', OWNER_SLUG).single();
-                if (!hostRes.data) return;
+                if (!hostRes.data) { showAccessError('invalid'); return; }
                 host = hostRes.data;
 
                 var contentRes = await sb.from('guide_content')
                     .select('property_name, wifi_name, wifi_password, address, maps_url, maps_embed, theme_color, theme_color_light, checkin_time, checkout_time, lock_code, lock_code_valid_until, access_type, access_location, access_contact, access_instructions, welcome_message, hero_image_url, rules, restaurantes, mercados, farmacias, atividades, academias, lavanderias, emergencia, room_items')
                     .eq('host_id', host.id).single();
-                if (!contentRes.data) return;
+                if (!contentRes.data) { showAccessError('invalid'); return; }
                 c = contentRes.data;
 
                 var mediaRes = await sb.from('room_media')
                     .select('room, type, url, position')
                     .eq('host_id', host.id).order('position', { ascending: true });
                 c.room_media = mediaRes.data || [];
+            } else {
+                // Sem token e sem slug — nada a exibir
+                showAccessError('invalid');
+                return;
             }
 
             function _esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
