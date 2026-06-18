@@ -882,28 +882,40 @@ Tudo que voc√™ precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire√
             },
         ];
 
+        const albumIntervals = {};
+
         function renderAlbum(group) {
             const container = document.getElementById(`album-${group.key}`);
             if (!container) {
                 return;
             }
 
-            container.innerHTML = group.slides.map((slide, index) => `
-                <figure class="album-slide absolute inset-0 ${index === 0 ? 'is-active' : ''}">
-                    <img
+            container.innerHTML = group.slides.map((slide, index) => {
+                const media = slide.type === 'video'
+                    ? `<video src="${slide.src}" class="hero-zoom w-full h-full object-cover object-center brightness-110 saturate-105" autoplay muted loop playsinline></video>`
+                    : `<img
                         src="${slide.src}"
                         alt="${group.key} do Zamio"
                         class="hero-zoom w-full h-full object-cover object-center brightness-110 saturate-105"
                         loading="${index === 0 ? 'eager' : 'lazy'}"
-                    />
+                    />`;
+                return `
+                <figure class="album-slide absolute inset-0 ${index === 0 ? 'is-active' : ''}">
+                    ${media}
                     <div class="absolute inset-0 bg-gradient-to-r from-[#132015]/65 via-[#132015]/20 to-[#132015]/5"></div>
                     <div class="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#132015]/70 to-transparent"></div>
                 </figure>
-            `).join('');
+            `;
+            }).join('');
+
+            if (albumIntervals[group.key]) {
+                clearInterval(albumIntervals[group.key]);
+                delete albumIntervals[group.key];
+            }
 
             let current = 0;
             if (group.slides.length > 1) {
-                setInterval(() => {
+                albumIntervals[group.key] = setInterval(() => {
                     const slides = Array.from(container.querySelectorAll('.album-slide'));
                     if (!slides.length) {
                         return;
@@ -918,6 +930,20 @@ Tudo que voc√™ precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire√
         }
 
         albumGroups.forEach(renderAlbum);
+
+        function applyRoomMedia(mediaList) {
+            if (!mediaList || !mediaList.length) return;
+            const byRoom = { bedroom: [], kitchen: [], bathroom: [] };
+            mediaList.forEach((m) => { if (byRoom[m.room]) byRoom[m.room].push(m); });
+            albumGroups.forEach((group) => {
+                const media = byRoom[group.key];
+                if (!media || !media.length) return;
+                media.sort((a, b) => (a.position || 0) - (b.position || 0));
+                group.slides = media.map((m) => ({ src: m.url, type: m.type === 'video' ? 'video' : 'image' }));
+                renderAlbum(group);
+            });
+        }
+        window.applyRoomMedia = applyRoomMedia;
 
         // Video placeholder logic
         const vid = document.getElementById('video-acesso');
@@ -1070,6 +1096,11 @@ Tudo que voc√™ precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire√
                     .eq('host_id', host.id).single();
                 if (!contentRes.data) return;
                 c = contentRes.data;
+
+                var mediaRes = await sb.from('room_media')
+                    .select('room, type, url, position')
+                    .eq('host_id', host.id).order('position', { ascending: true });
+                c.room_media = mediaRes.data || [];
             }
 
             function _esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -1153,6 +1184,9 @@ Tudo que voc√™ precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire√
                     article.addEventListener('click', function() { overlay.style.opacity === '1' ? _hideOverlay() : _showOverlay(); });
                 });
             }
+
+            // Galeria din√¢mica: substitui fotos fixas pelas enviadas pelo anfitri√£o, quando existirem
+            applyRoomMedia(c.room_media);
 
             // Aplica tema sempre, com fallback para oliva padr√£o
             var r = document.documentElement;
