@@ -1132,13 +1132,17 @@ Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire�
                     if (!slotEl) return;
                     var article = slotEl.closest('article');
                     if (!article) return;
+                    var MAX_VISIBLE_ITEMS = 6;
+                    var visibleItems = items.length > MAX_VISIBLE_ITEMS ? items.slice(0, MAX_VISIBLE_ITEMS - 1) : items;
+                    var extraCount    = items.length > MAX_VISIBLE_ITEMS ? items.length - visibleItems.length : 0;
                     var overlay = document.createElement('div');
-                    overlay.style.cssText = 'position:absolute;left:0;right:0;bottom:0;z-index:20;padding:1.25rem;border-radius:0 0 2rem 2rem;background:rgba(0,0,0,0.75);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;transform:translateY(10px);transition:opacity 0.25s ease,transform 0.25s ease;pointer-events:none;';
-                    overlay.innerHTML = '<p style="font-size:10px;text-transform:uppercase;letter-spacing:0.35em;color:rgba(255,255,255,0.5);margin:0 0 10px" data-i18n="photos.items_label">Itens disponíveis<\/p>'
-                        + '<ul style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin:0;padding:0;list-style:none">'
-                        + items.map(function(item) {
-                            return '<li style="color:rgba(255,255,255,0.85);font-size:12px;display:flex;align-items:center;gap:4px"><span class="material-icons-outlined" style="font-size:11px;color:var(--pl,#6B8E61)">check_circle<\/span>' + _esc(item) + '<\/li>';
+                    overlay.style.cssText = 'position:absolute;left:0;right:0;bottom:0;z-index:20;padding:1.75rem 1.1rem 0.9rem;border-radius:0 0 2rem 2rem;background:linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.38) 60%, rgba(0,0,0,0) 100%);opacity:0;transform:translateY(8px);transition:opacity 0.25s ease,transform 0.25s ease;pointer-events:none;';
+                    overlay.innerHTML = '<p style="font-size:9px;text-transform:uppercase;letter-spacing:0.3em;color:rgba(255,255,255,0.55);margin:0 0 6px" data-i18n="photos.items_label">Itens disponíveis<\/p>'
+                        + '<ul style="display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin:0;padding:0;list-style:none">'
+                        + visibleItems.map(function(item) {
+                            return '<li style="color:rgba(255,255,255,0.9);font-size:11px;display:flex;align-items:center;gap:4px;text-shadow:0 1px 2px rgba(0,0,0,0.4)"><span class="material-icons-outlined" style="font-size:10px;color:var(--pl,#6B8E61)">check_circle<\/span>' + _esc(item) + '<\/li>';
                           }).join('')
+                        + (extraCount > 0 ? '<li style="color:rgba(255,255,255,0.65);font-size:11px;font-weight:700">+' + extraCount + (extraCount === 1 ? ' item' : ' itens') + '<\/li>' : '')
                         + '<\/ul>';
                     article.appendChild(overlay);
                     article.style.cursor = 'pointer';
