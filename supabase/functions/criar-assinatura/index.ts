@@ -17,10 +17,10 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   try {
-    const { cardToken, email, cpf, planoId, planoPeriodo, withTrial = true } = await req.json();
+    const { email, planoId, planoPeriodo, withTrial = true, hostId } = await req.json();
 
-    if (!cardToken) return json({ ok: false, message: "Token do cartão inválido." }, 400);
-    if (!email)     return json({ ok: false, message: "E-mail obrigatório." }, 400);
+    if (!email)  return json({ ok: false, message: "E-mail obrigatório." }, 400);
+    if (!hostId) return json({ ok: false, message: "Conta não encontrada." }, 400);
 
     const periodo  = planoPeriodo === "anual" ? "anual" : "mensal";
     const planKey  = (planoId ?? "individual") as string;
@@ -42,18 +42,15 @@ serve(async (req) => {
       autoRecurring.free_trial = { frequency: 7, frequency_type: "days" };
     }
 
+    // Sem card_token_id + status "pending" => MP retorna init_point (checkout hospedado)
     const body: Record<string, unknown> = {
-      reason:        `Zamio Guias – Plano ${planKey} (${periodo})`,
-      payer_email:   email,
-      card_token_id: cardToken,
-      auto_recurring: autoRecurring,
-      back_url: "https://guiazamio.vercel.app/painel.html",
-      status:   "authorized",
+      reason:             `Zamio Guias – Plano ${planKey} (${periodo})`,
+      external_reference: String(hostId),
+      payer_email:        email,
+      auto_recurring:     autoRecurring,
+      back_url:           "https://guiazamio.vercel.app/painel.html",
+      status:             "pending",
     };
-
-    if (cpf) {
-      body.payer = { identification: { type: "CPF", number: cpf } };
-    }
 
     const res = await fetch("https://api.mercadopago.com/preapproval", {
       method: "POST",
@@ -67,12 +64,18 @@ serve(async (req) => {
 
     const sub = await res.json();
 
-    if (sub.status === "authorized") {
-      return json({ ok: true, subscriptionId: String(sub.id), trialEndsAt, withTrial });
+    if (res.ok && sub.id && sub.init_point) {
+      return json({
+        ok:             true,
+        subscriptionId: String(sub.id),
+        initPoint:      sub.init_point,
+        trialEndsAt,
+        withTrial,
+      });
     }
 
-    const msg = sub.message ?? "Não foi possível criar a assinatura. Verifique os dados do cartão.";
-    return json({ ok: false, message: msg, detail: sub.status }, 402);
+    const msg = sub.message ?? "Não foi possível iniciar o pagamento. Tente novamente.";
+    return json({ ok: false, message: msg }, 402);
 
   } catch (err) {
     return json({ ok: false, message: "Erro interno: " + (err as Error).message }, 500);
