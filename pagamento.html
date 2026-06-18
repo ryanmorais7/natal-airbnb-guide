@@ -22,6 +22,8 @@ tailwind.config = {
 body { font-family: 'Nunito Sans', sans-serif; }
 @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
 .spin { animation: spin .8s linear infinite; display:inline-block; }
+@keyframes progress-slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(340%); } }
+.progress-bar { animation: progress-slide 1.1s cubic-bezier(.4,0,.2,1) infinite; }
 </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-stone-100 to-stone-50 flex flex-col items-center justify-center p-4 py-10">
@@ -103,7 +105,7 @@ body { font-family: 'Nunito Sans', sans-serif; }
     </div>
 
     <p class="text-sm text-gray-500 leading-relaxed">
-      Você será redirecionado para o ambiente seguro do Mercado Pago para informar os dados do cartão e confirmar a assinatura. Nenhum dado de pagamento é coletado pelo Zamio Guias.
+      Você será redirecionado para o ambiente seguro do Mercado Pago para informar os dados do cartão e confirmar a assinatura. Nenhum dado de pagamento é coletado pelo AirGuia.
     </p>
 
     <button id="btn-pagar" onclick="continuar()"
@@ -131,11 +133,18 @@ body { font-family: 'Nunito Sans', sans-serif; }
 <!-- Overlay de redirecionamento -->
 <div id="overlay-redirect" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
   <div class="bg-white rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl">
-    <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-      <span class="material-icons-outlined text-primary spin" style="font-size:32px">refresh</span>
+    <div class="relative w-16 h-16 mx-auto mb-5">
+      <div class="absolute inset-0 rounded-full border-4 border-primary/15"></div>
+      <div class="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+      <div class="absolute inset-0 flex items-center justify-center">
+        <span class="material-icons-outlined text-primary" style="font-size:22px">lock</span>
+      </div>
     </div>
-    <h2 class="font-serif text-2xl text-gray-900 mb-2">Quase lá!</h2>
-    <p class="text-sm text-gray-500">Te enviando para o ambiente seguro do Mercado Pago...</p>
+    <h2 class="font-serif text-2xl text-gray-900 mb-2">Quase lá</h2>
+    <p class="text-sm text-gray-500 mb-5 leading-relaxed">Redirecionando você com segurança para concluir o pagamento no Mercado Pago.</p>
+    <div class="h-1 w-full bg-gray-100 rounded-full overflow-hidden">
+      <div class="h-full w-1/3 bg-primary rounded-full progress-bar"></div>
+    </div>
   </div>
 </div>
 

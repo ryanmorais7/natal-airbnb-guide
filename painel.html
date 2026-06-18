@@ -480,14 +480,10 @@ tailwind.config = {
           <div class="mt-3 pt-3 border-t border-gray-100">
             <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Fotos e vídeo</span>
             <div id="room-bedroom-media" class="grid grid-cols-4 sm:grid-cols-6 gap-2 mt-2 mb-2"></div>
-            <div class="flex gap-2">
-              <label class="flex-1 flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl py-2.5 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
+            <div class="flex">
+              <label class="inline-flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl px-4 py-2 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
                 <span class="material-icons-outlined" style="font-size:16px">add_photo_alternate</span>Foto
                 <input type="file" accept="image/*" class="hidden" onchange="uploadRoomMedia(this,'bedroom','image')"/>
-              </label>
-              <label class="flex-1 flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl py-2.5 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
-                <span class="material-icons-outlined" style="font-size:16px">videocam</span>Vídeo
-                <input type="file" accept="video/*" class="hidden" onchange="uploadRoomMedia(this,'bedroom','video')"/>
               </label>
             </div>
             <p id="room-bedroom-media-status" class="text-xs font-bold hidden mt-1.5"></p>
@@ -510,14 +506,10 @@ tailwind.config = {
           <div class="mt-3 pt-3 border-t border-gray-100">
             <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Fotos e vídeo</span>
             <div id="room-kitchen-media" class="grid grid-cols-4 sm:grid-cols-6 gap-2 mt-2 mb-2"></div>
-            <div class="flex gap-2">
-              <label class="flex-1 flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl py-2.5 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
+            <div class="flex">
+              <label class="inline-flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl px-4 py-2 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
                 <span class="material-icons-outlined" style="font-size:16px">add_photo_alternate</span>Foto
                 <input type="file" accept="image/*" class="hidden" onchange="uploadRoomMedia(this,'kitchen','image')"/>
-              </label>
-              <label class="flex-1 flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl py-2.5 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
-                <span class="material-icons-outlined" style="font-size:16px">videocam</span>Vídeo
-                <input type="file" accept="video/*" class="hidden" onchange="uploadRoomMedia(this,'kitchen','video')"/>
               </label>
             </div>
             <p id="room-kitchen-media-status" class="text-xs font-bold hidden mt-1.5"></p>
@@ -540,18 +532,30 @@ tailwind.config = {
           <div class="mt-3 pt-3 border-t border-gray-100">
             <span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Fotos e vídeo</span>
             <div id="room-bathroom-media" class="grid grid-cols-4 sm:grid-cols-6 gap-2 mt-2 mb-2"></div>
-            <div class="flex gap-2">
-              <label class="flex-1 flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl py-2.5 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
+            <div class="flex">
+              <label class="inline-flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl px-4 py-2 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
                 <span class="material-icons-outlined" style="font-size:16px">add_photo_alternate</span>Foto
                 <input type="file" accept="image/*" class="hidden" onchange="uploadRoomMedia(this,'bathroom','image')"/>
-              </label>
-              <label class="flex-1 flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl py-2.5 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
-                <span class="material-icons-outlined" style="font-size:16px">videocam</span>Vídeo
-                <input type="file" accept="video/*" class="hidden" onchange="uploadRoomMedia(this,'bathroom','video')"/>
               </label>
             </div>
             <p id="room-bathroom-media-status" class="text-xs font-bold hidden mt-1.5"></p>
           </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="material-icons-outlined text-primary text-xl">videocam</span>
+            <h3 class="font-bold text-gray-800 text-sm">Vídeo de entrada</h3>
+          </div>
+          <p class="text-xs text-gray-400 mb-3">Este vídeo substitui a seção "Como entrar na casa" exibida para o hóspede no guia.</p>
+          <div id="room-entrada-media" class="grid grid-cols-4 sm:grid-cols-6 gap-2 mb-2"></div>
+          <div class="flex">
+            <label class="inline-flex items-center justify-center gap-1.5 border-2 border-dashed border-primary/30 rounded-xl px-4 py-2 cursor-pointer hover:bg-primary/5 transition-colors text-xs font-bold text-primary/70">
+              <span class="material-icons-outlined" style="font-size:16px">videocam</span>Vídeo de entrada
+              <input type="file" accept="video/*" class="hidden" onchange="uploadRoomMedia(this,'entrada','video')"/>
+            </label>
+          </div>
+          <p id="room-entrada-media-status" class="text-xs font-bold hidden mt-1.5"></p>
         </div>
 
         <div class="pt-1">
@@ -1019,7 +1023,7 @@ async function init() {
   }
 
   const subStatus = hostData.subscription_status;
-  const subBlocked = subStatus && subStatus !== 'authorized' && !hostData.is_demo;
+  const subBlocked = subStatus && subStatus !== 'authorized' && !hostData.is_demo && !hostData.is_admin;
   if (subBlocked) {
     document.getElementById('sub-block-modal').classList.remove('hidden');
     if (subStatus === 'pending') {
@@ -1919,14 +1923,14 @@ var ROOM_PHOTO_MAX  = 1.5 * 1024 * 1024;
 var ROOM_VIDEO_MAX  = 20  * 1024 * 1024;
 var ROOM_TOTAL_MAX  = 35  * 1024 * 1024;
 var ROOM_MAX_PHOTOS = 10;
-var roomMediaData = { bedroom: [], kitchen: [], bathroom: [] };
+var roomMediaData = { bedroom: [], kitchen: [], bathroom: [], entrada: [] };
 
 async function loadRoomMedia() {
   const { data, error } = await sb.from('room_media').select('*').eq('host_id', hostId).order('position', { ascending: true });
   if (error) { console.error(error); return; }
-  roomMediaData = { bedroom: [], kitchen: [], bathroom: [] };
+  roomMediaData = { bedroom: [], kitchen: [], bathroom: [], entrada: [] };
   (data || []).forEach(item => { if (roomMediaData[item.room]) roomMediaData[item.room].push(item); });
-  ['bedroom', 'kitchen', 'bathroom'].forEach(renderRoomMedia);
+  ['bedroom', 'kitchen', 'bathroom', 'entrada'].forEach(renderRoomMedia);
   updateRoomMediaUsage();
 }
 
@@ -1947,7 +1951,7 @@ function renderRoomMedia(room) {
 }
 
 function updateRoomMediaUsage() {
-  const all = [...roomMediaData.bedroom, ...roomMediaData.kitchen, ...roomMediaData.bathroom];
+  const all = [...roomMediaData.bedroom, ...roomMediaData.kitchen, ...roomMediaData.bathroom, ...roomMediaData.entrada];
   const totalBytes = all.reduce((sum, i) => sum + (i.size_bytes || 0), 0);
   const pct = Math.min(100, Math.round((totalBytes / ROOM_TOTAL_MAX) * 100));
   const label = document.getElementById('room-media-usage-label');
@@ -2014,7 +2018,7 @@ async function uploadRoomMedia(input, room, type) {
     return;
   }
 
-  const allBytes = [...roomMediaData.bedroom, ...roomMediaData.kitchen, ...roomMediaData.bathroom]
+  const allBytes = [...roomMediaData.bedroom, ...roomMediaData.kitchen, ...roomMediaData.bathroom, ...roomMediaData.entrada]
     .reduce((sum, i) => sum + (i.size_bytes || 0), 0);
 
   let uploadFile = file;
@@ -2083,7 +2087,7 @@ async function uploadRoomMedia(input, room, type) {
 
 async function deleteRoomMedia(id) {
   let found = null, room = null;
-  for (const r of ['bedroom', 'kitchen', 'bathroom']) {
+  for (const r of ['bedroom', 'kitchen', 'bathroom', 'entrada']) {
     const idx = (roomMediaData[r] || []).findIndex(i => i.id === id);
     if (idx !== -1) { found = roomMediaData[r][idx]; room = r; break; }
   }

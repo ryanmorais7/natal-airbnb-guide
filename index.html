@@ -241,6 +241,8 @@ Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire�
 <!-- VÍDEO: substitua o src pelo link de embed do YouTube -->
 <!-- Exemplo: src="https://www.youtube.com/embed/SEU_VIDEO_ID" -->
 <iframe id="video-acesso" src="" title="Como entrar na casa" class="w-full absolute inset-0" style="min-height: 340px; border: 0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<!-- Vídeo enviado pelo anfitrião pelo painel (substitui o placeholder/iframe quando existir) -->
+<video id="video-acesso-upload" class="hidden w-full h-full absolute inset-0 object-cover" style="min-height: 340px;" controls playsinline></video>
 </div>
 </section>
 <section class="mt-16 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -932,6 +934,18 @@ Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire�
         albumGroups.forEach(renderAlbum);
 
         function applyRoomMedia(mediaList) {
+            const entradaVideo = (mediaList || []).find((m) => m.room === 'entrada' && m.type === 'video');
+            if (entradaVideo) {
+                const vidUpload = document.getElementById('video-acesso-upload');
+                const vidIframe = document.getElementById('video-acesso');
+                const vidPlaceholder = document.getElementById('video-placeholder');
+                if (vidUpload) {
+                    vidUpload.src = entradaVideo.url;
+                    vidUpload.classList.remove('hidden');
+                }
+                if (vidIframe) vidIframe.style.display = 'none';
+                if (vidPlaceholder) vidPlaceholder.style.display = 'none';
+            }
             if (!mediaList || !mediaList.length) return;
             const byRoom = { bedroom: [], kitchen: [], bathroom: [] };
             mediaList.forEach((m) => { if (byRoom[m.room]) byRoom[m.room].push(m); });
