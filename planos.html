@@ -106,8 +106,6 @@ async function initPlanos() {
   renderPlanos();
 }
 
-initPlanos();
-
 // ═══════════════════════════════════════════════════
 // EDITE OS PLANOS AQUI
 // ═══════════════════════════════════════════════════
@@ -217,6 +215,8 @@ function escolher(id, nome, preco) {
   sessionStorage.setItem('zreg_plano_periodo', periodo);
   setTimeout(() => location.href = 'pagamento.html', 150);
 }
+
+initPlanos();
 </script>
 </body>
 </html>
