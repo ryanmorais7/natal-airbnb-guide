@@ -957,10 +957,11 @@ async function gerarToken() {
   const expiresIso = new Date(expiresAt).toISOString();
   const { error } = await sb.from('guest_tokens').insert({
     host_id:    hostId,
+    token:      crypto.randomUUID(),
     guest_name: guestName || null,
     expires_at: expiresIso,
   });
-  if (error) { showToast('Erro ao gerar link'); return; }
+  if (error) { console.error('Erro ao gerar link:', error); showToast(error.message || 'Erro ao gerar link'); return; }
   document.getElementById('res-guest-name').value  = '';
   document.getElementById('res-expires-at').value  = '';
   showToast('Link gerado!');
