@@ -126,13 +126,10 @@ tailwind.config = {
       <span class="material-icons-outlined">cleaning_services</span>Limpeza
     </button>
     <button class="nav-item" onclick="showSection('propriedade')">
-      <span class="material-icons-outlined">home</span>Propriedade
+      <span class="material-icons-outlined">home</span>Localização
     </button>
     <button class="nav-item" onclick="showSection('hero')">
-      <span class="material-icons-outlined">image</span>Apresentação
-    </button>
-    <button class="nav-item" onclick="showSection('fotos')">
-      <span class="material-icons-outlined">photo_library</span>Fotos
+      <span class="material-icons-outlined">image</span>Personalização
     </button>
     <button class="nav-item" onclick="showSection('wifi')">
       <span class="material-icons-outlined">wifi</span>Wi-Fi
@@ -173,8 +170,8 @@ tailwind.config = {
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('geral')"><span class="material-icons-outlined">tune</span><span class="hidden sm:inline">Geral</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('reservas')"><span class="material-icons-outlined">vpn_key</span><span class="hidden sm:inline">Reservas</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('limpeza')"><span class="material-icons-outlined">cleaning_services</span><span class="hidden sm:inline">Limpeza</span></button>
-    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('propriedade')"><span class="material-icons-outlined">home</span><span class="hidden sm:inline">Propriedade</span></button>
-    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('hero')"><span class="material-icons-outlined">image</span><span class="hidden sm:inline">Apresentação</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('propriedade')"><span class="material-icons-outlined">home</span><span class="hidden sm:inline">Localização</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('hero')"><span class="material-icons-outlined">image</span><span class="hidden sm:inline">Personalização</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('wifi')"><span class="material-icons-outlined">wifi</span><span class="hidden sm:inline">Wi-Fi</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('restaurantes')"><span class="material-icons-outlined">restaurant</span><span class="hidden sm:inline">Restaurantes</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('mercados')"><span class="material-icons-outlined">shopping_cart</span><span class="hidden sm:inline">Mercados</span></button>
@@ -369,7 +366,7 @@ tailwind.config = {
 
     <!-- === PROPRIEDADE === -->
     <div id="section-propriedade" class="section-panel">
-      <h2 class="font-serif text-2xl text-gray-900 mb-1">Informações da Propriedade</h2>
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Localização</h2>
       <p class="text-sm text-gray-500 mb-4 sm:mb-6">Endereço, horários e acesso.</p>
       <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-5">
         <div>
@@ -414,10 +411,10 @@ tailwind.config = {
       </div>
     </div>
 
-    <!-- === HERO / APRESENTAÇÃO === -->
+    <!-- === HERO / PERSONALIZAÇÃO === -->
     <div id="section-hero" class="section-panel">
-      <h2 class="font-serif text-2xl text-gray-900 mb-1">Apresentação</h2>
-      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Foto principal e mensagem de boas-vindas do guia.</p>
+      <h2 class="font-serif text-2xl text-gray-900 mb-1">Personalização</h2>
+      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Foto principal, mensagem de boas-vindas e itens por ambiente.</p>
       <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-5">
         <div>
           <label class="field-label">Foto Principal</label>
@@ -444,12 +441,11 @@ tailwind.config = {
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- === FOTOS / AMBIENTES === -->
-    <div id="section-fotos" class="section-panel">
-      <h2 class="font-serif text-2xl text-gray-900 mb-1">Itens por Ambiente</h2>
-      <p class="text-sm text-gray-500 mb-4 sm:mb-6">Aparecem ao passar o mouse sobre as fotos do guia. Use Enter ou o botão + para adicionar.</p>
+      <!-- === ITENS POR AMBIENTE === -->
+      <div class="mt-6">
+      <h3 class="font-bold text-gray-800 text-sm uppercase tracking-wide mb-2">Itens por Ambiente</h3>
+      <p class="text-xs text-gray-400 mb-4">Aparecem ao passar o mouse sobre as fotos do guia. Use Enter ou o botão + para adicionar.</p>
 
       <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 mb-4">
         <div class="flex items-center justify-between text-xs font-bold text-gray-600 mb-1.5">
@@ -563,6 +559,7 @@ tailwind.config = {
             <span class="material-icons-outlined" style="font-size:16px">save</span>Salvar
           </button>
         </div>
+      </div>
       </div>
     </div>
 
