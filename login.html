@@ -74,11 +74,11 @@ tailwind.config = {
       <span class="text-xs text-gray-400 font-medium">ou</span>
       <div class="flex-1 h-px bg-gray-200"></div>
     </div>
-    <a href="index.html?h=demo" target="_blank"
+    <button id="btn-demo" type="button" onclick="entrarDemo()"
       class="flex items-center justify-center gap-2 w-full py-3 rounded-xl border-2 border-primary/20 text-primary font-bold text-sm hover:bg-primary/5 transition-all">
       <span class="material-icons-outlined text-base">visibility</span>
       Ver demo do guia
-    </a>
+    </button>
     <p class="text-center text-xs text-gray-400 mt-2">Veja como o hóspede enxerga o guia</p>
   </div>
 
@@ -119,6 +119,125 @@ async function doLogin() {
   } else {
     location.href = 'painel.html';
   }
+}
+
+const DEMO_EMAIL    = 'demo@airguia.com';
+const DEMO_PASSWORD = 'AirGuiaDemo#2026';
+
+async function entrarDemo() {
+  const btn = document.getElementById('btn-demo');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-icons-outlined text-base spin">refresh</span> Carregando demo...';
+
+  let { error } = await sb.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
+
+  if (error) {
+    // Conta demo ainda não existe nesse projeto -- cria na primeira vez que alguém clicar
+    const { data: signupData, error: signupError } = await sb.auth.signUp({
+      email: DEMO_EMAIL, password: DEMO_PASSWORD
+    });
+    if (signupError || !signupData.user) {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-icons-outlined text-base">visibility</span> Ver demo do guia';
+      showError('Não foi possível abrir a demo agora. Tente novamente em instantes.');
+      return;
+    }
+    await seedDemoAccount(signupData.user.id);
+
+    let { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      const retry = await sb.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
+      if (retry.error) {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-icons-outlined text-base">visibility</span> Ver demo do guia';
+        showError('Não foi possível abrir a demo agora. Tente novamente em instantes.');
+        return;
+      }
+    }
+  }
+
+  location.href = 'painel.html';
+}
+
+async function seedDemoAccount(userId) {
+  await sb.from('hosts').update({
+    is_demo:       true,
+    property_name: 'Casa Vista Mar — Demo',
+    owner_name:    'Anfitrião Demo',
+    slug:          'demo'
+  }).eq('id', userId);
+
+  await sb.from('guide_content').upsert({
+    host_id:             userId,
+    property_name:       'Casa Vista Mar — Demo',
+    welcome_message:     'Seja muito bem-vindo(a) à Casa Vista Mar! Preparamos este guia com tudo que você precisa para uma estadia tranquila.',
+    address:              'Rua das Dunas, 120 — Ponta Negra, Natal/RN',
+    maps_url:              'https://maps.google.com/?q=Ponta+Negra+Natal',
+    checkin_time:          '14:00',
+    checkout_time:         '11:00',
+    hero_image_url:        'assets/Zamiofotoprincipal.png',
+    wifi_name:             'VistaMar_5G',
+    wifi_password:         'praia2026',
+    theme_id:              'oceano',
+    theme_color:           '#3D6680',
+    theme_color_light:     '#5C8AA3',
+    access_type:           'fechadura',
+    lock_code:             '4821',
+    access_instructions:   '1. Aproxime o cartão da fechadura\n2. Aguarde o beep verde\n3. Gire a maçaneta para entrar',
+    rules:                 'Check-in a partir das 14h e check-out até as 11h.\nProibido fumar dentro do imóvel.\nMáximo de 4 hóspedes.\nSilêncio após as 22h.\nNão são permitidos animais de estimação.',
+    restaurantes: [
+      { name: 'Camarões Poty',  description: 'Frutos do mar tradicionais à beira-mar', time: '8 min',  category: 'Frutos do Mar', maps_url: 'https://maps.google.com/?q=Camaroes+Poty+Natal', address: 'Av. Eng. Roberto Freire, Ponta Negra' },
+      { name: 'Mangai',          description: 'Buffet de comida regional nordestina',   time: '12 min', category: 'Regional',      maps_url: 'https://maps.google.com/?q=Mangai+Natal',         address: 'Av. Amintas Barros, Lagoa Nova' }
+    ],
+    mercados: [
+      { name: 'Hiper Bom Preço',     description: 'Supermercado completo, aberto até 22h', time: '5 min', category: 'Supermercado',  maps_url: 'https://maps.google.com/?q=Bom+Preco+Ponta+Negra', address: 'Av. Engenheiro Roberto Freire' },
+      { name: 'Mercadinho da Praia', description: 'Conveniência rápida, itens básicos',    time: '3 min', category: 'Conveniência',  maps_url: '', address: 'Rua das Algas, Ponta Negra' }
+    ],
+    farmacias: [
+      { name: 'Drogasil Ponta Negra', description: 'Aberta 24h', time: '4 min', category: '24h', maps_url: 'https://maps.google.com/?q=Drogasil+Ponta+Negra', address: 'Av. Engenheiro Roberto Freire' }
+    ],
+    atividades: [
+      { name: 'Morro do Careca',                description: 'Cartão-postal de Natal, dunas e vista para o mar', time: '10 min', category: 'Ponto Turístico', maps_url: 'https://maps.google.com/?q=Morro+do+Careca', address: 'Ponta Negra' },
+      { name: 'Passeio de Buggy pelas Dunas',   description: 'Aventura pelas dunas de Genipabu',                 time: '25 min', category: 'Aventura',       maps_url: '', address: 'Genipabu' }
+    ],
+    academias: [
+      { name: 'Smart Fit Ponta Negra', description: 'Academia 24h com diária para visitantes', time: '6 min', category: '24h', maps_url: 'https://maps.google.com/?q=SmartFit+Ponta+Negra', address: 'Av. Engenheiro Roberto Freire' }
+    ],
+    lavanderias: [
+      { name: 'Lavanderia 5àSec', description: 'Lavagem e passagem expressa', time: '7 min', category: 'Expressa', maps_url: '', address: 'Ponta Negra' }
+    ],
+    emergencia: [
+      { name: 'Hospital Walfredo Gurgel', description: 'Hospital público 24h',          maps_url: 'tel:+5584999990000' },
+      { name: 'Polícia Militar',          description: 'Emergência policial',           maps_url: 'tel:190' },
+      { name: 'SAMU',                     description: 'Atendimento médico de urgência', maps_url: 'tel:192' }
+    ],
+    room_items: {
+      bedroom:  ['Cama de casal', 'Ar-condicionado', 'TV Smart', 'Guarda-roupa'],
+      kitchen:  ['Fogão 4 bocas', 'Geladeira', 'Micro-ondas', 'Utensílios completos'],
+      bathroom: ['Chuveiro elétrico', 'Secador de cabelo', 'Toalhas', 'Itens de higiene']
+    },
+    cleaning_state: {
+      lencol: 'ok', fronha: 'ok', cobertor: 'ok', travesseiro: 'atencao',
+      'toalha-banho': 'ok', 'toalha-rosto': 'faltando', 'tapete-ban': 'ok', papel: 'atencao', sabonete: 'ok',
+      pratos: 'ok', copos: 'ok', talheres: 'ok', panelas: 'atencao', detergente: 'faltando',
+      almofadas: 'ok', 'tapete-sal': 'ok', lixo: 'ok', chao: 'ok', janelas: 'ok'
+    },
+    cleaning_instructions: 'Trocar lençóis e toalhas.\nRepor papel higiênico e amenities.\nVarrer e passar pano em todos os ambientes.\nVerificar geladeira e repor água.',
+    maintenance_reminders: [
+      { id: 'mr_demo_1', title: 'Dedetização semestral',                 type: 'dedetizacao', due_date: '2026-05-01', completed: false, created_at: new Date().toISOString() },
+      { id: 'mr_demo_2', title: 'Troca de filtro do ar-condicionado',    type: 'filtro',       due_date: '2026-08-15', completed: false, created_at: new Date().toISOString() }
+    ],
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'host_id' });
+
+  await sb.from('room_media').insert([
+    { host_id: userId, room: 'bedroom',  type: 'image', url: 'assets/Quarto/quarto1.jpeg',     position: 0 },
+    { host_id: userId, room: 'bedroom',  type: 'image', url: 'assets/Quarto/quarto2.jpeg',     position: 1 },
+    { host_id: userId, room: 'kitchen',  type: 'image', url: 'assets/Cozinha/cozinha1.jpeg',   position: 0 },
+    { host_id: userId, room: 'kitchen',  type: 'image', url: 'assets/Cozinha/cozinha2.jpeg',   position: 1 },
+    { host_id: userId, room: 'bathroom', type: 'image', url: 'assets/Banheiro/banheiro1.jpeg', position: 0 },
+    { host_id: userId, room: 'bathroom', type: 'image', url: 'assets/Banheiro/banheiro2.jpeg', position: 1 }
+  ]);
 }
 
 function showError(msg) {

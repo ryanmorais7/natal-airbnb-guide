@@ -1021,6 +1021,14 @@ async function init() {
         btn.appendChild(lock);
       }
     });
+
+    const verGuia = document.getElementById('ver-guia-link');
+    if (verGuia) {
+      verGuia.classList.remove('text-primary', 'border-primary/30', 'px-3', 'py-2', 'text-xs', 'hover:bg-primary', 'hover:text-white', 'hover:border-primary');
+      verGuia.classList.add('bg-amber-500', 'border-amber-500', 'text-white', 'px-5', 'py-3', 'text-sm', 'shadow-lg', 'shadow-amber-500/30', 'hover:bg-amber-600', 'hover:border-amber-600');
+      const verGuiaIcon = verGuia.querySelector('.material-icons-outlined');
+      if (verGuiaIcon) verGuiaIcon.style.fontSize = '20px';
+    }
   }
 
   const subStatus = hostData.subscription_status;
@@ -1775,6 +1783,7 @@ function updateVerGuiaLink() {
 
 // ── Save: Geral ───────────────────────────────────────────────────────
 async function saveGeral() {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
   const slug = g('g-slug');
   if (!slug) { showToast('⚠ Defina um slug para o guia.'); return; }
 
