@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Painel — AirGuia</title>
+<link href="assets/airguia-icone.svg" rel="icon" type="image/svg+xml"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -53,10 +54,8 @@ tailwind.config = {
 <!-- Top bar -->
 <header class="bg-white border-b border-gray-100 px-3 sm:px-4 py-3 flex items-center justify-between sticky top-0 z-20 shadow-sm">
   <div class="flex items-center gap-2.5">
-    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-      <span class="material-icons-outlined text-white" style="font-size:18px">cottage</span>
-    </div>
-    <span class="font-bold text-gray-900 text-sm hidden sm:block">AirGuia</span>
+    <img src="assets/airguia-horizontal.svg" alt="AirGuia" class="h-7 hidden sm:block">
+    <img src="assets/airguia-icone.svg" alt="AirGuia" class="h-8 sm:hidden">
     <span class="text-gray-300 hidden sm:block">·</span>
     <span id="header-prop" class="text-sm font-semibold text-gray-500 hidden sm:block">Carregando...</span>
   </div>
@@ -725,10 +724,7 @@ tailwind.config = {
     <div class="max-w-md mx-auto">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-2">
-          <div class="w-7 h-7 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-            <span class="material-icons-outlined text-white" style="font-size:15px">cottage</span>
-          </div>
-          <span class="text-sm font-bold text-gray-700">AirGuia</span>
+          <img src="assets/airguia-horizontal.svg" alt="AirGuia" class="h-6">
         </div>
         <button onclick="skipOnboarding()" class="text-xs text-gray-300 hover:text-gray-400 font-bold transition-colors">Pular configuração</button>
       </div>
