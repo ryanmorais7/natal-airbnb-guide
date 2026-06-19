@@ -125,6 +125,8 @@ const PLANOS = [
       { ok: true,  texto: '1 tema de cor (Oliva)' },
       { ok: false, texto: 'Múltiplas propriedades' },
       { ok: false, texto: 'Temas de cores exclusivos' },
+      { ok: false, texto: 'Tela de manutenção preventiva' },
+      { ok: false, texto: 'Fechadura eletrônica com senha expirável por hóspede' },
     ],
   },
   {
@@ -140,6 +142,8 @@ const PLANOS = [
       { ok: true, texto: 'Tudo do Individual incluso, em cada propriedade' },
       { ok: true, texto: 'Até 5 propriedades em um painel só' },
       { ok: true, texto: '6 temas de cores exclusivos (Oceano, Terracota, Lavanda, Vinho, Ardósia e Oliva)' },
+      { ok: true, texto: 'Tela de manutenção (enxoval, ar-condicionado, dedetização, pintura e mais)' },
+      { ok: true, texto: 'Fechadura eletrônica com senha expirável por hóspede' },
     ],
   },
 ];
@@ -169,7 +173,7 @@ function renderPlanos() {
       ? '<div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-extrabold uppercase tracking-widest px-4 py-1 rounded-full shadow whitespace-nowrap">' + p.badge + '</div>'
       : '';
     const itens = p.itens.map(i =>
-      '<li class="flex items-center gap-2 text-sm ' + (i.ok ? 'text-gray-700' : 'text-gray-300') + '">'
+      '<li class="flex items-center gap-2 text-sm ' + (i.ok ? 'text-gray-700' : 'text-gray-300 line-through') + '">'
       + '<span class="material-icons-outlined ' + (i.ok ? 'text-primary' : 'text-gray-200') + '" style="font-size:15px">'
       + (i.ok ? 'check_circle' : 'remove_circle_outline') + '</span>' + i.texto + '</li>'
     ).join('');
