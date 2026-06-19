@@ -894,7 +894,7 @@ let editIndex = -1;
 const LIST_KEYS = ['restaurantes','mercados','farmacias','atividades','academias','lavanderias','emergencia'];
 
 // ── Reservas (tokens de hóspede) ─────────────────────────────────────
-const GUIDE_BASE = 'https://guiazamio.vercel.app/index.html';
+const GUIDE_BASE = location.origin + '/index.html';
 
 async function loadReservas() {
   const { data: tokens } = await sb.from('guest_tokens')

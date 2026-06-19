@@ -209,7 +209,7 @@ async function continuar() {
     } else {
       const { data, error } = await sb.auth.signUp({
         email, password: senha,
-        options: { emailRedirectTo: 'https://guiazamio.vercel.app/painel.html' }
+        options: { emailRedirectTo: location.origin + '/painel.html' }
       });
       if (error) {
         if (error.message.includes('already registered')) {

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const MP_ACCESS_TOKEN = Deno.env.get("MP_ACCESS_TOKEN") ?? "";
+const SITE_URL         = Deno.env.get("SITE_URL") ?? "https://guiazamio.vercel.app";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -48,7 +49,7 @@ serve(async (req) => {
       external_reference: String(hostId),
       payer_email:        email,
       auto_recurring:     autoRecurring,
-      back_url:           "https://guiazamio.vercel.app/painel.html",
+      back_url:           SITE_URL + "/painel.html",
       status:             "pending",
     };
 
