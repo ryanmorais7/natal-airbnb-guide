@@ -844,13 +844,19 @@ Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire�
             if (!LANGS.includes(lang)) lang = 'pt';
             _lang = lang;
             localStorage.setItem('guia-lang', lang);
-            fetch('i18n/' + lang + '.json')
-                .then(function(r) { return r.json(); })
+            fetch('i18n/' + lang + '.json', { cache: 'no-store' })
+                .then(function(r) {
+                    if (!r.ok) throw new Error('HTTP ' + r.status + ' ao buscar i18n/' + lang + '.json');
+                    return r.json();
+                })
                 .then(function(d) {
                     _data = d;
                     window._reApplyDynamic();
                 })
-                .catch(function() { window._applyI18n(); });
+                .catch(function(err) {
+                    console.error('[i18n] Falha ao carregar traduções de "' + lang + '":', err);
+                    window._applyI18n();
+                });
         };
 
         window._setLang(_lang);
