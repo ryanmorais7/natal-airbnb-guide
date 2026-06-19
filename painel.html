@@ -66,11 +66,6 @@ tailwind.config = {
       <span class="material-icons-outlined" style="font-size:16px">open_in_new</span>
       <span class="hidden sm:inline">Ver Guia</span>
     </a>
-    <button onclick="shareGuia()"
-      class="save-btn text-xs py-2 px-4">
-      <span class="material-icons-outlined" style="font-size:16px">share</span>
-      <span class="hidden sm:inline">Compartilhar Guia</span>
-    </button>
     <button onclick="doLogout()"
       class="text-xs text-gray-400 hover:text-red-500 flex items-center gap-1 font-bold transition-colors">
       <span class="material-icons-outlined" style="font-size:16px">logout</span>
@@ -1108,7 +1103,7 @@ function g(id) {
 }
 
 // ── Navigation ───────────────────────────────────────────────────────
-const DEMO_ALLOWED_SECTIONS = new Set(['geral','limpeza','manutencao','aparencia','propriedade']);
+const DEMO_ALLOWED_SECTIONS = new Set(['geral','reservas','limpeza','manutencao','aparencia']);
 
 function showSection(name) {
   if (window.isDemoMode && !DEMO_ALLOWED_SECTIONS.has(name)) {
@@ -2405,16 +2400,6 @@ function guiaBaseUrl(withVersion) {
   let url = base + 'index.html' + (slug ? '?h=' + encodeURIComponent(slug) : '');
   if (withVersion) url += (slug ? '&' : '?') + 'v=' + Date.now();
   return url;
-}
-
-function shareGuia() {
-  if (!hostData.slug) { showToast('⚠ Defina um slug nas Configurações Gerais antes de compartilhar.'); return; }
-  const url = guiaBaseUrl(true);
-  if (navigator.share) {
-    navigator.share({ title: 'Guia do Hóspede', text: 'Acesse o guia completo da sua estadia:', url });
-  } else {
-    navigator.clipboard.writeText(url).then(() => showToast('✓ Link do guia copiado!'));
-  }
 }
 
 // ── Logout ─────────────────────────────────────────────────────────────
