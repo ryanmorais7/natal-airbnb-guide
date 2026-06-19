@@ -32,7 +32,7 @@ serve(async (req) => {
     // Busca o token e valida
     const { data: gt } = await sb
       .from("guest_tokens")
-      .select("host_id, guest_name, expires_at")
+      .select("host_id, guest_name, expires_at, lock_code")
       .eq("token", token)
       .single();
 
@@ -65,9 +65,12 @@ serve(async (req) => {
       .eq("host_id", gt.host_id)
       .order("position", { ascending: true });
 
+    const mergedContent = { ...(content ?? {}), room_media: media ?? [] };
+    if (gt.lock_code) mergedContent.lock_code = gt.lock_code;
+
     return json({
       ok:        true,
-      content:   { ...(content ?? {}), room_media: media ?? [] },
+      content:   mergedContent,
       host:      { id: host?.id, property_name: host?.property_name },
       guestName: gt.guest_name ?? null,
     });

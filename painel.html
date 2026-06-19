@@ -105,7 +105,17 @@ tailwind.config = {
 <div class="flex flex-col md:flex-row" style="min-height:calc(100vh - 57px)">
   <!-- Sidebar (desktop) -->
   <aside class="w-52 hidden md:flex flex-col bg-white border-r border-gray-100 py-3 px-2 sticky top-[57px] self-start h-[calc(100vh-57px)] overflow-y-auto flex-shrink-0">
-    <div class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 px-3 mb-1 mt-1">Configurações</div>
+    <div class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 px-3 mb-1 mt-1">Recursos Pro</div>
+    <button class="nav-item" onclick="showSection('manutencao')">
+      <span class="material-icons-outlined">build</span>Manutenção
+    </button>
+    <button class="nav-item" onclick="showSection('aparencia')">
+      <span class="material-icons-outlined">palette</span>Aparência
+    </button>
+    <button class="nav-item" onclick="showSection('fechadura')">
+      <span class="material-icons-outlined">key</span>Acesso
+    </button>
+    <div class="text-[10px] font-extrabold uppercase tracking-widest text-gray-300 px-3 mb-1 mt-4">Configurações</div>
     <button class="nav-item" onclick="showSection('geral')">
       <span class="material-icons-outlined">tune</span>Geral
     </button>
@@ -115,17 +125,8 @@ tailwind.config = {
     <button class="nav-item" onclick="showSection('limpeza')">
       <span class="material-icons-outlined">cleaning_services</span>Limpeza
     </button>
-    <button class="nav-item" onclick="showSection('manutencao')">
-      <span class="material-icons-outlined">build</span>Manutenção
-    </button>
-    <button class="nav-item" onclick="showSection('aparencia')">
-      <span class="material-icons-outlined">palette</span>Aparência
-    </button>
     <button class="nav-item" onclick="showSection('propriedade')">
       <span class="material-icons-outlined">home</span>Propriedade
-    </button>
-    <button class="nav-item" onclick="showSection('fechadura')">
-      <span class="material-icons-outlined">key</span>Acesso
     </button>
     <button class="nav-item" onclick="showSection('hero')">
       <span class="material-icons-outlined">image</span>Apresentação
@@ -166,13 +167,13 @@ tailwind.config = {
 
   <!-- Mobile nav (horizontal scroll) -->
   <div class="md:hidden bg-white border-b border-gray-100 flex gap-0.5 overflow-x-auto px-2 py-1.5 sticky top-[57px] z-10 w-full" style="scrollbar-width:none">
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('manutencao')"><span class="material-icons-outlined">build</span><span class="hidden sm:inline">Manutenção</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('aparencia')"><span class="material-icons-outlined">palette</span><span class="hidden sm:inline">Aparência</span></button>
+    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('fechadura')"><span class="material-icons-outlined">key</span><span class="hidden sm:inline">Acesso</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('geral')"><span class="material-icons-outlined">tune</span><span class="hidden sm:inline">Geral</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('reservas')"><span class="material-icons-outlined">vpn_key</span><span class="hidden sm:inline">Reservas</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('limpeza')"><span class="material-icons-outlined">cleaning_services</span><span class="hidden sm:inline">Limpeza</span></button>
-    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('manutencao')"><span class="material-icons-outlined">build</span><span class="hidden sm:inline">Manutenção</span></button>
-    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('aparencia')"><span class="material-icons-outlined">palette</span><span class="hidden sm:inline">Aparência</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('propriedade')"><span class="material-icons-outlined">home</span><span class="hidden sm:inline">Propriedade</span></button>
-    <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('fechadura')"><span class="material-icons-outlined">key</span><span class="hidden sm:inline">Acesso</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('hero')"><span class="material-icons-outlined">image</span><span class="hidden sm:inline">Apresentação</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('wifi')"><span class="material-icons-outlined">wifi</span><span class="hidden sm:inline">Wi-Fi</span></button>
     <button class="nav-item flex-shrink-0 w-auto" onclick="showSection('restaurantes')"><span class="material-icons-outlined">restaurant</span><span class="hidden sm:inline">Restaurantes</span></button>
@@ -230,6 +231,11 @@ tailwind.config = {
             <label class="field-label">Data e horário do checkout</label>
             <input id="res-expires-at" class="field-input" type="datetime-local"/>
           </div>
+        </div>
+        <div id="res-lockcode-wrap" class="hidden mb-4">
+          <label class="field-label">Código da fechadura para esse hóspede (opcional)</label>
+          <input id="res-lock-code" class="field-input font-mono tracking-widest" type="text" placeholder="Ex: 5478"/>
+          <p class="text-xs text-gray-400 mt-1.5">Aparece no guia só durante a estadia. Some automaticamente após o checkout.</p>
         </div>
         <button onclick="gerarToken()" class="save-btn">
           <span class="material-icons-outlined" style="font-size:17px">vpn_key</span>
@@ -898,7 +904,7 @@ const GUIDE_BASE = location.origin + '/index.html';
 
 async function loadReservas() {
   const { data: tokens } = await sb.from('guest_tokens')
-    .select('id, token, guest_name, expires_at, created_at')
+    .select('id, token, guest_name, expires_at, created_at, lock_code')
     .eq('host_id', hostId)
     .order('created_at', { ascending: false });
   renderReservas(tokens || []);
@@ -925,6 +931,7 @@ function renderReservas(tokens) {
         <p class="font-bold text-sm text-gray-900">${t.guest_name || 'Hóspede'} ${badge}</p>
         <p class="text-xs text-gray-400 mt-0.5">Expira: ${dateStr}</p>
         <p class="text-xs text-primary/70 truncate mt-0.5">${link}</p>
+        ${t.lock_code ? `<p class="text-xs text-gray-400 mt-0.5">Fechadura: <span class="font-mono font-bold text-gray-600">${escHtml(t.lock_code)}</span></p>` : ''}
       </div>
       <div class="flex items-center gap-1 flex-shrink-0">
         <button onclick="copiarLinkReserva('${t.token}')" title="Copiar link"
@@ -944,6 +951,9 @@ async function gerarToken() {
   if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
   const guestName = document.getElementById('res-guest-name').value.trim();
   const expiresAt = document.getElementById('res-expires-at').value;
+  const lockCodeEl = document.getElementById('res-lock-code');
+  const lockCode   = (lockCodeEl && !lockCodeEl.closest('#res-lockcode-wrap').classList.contains('hidden'))
+    ? lockCodeEl.value.trim() : '';
   if (!expiresAt) { showToast('Informe a data de checkout'); return; }
   const expiresIso = new Date(expiresAt).toISOString();
   const { error } = await sb.from('guest_tokens').insert({
@@ -951,10 +961,12 @@ async function gerarToken() {
     token:      crypto.randomUUID(),
     guest_name: guestName || null,
     expires_at: expiresIso,
+    lock_code:  lockCode || null,
   });
   if (error) { console.error('Erro ao gerar link:', error); showToast(error.message || 'Erro ao gerar link'); return; }
   document.getElementById('res-guest-name').value  = '';
   document.getElementById('res-expires-at').value  = '';
+  if (lockCodeEl) lockCodeEl.value = '';
   showToast('Link gerado!');
   await loadReservas();
 }
@@ -1021,6 +1033,8 @@ async function init() {
       if (verGuiaIcon) verGuiaIcon.style.fontSize = '20px';
     }
   }
+
+  applyProLock();
 
   const subStatus = hostData.subscription_status;
   const subBlocked = subStatus && subStatus !== 'authorized' && !hostData.is_demo && !hostData.is_admin;
@@ -1100,10 +1114,34 @@ function g(id) {
 
 // ── Navigation ───────────────────────────────────────────────────────
 const DEMO_ALLOWED_SECTIONS = new Set(['geral','reservas','limpeza','manutencao','aparencia']);
+const PRO_ONLY_SECTIONS     = new Set(['manutencao','aparencia','fechadura']);
+
+function applyProLock() {
+  const isPro = window.isDemoMode || hostData.is_admin || hostData.plan_id === 'pro';
+  const lockCodeWrap = document.getElementById('res-lockcode-wrap');
+  if (lockCodeWrap) lockCodeWrap.classList.toggle('hidden', !isPro);
+  if (isPro) return;
+  window.proLocked = true;
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    const m = (btn.getAttribute('onclick') || '').match(/showSection\('(\w+)'\)/);
+    if (m && PRO_ONLY_SECTIONS.has(m[1])) {
+      btn.style.opacity = '0.45';
+      const lock = document.createElement('span');
+      lock.className = 'material-icons-outlined';
+      lock.style.cssText = 'font-size:14px;margin-left:auto;flex-shrink:0';
+      lock.textContent = 'lock';
+      btn.appendChild(lock);
+    }
+  });
+}
 
 function showSection(name) {
   if (window.isDemoMode && !DEMO_ALLOWED_SECTIONS.has(name)) {
     window.location.href = 'planos.html';
+    return;
+  }
+  if (window.proLocked && PRO_ONLY_SECTIONS.has(name)) {
+    document.getElementById('pro-lock-modal').classList.remove('hidden');
     return;
   }
   document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
@@ -2673,6 +2711,24 @@ init();
     <button onclick="document.getElementById('demo-modal').classList.add('hidden')"
       class="text-sm text-gray-400 hover:text-gray-600 transition-colors">
       Continuar explorando
+    </button>
+  </div>
+</div>
+
+<!-- Modal: Recurso exclusivo do plano Pro -->
+<div id="pro-lock-modal" class="fixed inset-0 bg-black/50 z-[200] flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
+    <div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+      <span class="material-icons-outlined text-primary" style="font-size:30px">workspace_premium</span>
+    </div>
+    <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2">Recurso exclusivo Pro</h3>
+    <p class="text-sm text-gray-500 leading-relaxed mb-6">Manutenção, Aparência e Acesso fazem parte do plano Pro. Faça upgrade para liberar esses recursos no seu painel.</p>
+    <a href="planos.html" class="block w-full bg-primary text-white font-bold py-3 rounded-xl hover:bg-primary-light transition-colors mb-3 text-sm">
+      Fazer upgrade →
+    </a>
+    <button onclick="document.getElementById('pro-lock-modal').classList.add('hidden')"
+      class="text-sm text-gray-400 hover:text-gray-600 transition-colors">
+      Fechar
     </button>
   </div>
 </div>
