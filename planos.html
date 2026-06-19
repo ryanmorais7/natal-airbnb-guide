@@ -133,6 +133,7 @@ const PLANOS = [
     id:          'pro',
     nome:        'Pro',
     descricao:   'Até 5 propriedades',
+    maxPropriedades: 5,
     precoMensal: '69,90',
     precoAnual:  '54,90',   // cobrado como R$ 658,80/ano
     economia:    'R$ 180 de economia no ano',
@@ -177,6 +178,14 @@ function renderPlanos() {
       + '<span class="material-icons-outlined ' + (i.ok ? 'text-primary' : 'text-gray-200') + '" style="font-size:15px">'
       + (i.ok ? 'check_circle' : 'remove_circle_outline') + '</span>' + i.texto + '</li>'
     ).join('');
+    const porPropriedade = p.maxPropriedades > 1
+      ? '<div class="bg-green-50 border border-green-100 rounded-xl px-3 py-2 flex items-center gap-2 mb-3">'
+        + '<span class="material-icons-outlined text-green-600" style="font-size:16px">savings</span>'
+        + '<div>'
+        + '<p class="text-xs font-bold text-green-700">Sai mais barato por propriedade</p>'
+        + '<p class="text-[11px] text-green-600/80">R$ ' + (Number(preco.replace(',', '.')) / p.maxPropriedades).toFixed(2).replace('.', ',') + '/propriedade com as ' + p.maxPropriedades + ' ativas</p>'
+        + '</div></div>'
+      : '';
     const btnClass = p.destaque
       ? 'w-full py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-light transition-all shadow-lg shadow-primary/20'
       : 'w-full py-3 rounded-xl border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all';
@@ -191,6 +200,7 @@ function renderPlanos() {
       + '</div>'
       + '<p class="text-xs font-bold text-gray-400 mb-3 flex items-center gap-1"><span class="material-icons-outlined" style="font-size:13px">home</span>' + p.descricao + '</p>'
       + '<ul class="space-y-2 flex-1 mb-5">' + itens + '</ul>'
+      + porPropriedade
       + '<div class="bg-primary/5 border border-primary/15 rounded-xl px-3 py-2 flex items-center gap-2 mb-4">'
       + '<span class="material-icons-outlined text-primary" style="font-size:16px">card_giftcard</span>'
       + '<span class="text-xs font-bold text-primary">7 dias grátis para testar</span>'
