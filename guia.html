@@ -1120,13 +1120,21 @@ Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire�
                 c    = data.content;
             } else if (OWNER_SLUG) {
                 // Acesso via slug (preview do anfitrião / demo)
-                var hostRes = await sb.from('hosts').select('id, property_name, subscription_status, trial_ends_at, is_demo, is_admin').eq('slug', OWNER_SLUG).single();
+                var hostRes = await sb.from('hosts').select('id, property_name, subscription_status, trial_ends_at, is_demo, is_admin, owner_id').eq('slug', OWNER_SLUG).single();
                 if (!hostRes.data) { showAccessError('invalid'); return; }
                 host = hostRes.data;
+
+                // Propriedade extra (owner_id preenchido): assinatura/teste vivem na conta dona, nao nesta linha
+                var billing = host;
+                if (host.owner_id) {
+                    var ownerRes = await sb.from('hosts').select('subscription_status, trial_ends_at, is_demo, is_admin').eq('id', host.owner_id).single();
+                    if (ownerRes.data) billing = ownerRes.data;
+                }
+
                 var nonBlockingStatuses = ['authorized', 'convidada'];
-                var trialExpired = host.trial_ends_at && new Date(host.trial_ends_at) < new Date() && host.subscription_status !== 'authorized';
-                var realBlock = host.subscription_status && nonBlockingStatuses.indexOf(host.subscription_status) === -1;
-                if (!host.is_demo && !host.is_admin && (realBlock || trialExpired)) {
+                var trialExpired = billing.trial_ends_at && new Date(billing.trial_ends_at) < new Date() && billing.subscription_status !== 'authorized';
+                var realBlock = billing.subscription_status && nonBlockingStatuses.indexOf(billing.subscription_status) === -1;
+                if (!billing.is_demo && !billing.is_admin && (realBlock || trialExpired)) {
                     showAccessError('inactive');
                     return;
                 }

@@ -57,7 +57,14 @@ tailwind.config = {
     <img src="assets/airguia-logo-horizontal.png" alt="AirGuia" class="h-7 hidden sm:block">
     <img src="assets/airguia-favicon.png" alt="AirGuia" class="h-8 sm:hidden">
     <span class="text-gray-300 hidden sm:block">·</span>
-    <span id="header-prop" class="text-sm font-semibold text-gray-500 hidden sm:block">Carregando...</span>
+    <div class="relative hidden sm:block">
+      <button id="header-prop-btn" onclick="togglePropertySwitcher()"
+        class="flex items-center gap-1 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors">
+        <span id="header-prop">Carregando...</span>
+        <span id="header-prop-caret" class="material-icons-outlined hidden" style="font-size:16px">expand_more</span>
+      </button>
+      <div id="property-switcher-menu" class="hidden absolute left-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-30"></div>
+    </div>
   </div>
   <div class="flex items-center gap-3">
     <a id="ver-guia-link" href="guia.html" target="_blank"
@@ -896,6 +903,9 @@ const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
 let hostId = null;
 let hostData = {};
+let activePropertyId = null;
+let propertyData = {};
+let properties = [];
 let content  = {};
 let editList  = null;
 let editIndex = -1;
@@ -908,7 +918,7 @@ const GUIDE_BASE = location.origin + '/guia.html';
 async function loadReservas() {
   const { data: tokens } = await sb.from('guest_tokens')
     .select('id, token, guest_name, expires_at, created_at, lock_code')
-    .eq('host_id', hostId)
+    .eq('host_id', activePropertyId)
     .order('created_at', { ascending: false });
   renderReservas(tokens || []);
 }
@@ -960,7 +970,7 @@ async function gerarToken() {
   if (!expiresAt) { showToast('Informe a data de checkout'); return; }
   const expiresIso = new Date(expiresAt).toISOString();
   const { error } = await sb.from('guest_tokens').insert({
-    host_id:    hostId,
+    host_id:    activePropertyId,
     token:      crypto.randomUUID(),
     guest_name: guestName || null,
     expires_at: expiresIso,
@@ -977,7 +987,7 @@ async function gerarToken() {
 async function deletarToken(id) {
   if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
   if (!confirm('Revogar este link? O hóspede perderá acesso imediatamente.')) return;
-  await sb.from('guest_tokens').delete().eq('id', id).eq('host_id', hostId);
+  await sb.from('guest_tokens').delete().eq('id', id).eq('host_id', activePropertyId);
   showToast('Link revogado');
   await loadReservas();
 }
@@ -999,19 +1009,8 @@ async function init() {
   }
   hostId = session.user.id;
 
-  const [{ data: h }, { data: c }] = await Promise.all([
-    sb.from('hosts').select('*').eq('id', hostId).single(),
-    sb.from('guide_content').select('*').eq('host_id', hostId).single()
-  ]);
+  const { data: h } = await sb.from('hosts').select('*').eq('id', hostId).single();
   hostData = h || {};
-
-  if (!c) {
-    await sb.from('guide_content').upsert({ host_id: hostId });
-    const { data: c2 } = await sb.from('guide_content').select('*').eq('host_id', hostId).single();
-    content = c2 || {};
-  } else {
-    content = c;
-  }
 
   if (hostData.is_demo) {
     window.isDemoMode = true;
@@ -1078,21 +1077,159 @@ async function init() {
     }
   }
 
+  await loadProperties();
+
+  const storedProp = localStorage.getItem('airguia_active_property_' + hostId);
+  activePropertyId = (storedProp && properties.some(p => p.id === storedProp)) ? storedProp : hostId;
+
+  await loadActiveProperty();
+
   document.getElementById('loading-state').style.display = 'none';
+  showSection('geral');
+  checkOnboarding();
+}
+
+// ── Propriedades (plano Pro: até 5 propriedades por conta) ─────────────
+async function loadProperties() {
+  const isPro = hostData.is_admin || hostData.plan_id === 'pro';
+  if (!isPro) {
+    properties = [{ id: hostId, property_name: hostData.property_name, slug: hostData.slug }];
+    renderPropertySwitcher();
+    return;
+  }
+  const { data } = await sb.from('hosts')
+    .select('id, property_name, slug, owner_id, created_at')
+    .or(`id.eq.${hostId},owner_id.eq.${hostId}`)
+    .order('created_at', { ascending: true });
+  properties = (data && data.length) ? data : [{ id: hostId, property_name: hostData.property_name, slug: hostData.slug }];
+  renderPropertySwitcher();
+}
+
+async function loadActiveProperty() {
+  if (activePropertyId === hostId) {
+    propertyData = hostData;
+  } else {
+    const { data: p } = await sb.from('hosts').select('*').eq('id', activePropertyId).single();
+    propertyData = p || { id: activePropertyId };
+  }
+
+  const { data: c } = await sb.from('guide_content').select('*').eq('host_id', activePropertyId).single();
+  if (!c) {
+    await sb.from('guide_content').upsert({ host_id: activePropertyId });
+    const { data: c2 } = await sb.from('guide_content').select('*').eq('host_id', activePropertyId).single();
+    content = c2 || {};
+  } else {
+    content = c;
+  }
+
   populateForms();
   loadLimpeza();
   loadManutencao();
   loadReservas();
   renderAlertaBanner();
+  renderPropertySwitcher();
+}
+
+function togglePropertySwitcher() {
+  const menu = document.getElementById('property-switcher-menu');
+  if (!menu) return;
+  const isPro = hostData.is_admin || hostData.plan_id === 'pro';
+  if (!isPro) return;
+  menu.classList.toggle('hidden');
+}
+
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('property-switcher-menu');
+  const btn  = document.getElementById('header-prop-btn');
+  if (!menu || menu.classList.contains('hidden')) return;
+  if (!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.add('hidden');
+});
+
+function renderPropertySwitcher() {
+  const caret = document.getElementById('header-prop-caret');
+  const menu  = document.getElementById('property-switcher-menu');
+  const isPro = hostData.is_admin || hostData.plan_id === 'pro';
+  if (caret) caret.classList.toggle('hidden', !isPro);
+  if (!menu) return;
+  if (!isPro) { menu.innerHTML = ''; return; }
+
+  const atLimit = properties.length >= 5;
+  menu.innerHTML = properties.map(p => `
+    <div class="flex items-center gap-1 px-2">
+      <button onclick="switchProperty('${p.id}')"
+        class="flex-1 text-left px-2.5 py-2 rounded-lg text-sm font-semibold transition-colors ${p.id === activePropertyId ? 'bg-primary/10 text-primary' : 'text-gray-600 hover:bg-gray-50'}">
+        ${escHtml(p.property_name || 'Sem nome')}
+      </button>
+      ${p.id !== hostId ? `<button onclick="excluirPropriedade('${p.id}', '${escAttr(p.property_name || 'Sem nome')}')" title="Excluir propriedade" class="item-btn del p-1.5 rounded-lg hover:bg-red-50 flex-shrink-0"><span class="material-icons-outlined" style="font-size:16px">delete_outline</span></button>` : ''}
+    </div>
+  `).join('') + `
+    <div class="border-t border-gray-100 mt-2 pt-2 px-2">
+      <button onclick="criarPropriedade()" ${atLimit ? 'disabled' : ''}
+        class="w-full text-left px-2.5 py-2 rounded-lg text-sm font-bold flex items-center gap-1.5 ${atLimit ? 'text-gray-300 cursor-not-allowed' : 'text-primary hover:bg-primary/5'}">
+        <span class="material-icons-outlined" style="font-size:16px">add_circle_outline</span>
+        ${atLimit ? 'Limite de 5 propriedades atingido' : 'Adicionar propriedade'}
+      </button>
+    </div>
+  `;
+}
+
+async function switchProperty(id) {
+  if (id === activePropertyId) { document.getElementById('property-switcher-menu').classList.add('hidden'); return; }
+  activePropertyId = id;
+  localStorage.setItem('airguia_active_property_' + hostId, id);
+  document.getElementById('property-switcher-menu').classList.add('hidden');
+  document.getElementById('loading-state').style.display = '';
+  await loadActiveProperty();
+  document.getElementById('loading-state').style.display = 'none';
   showSection('geral');
-  checkOnboarding();
+  showToast('Propriedade alterada');
+}
+
+async function criarPropriedade() {
+  document.getElementById('property-switcher-menu').classList.add('hidden');
+  showToast('Criando propriedade...');
+  const { data: { session } } = await sb.auth.getSession();
+  try {
+    const res = await fetch(SB_URL + '/functions/v1/gerenciar-propriedade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ action: 'criar' }),
+    });
+    const result = await res.json();
+    if (!result.ok) { showToast(result.message || 'Erro ao criar propriedade.'); return; }
+    await loadProperties();
+    await switchProperty(result.propertyId);
+    showToast('Propriedade criada! Defina o nome e o link dela em Geral.');
+  } catch (e) {
+    showToast('Erro de conexão.');
+  }
+}
+
+async function excluirPropriedade(id, name) {
+  if (!confirm(`Excluir a propriedade "${name}"?\n\nTodo o conteúdo dela (guia, fotos, links de hóspede) será removido permanentemente.`)) return;
+  const { data: { session } } = await sb.auth.getSession();
+  try {
+    const res = await fetch(SB_URL + '/functions/v1/gerenciar-propriedade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ action: 'excluir', propertyId: id }),
+    });
+    const result = await res.json();
+    if (!result.ok) { showToast(result.message || 'Erro ao excluir propriedade.'); return; }
+    await loadProperties();
+    if (activePropertyId === id) await switchProperty(hostId);
+    else renderPropertySwitcher();
+    showToast('Propriedade excluída.');
+  } catch (e) {
+    showToast('Erro de conexão.');
+  }
 }
 
 function populateForms() {
   // Geral
-  v('g-propname', hostData.property_name || '');
-  v('g-owner',    hostData.owner_name    || '');
-  v('g-slug',     hostData.slug          || '');
+  v('g-propname', propertyData.property_name || '');
+  v('g-owner',    propertyData.owner_name    || '');
+  v('g-slug',     propertyData.slug          || '');
   // Propriedade
   v('p-address',  content.address     || '');
   v('p-checkin',  content.checkin_time || '13:00');
@@ -1123,7 +1260,7 @@ function populateForms() {
   loadRoomItems();
   loadRoomMedia();
   // Header
-  document.getElementById('header-prop').textContent = hostData.property_name || 'Minha Propriedade';
+  document.getElementById('header-prop').textContent = propertyData.property_name || 'Minha Propriedade';
   updateVerGuiaLink();
 }
 
@@ -1389,7 +1526,7 @@ function renderLimpeza() {
 const GRUPO_EMOJI = { cama: '🛏', banheiro: '🚿', cozinha: '🍳', geral: '🏠' };
 
 function enviarWhatsapp() {
-  const prop = (hostData && hostData.property_name) ? hostData.property_name : 'Minha Propriedade';
+  const prop = (propertyData && propertyData.property_name) ? propertyData.property_name : 'Minha Propriedade';
   const hoje = new Date().toLocaleDateString('pt-BR');
   const allGroups = getAllLimpezaGroups();
 
@@ -1821,7 +1958,7 @@ async function saveAparencia() {
 function updateVerGuiaLink() {
   const link = document.getElementById('ver-guia-link');
   if (!link) return;
-  if (!hostData.slug) {
+  if (!propertyData.slug) {
     link.href = '#';
     link.title = 'Defina um slug na seção Geral para visualizar o guia';
     link.style.opacity = '0.4';
@@ -1844,13 +1981,20 @@ async function saveGeral() {
     property_name: g('g-propname'),
     owner_name:    g('g-owner'),
     slug:          slug
-  }).eq('id', hostId);
+  }).eq('id', activePropertyId);
 
   if (error) { showToast('Erro: ' + error.message); return; }
-  hostData.property_name = g('g-propname');
-  hostData.owner_name    = g('g-owner');
-  hostData.slug          = slug;
-  document.getElementById('header-prop').textContent = hostData.property_name || 'Minha Propriedade';
+  propertyData.property_name = g('g-propname');
+  propertyData.owner_name    = g('g-owner');
+  propertyData.slug          = slug;
+  if (activePropertyId === hostId) {
+    hostData.property_name = propertyData.property_name;
+    hostData.owner_name    = propertyData.owner_name;
+    hostData.slug          = propertyData.slug;
+  }
+  const cached = properties.find(p => p.id === activePropertyId);
+  if (cached) { cached.property_name = propertyData.property_name; cached.slug = propertyData.slug; }
+  document.getElementById('header-prop').textContent = propertyData.property_name || 'Minha Propriedade';
   updateVerGuiaLink();
   showToast('✓ Salvo com sucesso!');
 }
@@ -2010,7 +2154,7 @@ var ROOM_MAX_PHOTOS = 10;
 var roomMediaData = { bedroom: [], kitchen: [], bathroom: [], entrada: [] };
 
 async function loadRoomMedia() {
-  const { data, error } = await sb.from('room_media').select('*').eq('host_id', hostId).order('position', { ascending: true });
+  const { data, error } = await sb.from('room_media').select('*').eq('host_id', activePropertyId).order('position', { ascending: true });
   if (error) { console.error(error); return; }
   roomMediaData = { bedroom: [], kitchen: [], bathroom: [], entrada: [] };
   (data || []).forEach(item => { if (roomMediaData[item.room]) roomMediaData[item.room].push(item); });
@@ -2143,7 +2287,7 @@ async function uploadRoomMedia(input, room, type) {
 
   showStatus('Enviando...', true);
   const ext = type === 'image' ? 'jpg' : (file.name.split('.').pop() || 'mp4');
-  const path = `${hostId}/${room}/${Date.now()}.${ext}`;
+  const path = `${activePropertyId}/${room}/${Date.now()}.${ext}`;
   const { error: upErr } = await sb.storage.from(ROOM_MEDIA_BUCKET).upload(path, uploadFile, { upsert: true });
   if (upErr) {
     showStatus('Erro no upload: ' + upErr.message, false);
@@ -2153,7 +2297,7 @@ async function uploadRoomMedia(input, room, type) {
   const { data: pub } = sb.storage.from(ROOM_MEDIA_BUCKET).getPublicUrl(path);
 
   const { data: row, error: insErr } = await sb.from('room_media').insert({
-    host_id: hostId,
+    host_id: activePropertyId,
     room: room,
     type: type,
     storage_path: path,
@@ -2214,7 +2358,7 @@ async function upsertContent(updates) {
     return;
   }
   // Usa .update() em vez de .upsert() para evitar sobrescrever campos não relacionados
-  const doUpdate = () => sb.from('guide_content').update(updates).eq('host_id', hostId);
+  const doUpdate = () => sb.from('guide_content').update(updates).eq('host_id', activePropertyId);
   const { error } = await doUpdate();
   if (error) {
     if (error.message?.includes('JWT') || error.message?.includes('expired') || error.status === 401) {
@@ -2338,7 +2482,7 @@ async function saveItem(key) {
   else items.push(item);
 
   const updates = { [key]: items, updated_at: new Date().toISOString() };
-  const { error } = await sb.from('guide_content').upsert({ host_id: hostId, ...content, ...updates });
+  const { error } = await sb.from('guide_content').upsert({ host_id: activePropertyId, ...content, ...updates });
   if (error) { showToast('Erro: ' + error.message); return; }
   Object.assign(content, updates);
   renderList(key);
@@ -2351,7 +2495,7 @@ async function removeItem(key, idx) {
   const items = [...(content[key] || [])];
   items.splice(idx, 1);
   const updates = { [key]: items, updated_at: new Date().toISOString() };
-  const { error } = await sb.from('guide_content').upsert({ host_id: hostId, ...content, ...updates });
+  const { error } = await sb.from('guide_content').upsert({ host_id: activePropertyId, ...content, ...updates });
   if (error) { showToast('Erro: ' + error.message); return; }
   Object.assign(content, updates);
   renderList(key);
@@ -2374,7 +2518,7 @@ async function uploadHeroImage(input) {
   status.classList.remove('hidden');
 
   const ext  = file.name.split('.').pop();
-  const path = `${hostId}/hero-${Date.now()}.${ext}`;
+  const path = `${activePropertyId}/hero-${Date.now()}.${ext}`;
   const { error } = await sb.storage.from('guide-images').upload(path, file, { upsert: true });
   if (error) {
     status.textContent = 'Erro: ' + error.message;
@@ -2474,7 +2618,7 @@ async function saveAcesso() {
 
 // ── Share ──────────────────────────────────────────────────────────────
 function guiaBaseUrl(withVersion) {
-  const slug = hostData.slug || '';
+  const slug = propertyData.slug || '';
   const base = location.href.replace(/painel\.html.*$/, '');
   let url = base + 'guia.html' + (slug ? '?h=' + encodeURIComponent(slug) : '');
   if (withVersion) url += (slug ? '&' : '?') + 'v=' + Date.now();
@@ -2505,8 +2649,8 @@ function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
 function gerarCartao() {
   const wifiName  = g('w-name') || content.wifi_name     || '';
   const wifiPass  = g('w-pass') || content.wifi_password || '';
-  const propName  = hostData.property_name || 'Minha Propriedade';
-  const guideUrl  = location.href.replace('painel.html', 'guia.html');
+  const propName  = propertyData.property_name || 'Minha Propriedade';
+  const guideUrl  = guiaBaseUrl(false);
   const cor       = (content.theme_color || '#4A6741').replace('#', '');
   const corHex    = '#' + cor;
   const qrSrc     = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=${cor}&bgcolor=ffffff&data=${encodeURIComponent(guideUrl)}&margin=0`;

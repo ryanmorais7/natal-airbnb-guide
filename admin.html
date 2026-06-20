@@ -407,9 +407,9 @@ async function loadDashboard() {
   document.getElementById('loading').classList.remove('hidden');
   document.getElementById('dashboard').classList.add('hidden');
 
-  // Load all hosts
+  // Load all hosts (propriedades extras de uma conta Pro ficam escondidas aqui, tem owner_id preenchido)
   const { data: hosts } = await sb.from('hosts').select('*').order('created_at', { ascending: false });
-  allHosts = hosts || [];
+  allHosts = (hosts || []).filter(h => !h.owner_id);
 
   // Load all guide_content
   const { data: contents } = await sb.from('guide_content').select('*');

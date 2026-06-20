@@ -51,17 +51,28 @@ serve(async (req) => {
 
     const { data: host } = await sb
       .from("hosts")
-      .select("id, property_name, subscription_status, trial_ends_at, is_demo, is_admin")
+      .select("id, property_name, subscription_status, trial_ends_at, is_demo, is_admin, owner_id")
       .eq("id", gt.host_id)
       .single();
 
-    const NON_BLOCKING_STATUSES = new Set(["authorized", "convidada"]);
-    const trialExpired = !!host?.trial_ends_at
-      && new Date(host.trial_ends_at) < new Date()
-      && host.subscription_status !== "authorized";
-    const realBlock = !!host?.subscription_status && !NON_BLOCKING_STATUSES.has(host.subscription_status);
+    // Propriedade extra (owner_id preenchido): assinatura/teste vivem na conta dona, nao nesta linha
+    let billing = host;
+    if (host?.owner_id) {
+      const { data: owner } = await sb
+        .from("hosts")
+        .select("subscription_status, trial_ends_at, is_demo, is_admin")
+        .eq("id", host.owner_id)
+        .single();
+      if (owner) billing = owner as typeof host;
+    }
 
-    if (host && !host.is_demo && !host.is_admin && (realBlock || trialExpired)) {
+    const NON_BLOCKING_STATUSES = new Set(["authorized", "convidada"]);
+    const trialExpired = !!billing?.trial_ends_at
+      && new Date(billing.trial_ends_at) < new Date()
+      && billing.subscription_status !== "authorized";
+    const realBlock = !!billing?.subscription_status && !NON_BLOCKING_STATUSES.has(billing.subscription_status);
+
+    if (host && billing && !billing.is_demo && !billing.is_admin && (realBlock || trialExpired)) {
       return json({ ok: false, error: "inactive" }, 403);
     }
 
