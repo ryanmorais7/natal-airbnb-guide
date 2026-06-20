@@ -2,6 +2,9 @@ const SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
+const DEMO_EMAIL    = 'demo@airguia.com';
+const DEMO_PASSWORD = 'AirGuiaDemo#2026';
+
 const wantsDemo = new URLSearchParams(location.search).get('demo') === '1';
 
 if (wantsDemo) {
@@ -39,9 +42,6 @@ async function doLogin() {
   }
 }
 
-const DEMO_EMAIL    = 'demo@airguia.com';
-const DEMO_PASSWORD = 'AirGuiaDemo#2026';
-
 async function entrarDemo() {
   const btn = document.getElementById('btn-demo');
   btn.disabled = true;
@@ -76,12 +76,19 @@ async function entrarDemo() {
 }
 
 async function seedDemoAccount(userId) {
-  await sb.from('hosts').update({
+  // upsert (não update) pra garantir que a linha em hosts existe e fica correta
+  // mesmo se o trigger handle_new_user ainda não tiver criado ela a tempo
+  await sb.from('hosts').upsert({
+    id:            userId,
+    email:         DEMO_EMAIL,
     is_demo:       true,
+    plan_id:       'pro',
+    plan_name:     'Pro (Demo)',
+    plan_active:   true,
     property_name: 'Casa Vista Mar — Demo',
     owner_name:    'Anfitrião Demo',
     slug:          'demo'
-  }).eq('id', userId);
+  });
 
   await sb.from('guide_content').upsert({
     host_id:             userId,
