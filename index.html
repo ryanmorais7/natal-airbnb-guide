@@ -411,10 +411,21 @@ details[open] summary .chevron { transform: rotate(180deg); }
         <p class="text-sm text-gray-500 leading-relaxed">6 paletas pra deixar o guia com a identidade de cada propriedade: Oceano, Terracota, Lavanda, Vinho, Ardósia e Oliva.</p>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
-        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">print</span>
-        <h3 class="font-bold text-gray-900 mb-1.5">Cartão imprimível com QR duplo</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">Um cartão pra deixar na propriedade, com QR do wifi e QR do guia — pra quem prefere físico ao digital.</p>
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal flex flex-col">
+        <div class="flex items-start gap-4 flex-1">
+          <div class="flex-1">
+            <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">print</span>
+            <h3 class="font-bold text-gray-900 mb-1.5">Cartão imprimível com QR duplo</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Um cartão pra deixar na propriedade, com QR do wifi e QR do guia — pra quem prefere físico ao digital.</p>
+          </div>
+          <div class="float flex-shrink-0 bg-white border border-gray-200 rounded-lg shadow-md p-1.5 w-[72px]" style="animation-delay:-1.5s">
+            <p class="text-[5px] font-extrabold text-primary text-center mb-1 truncate tracking-wide">CASA VISTA MAR</p>
+            <div class="flex gap-1 justify-center">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&color=4A6741&bgcolor=ffffff&data=WIFI%3AT%3AWPA%3BS%3AVistaMar_5G%3BP%3Apraia2026%3B%3B&margin=0" class="w-7 h-7" alt="QR Wi-Fi" loading="lazy"/>
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&color=4A6741&bgcolor=ffffff&data=https%3A%2F%2Fairguia.com.br%2Fguia.html%3Fh%3Ddemo&margin=0" class="w-7 h-7" alt="QR Guia" loading="lazy"/>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
