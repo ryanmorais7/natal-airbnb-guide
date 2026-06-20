@@ -770,7 +770,7 @@ function lpRenderPlanos() {
       ? 'w-full py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-light transition-all shadow-lg shadow-primary/20 flex items-center justify-center'
       : 'w-full py-3 rounded-xl border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all flex items-center justify-center';
 
-    return '<a href="cadastro.html" class="plan-card bg-white rounded-2xl p-6 flex flex-col relative shadow-sm block reveal ' + (p.destaque ? 'destaque shadow-primary/10' : '') + '">'
+    return '<a href="cadastro.html" class="plan-card bg-white rounded-2xl p-6 flex flex-col relative shadow-sm block ' + (p.destaque ? 'destaque shadow-primary/10' : '') + '">'
       + badgeHtml
       + '<div class="mb-4">'
       + '<p class="text-xs font-extrabold uppercase tracking-widest ' + (p.destaque ? 'text-primary' : 'text-gray-400') + ' mb-0.5">' + p.nome + '</p>'
