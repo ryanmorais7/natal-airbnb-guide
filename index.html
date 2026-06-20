@@ -48,6 +48,9 @@ body { font-family: 'Nunito Sans', sans-serif; scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
 }
+#mock-field-pass.mock-hover-field > div { border-color: #4A6741; box-shadow: 0 0 0 3px rgba(74,103,65,.15); }
+.mock-hover-theme { transform: scale(1.18); box-shadow: 0 0 0 3px rgba(74,103,65,.35); }
+#mock-save-btn.mock-hover-save { background: #3d5536; box-shadow: 0 6px 14px -4px rgba(74,103,65,.5); transform: translateY(-1px); }
 details > summary { list-style: none; cursor: pointer; }
 details > summary::-webkit-details-marker { display: none; }
 details summary .chevron { transition: transform .2s; }
@@ -238,6 +241,78 @@ details[open] summary .chevron { transform: rotate(180deg); }
         <h3 class="font-bold text-gray-900 mb-1.5">O link expira sozinho</h3>
         <p class="text-sm text-gray-500 leading-relaxed">No check-out, o acesso some — e você ganhou de volta o seu tempo.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ MOCKUP DO PAINEL ════════════════ -->
+<section id="painel-preview" class="bg-stone-50">
+  <div class="max-w-5xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+    <div class="text-center max-w-2xl mx-auto mb-12 reveal">
+      <h2 class="font-serif text-3xl sm:text-4xl text-gray-900 mb-3">Veja o painel por dentro</h2>
+      <p class="text-gray-500">Preencha os dados, escolha o visual e salve. Sem curva de aprendizado, sem manual.</p>
+    </div>
+
+    <div class="max-w-3xl mx-auto reveal">
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+
+        <div class="flex items-center justify-between px-5 py-3 border-b border-gray-100">
+          <div class="flex items-center gap-2">
+            <img src="assets/airguia-favicon.png" class="w-6 h-6 rounded-lg" alt=""/>
+            <span class="font-bold text-sm text-gray-800">Zamio</span>
+          </div>
+          <span class="text-[11px] font-bold text-primary border-2 border-primary/30 rounded-lg px-3 py-1.5 flex items-center gap-1">
+            <span class="material-icons-outlined" style="font-size:14px">visibility</span>
+            <span class="hidden sm:inline">Ver Guia</span>
+          </span>
+        </div>
+
+        <div class="flex">
+          <div class="hidden sm:block w-36 border-r border-gray-100 py-3 px-2 flex-shrink-0">
+            <div class="px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 mb-1"><span class="material-icons-outlined" style="font-size:16px">tune</span>Geral</div>
+            <div class="px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 mb-1"><span class="material-icons-outlined" style="font-size:16px">cleaning_services</span>Limpeza</div>
+            <div class="px-2.5 py-2 rounded-lg text-xs font-bold text-primary bg-primary/10 flex items-center gap-2 mb-1"><span class="material-icons-outlined" style="font-size:16px">wifi</span>Wi-Fi</div>
+            <div class="px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 mb-1"><span class="material-icons-outlined" style="font-size:16px">palette</span>Aparência</div>
+            <div class="px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2"><span class="material-icons-outlined" style="font-size:16px">key</span>Acesso</div>
+          </div>
+
+          <div class="flex-1 p-5 sm:p-6 relative" id="mock-stage">
+            <p class="font-serif text-lg text-gray-900 mb-1">Wi-Fi</p>
+            <p class="text-xs text-gray-400 mb-4">Dados da rede que aparecem no guia do hóspede.</p>
+
+            <div class="space-y-3 mb-5">
+              <div>
+                <label class="text-[10px] font-bold uppercase text-gray-400">Nome da Rede</label>
+                <div class="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white mt-1">Zamio_5G</div>
+              </div>
+              <div id="mock-field-pass">
+                <label class="text-[10px] font-bold uppercase text-gray-400">Senha</label>
+                <div class="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white mt-1 transition-all">••••••••</div>
+              </div>
+            </div>
+
+            <p class="text-[10px] font-bold uppercase text-gray-400 mb-2">Tema</p>
+            <div class="flex gap-2 mb-6">
+              <span class="w-7 h-7 rounded-full bg-[#4A6741] border-2 border-white shadow transition-all"></span>
+              <span id="mock-theme-2" class="w-7 h-7 rounded-full bg-[#3D6680] border-2 border-white shadow transition-all"></span>
+              <span class="w-7 h-7 rounded-full bg-[#A45A3C] border-2 border-white shadow transition-all"></span>
+              <span class="w-7 h-7 rounded-full bg-[#6B4E71] border-2 border-white shadow transition-all"></span>
+            </div>
+
+            <span id="mock-save-btn" class="inline-flex items-center gap-2 bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+              <span class="material-icons-outlined" style="font-size:15px">save</span>Salvar
+            </span>
+
+            <div id="mock-cursor" class="absolute pointer-events-none transition-all duration-700 ease-in-out" style="left:0; top:0; opacity:0;">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 3px rgba(0,0,0,.35))">
+                <path d="M2 1L2 18L6.5 14.5L9.5 20.5L12.5 19L9.5 13L15.5 12.5L2 1Z" fill="white" stroke="#1f2937" stroke-width="1.2" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-center text-xs text-gray-400 mt-4">Demonstração ilustrativa do painel — não conectada a dados reais</p>
     </div>
   </div>
 </section>
@@ -670,6 +745,63 @@ lpRenderPlanos();
   }, { threshold: 0.4 });
 
   counters.forEach(function (el) { counterObserver.observe(el); });
+})();
+
+// ── Mockup do painel: cursor animado ────────────────────────────────────
+(function initPanelMockup() {
+  var section = document.getElementById('painel-preview');
+  var stage   = document.getElementById('mock-stage');
+  var cursor  = document.getElementById('mock-cursor');
+  if (!section || !stage || !cursor) return;
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var points = [
+    { el: document.getElementById('mock-field-pass'), hoverClass: 'mock-hover-field' },
+    { el: document.getElementById('mock-theme-2'),    hoverClass: 'mock-hover-theme' },
+    { el: document.getElementById('mock-save-btn'),   hoverClass: 'mock-hover-save'  }
+  ];
+
+  function moveCursorTo(el) {
+    var stageRect = stage.getBoundingClientRect();
+    var elRect    = el.getBoundingClientRect();
+    cursor.style.left = (elRect.left - stageRect.left + elRect.width  * 0.55) + 'px';
+    cursor.style.top  = (elRect.top  - stageRect.top  + elRect.height * 0.55) + 'px';
+    cursor.style.opacity = '1';
+  }
+
+  var idx = 0;
+  var running = false;
+  var timer = null;
+
+  function tick() {
+    var point = points[idx];
+    moveCursorTo(point.el);
+    point.el.classList.add(point.hoverClass);
+    timer = setTimeout(function () {
+      point.el.classList.remove(point.hoverClass);
+      idx = (idx + 1) % points.length;
+      timer = setTimeout(tick, 250);
+    }, 1500);
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+    moveCursorTo(points[0].el);
+    timer = setTimeout(tick, 700);
+  }
+
+  var sectionObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) start();
+    });
+  }, { threshold: 0.3 });
+  sectionObserver.observe(section);
+
+  window.addEventListener('resize', function () {
+    if (running) moveCursorTo(points[idx].el);
+  });
 })();
 </script>
 </body>
