@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 tailwind.config = {
   theme: {
@@ -97,6 +98,10 @@ body { font-family: 'Nunito Sans', sans-serif; }
 </div>
 
 <script>
+const SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
+const sb = window.supabase.createClient(SB_URL, SB_KEY);
+
 function maskPhone(el) {
   let v = el.value.replace(/\D/g, '').slice(0, 11);
   if (v.length <= 10) v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
@@ -116,7 +121,7 @@ function showError(msg) {
   document.getElementById('error-msg').classList.remove('hidden');
 }
 
-function avancar() {
+async function avancar() {
   const email   = document.getElementById('reg-email').value.trim();
   const senha   = document.getElementById('reg-senha').value;
   const celular = document.getElementById('reg-celular').value.trim();
@@ -130,6 +135,10 @@ function avancar() {
   sessionStorage.setItem('zreg_email',   email);
   sessionStorage.setItem('zreg_senha',   senha);
   sessionStorage.setItem('zreg_celular', celular);
+
+  try {
+    await sb.from('leads').upsert({ email, phone: celular }, { onConflict: 'email', ignoreDuplicates: true });
+  } catch (e) { /* não bloqueia o cadastro se o registro do lead falhar */ }
 
   location.href = 'planos.html';
 }
