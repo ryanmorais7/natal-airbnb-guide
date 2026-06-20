@@ -512,6 +512,14 @@ function renderHosts(hosts) {
             title="Gerar cartão imprimível">
             <span class="material-icons-outlined" style="font-size:14px">print</span>
           </button>
+          ${(!h.is_admin && !h.is_demo && h.subscription_status === 'authorized')
+            ? `<button onclick="cancelarAssinatura('${h.id}', '${escAttr(h.property_name || h.email || '')}')"
+                class="action-btn bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white"
+                title="Cancelar assinatura">
+                <span class="material-icons-outlined" style="font-size:14px">cancel</span>
+              </button>`
+            : ''
+          }
           <button onclick="deleteHost('${h.id}', '${escAttr(h.email || '')}')"
             class="action-btn bg-red-50 text-red-400 hover:bg-red-500 hover:text-white"
             title="Excluir anfitrião">
@@ -898,6 +906,29 @@ async function deleteHost(hostId, email) {
   delete allContent[hostId];
   renderHosts(allHosts);
   showToast('Anfitrião removido.');
+}
+
+// ── Cancelar assinatura ─────────────────────────────────────────────────
+async function cancelarAssinatura(hostId, nome) {
+  if (!confirm(`Cancelar a assinatura de "${nome}"?\n\nAs cobranças futuras no Mercado Pago param imediatamente, e o painel e o guia desse anfitrião ficam bloqueados.`)) return;
+
+  const { data: { session } } = await sb.auth.getSession();
+  try {
+    const res = await fetch(SB_URL + '/functions/v1/cancelar-assinatura', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ hostId }),
+    });
+    const result = await res.json();
+    if (!result.ok) { showToast(result.message || 'Erro ao cancelar.'); return; }
+
+    const h = allHosts.find(x => x.id === hostId);
+    if (h) { h.subscription_status = 'cancelled'; h.plan_active = false; }
+    renderHosts(allHosts);
+    showToast('Assinatura cancelada.');
+  } catch (e) {
+    showToast('Erro de conexão.');
+  }
 }
 
 // ── Logout ────────────────────────────────────────────────────────────
