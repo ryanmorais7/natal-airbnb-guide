@@ -1025,6 +1025,15 @@ async function enviarConvite() {
     return;
   }
 
+  if (_inviteTipo === 'livre') {
+    // Acesso livre (parceria/influencer) entra direto com o plano Pro completo, sem cobrança
+    await sb.from('hosts').update({
+      plan_id:     'pro',
+      plan_name:   'Pro (Parceria)',
+      plan_active: true,
+    }).eq('email', email);
+  }
+
   const msg = _inviteTipo === 'pagamento'
     ? 'Link enviado para ' + email + '. O anfitrião precisará escolher um plano antes de acessar o painel.'
     : 'Link enviado para ' + email + '. O anfitrião terá acesso imediato ao painel ao clicar no e-mail.';

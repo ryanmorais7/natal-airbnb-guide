@@ -1120,10 +1120,11 @@ Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e dire�
                 c    = data.content;
             } else if (OWNER_SLUG) {
                 // Acesso via slug (preview do anfitrião / demo)
-                var hostRes = await sb.from('hosts').select('id, property_name, subscription_status, is_demo, is_admin').eq('slug', OWNER_SLUG).single();
+                var hostRes = await sb.from('hosts').select('id, property_name, subscription_status, trial_ends_at, is_demo, is_admin').eq('slug', OWNER_SLUG).single();
                 if (!hostRes.data) { showAccessError('invalid'); return; }
                 host = hostRes.data;
-                if (host.subscription_status && host.subscription_status !== 'authorized' && !host.is_demo && !host.is_admin) {
+                var trialExpired = host.trial_ends_at && new Date(host.trial_ends_at) < new Date() && host.subscription_status !== 'authorized';
+                if (!host.is_demo && !host.is_admin && ((host.subscription_status && host.subscription_status !== 'authorized') || trialExpired)) {
                     showAccessError('inactive');
                     return;
                 }

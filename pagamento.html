@@ -103,14 +103,12 @@ body { font-family: 'Nunito Sans', sans-serif; }
       <span id="error-text"></span>
     </div>
 
-    <p class="text-sm text-gray-500 leading-relaxed">
-      Você será redirecionado para o ambiente seguro do Mercado Pago para informar os dados do cartão e confirmar a assinatura. Nenhum dado de pagamento é coletado pelo AirGuia.
-    </p>
+    <p id="payment-explain" class="text-sm text-gray-500 leading-relaxed"></p>
 
     <button id="btn-pagar" onclick="continuar()"
       class="w-full bg-primary text-white font-bold py-4 rounded-2xl hover:bg-primary-light active:scale-[.98] transition-all flex items-center justify-center gap-2 text-sm shadow-xl shadow-primary/25 mt-2">
       <span class="material-icons-outlined text-base">lock</span>
-      Continuar para pagamento seguro
+      Continuar
     </button>
 
   </div>
@@ -175,12 +173,16 @@ function setStartMode(mode) {
   document.getElementById('opt-direct-check').classList.toggle('hidden', withTrial);
   const btn = document.getElementById('btn-pagar');
   btn.innerHTML = '<span class="material-icons-outlined text-base">lock</span>' + (withTrial ? 'Começar 7 dias grátis' : 'Assinar agora');
+  document.getElementById('payment-explain').textContent = withTrial
+    ? 'Você terá acesso completo ao painel por 7 dias, sem precisar cadastrar cartão. Se quiser continuar depois do teste, escolhe um plano direto no painel.'
+    : 'Você será redirecionado para o ambiente seguro do Mercado Pago para informar os dados do cartão e confirmar a assinatura. Nenhum dado de pagamento é coletado pelo AirGuia.';
 }
 
 if (!email || !planoId) location.href = isInvite ? 'login.html' : 'cadastro.html';
 
 document.getElementById('resumo-nome').textContent  = 'Plano ' + (planoNome || '') + ' · ' + (planoPeriodo === 'anual' ? 'Anual' : 'Mensal');
 document.getElementById('resumo-preco').textContent = 'R$ ' + (planoPreco || '');
+setStartMode('trial');
 
 function showError(msg) {
   document.getElementById('error-text').textContent = msg;
@@ -232,6 +234,28 @@ async function continuar() {
 
   if (!userId) { showError('Não foi possível identificar sua conta. Tente novamente.'); return; }
 
+  ['zreg_email','zreg_senha','zreg_celular','zreg_plano_id','zreg_plano_nome','zreg_plano_preco','zreg_plano_periodo','zreg_invite']
+    .forEach(k => sessionStorage.removeItem(k));
+
+  // 7 dias grátis: acesso imediato no painel, sem cartão e sem passar pelo Mercado Pago
+  if (withTrial) {
+    const trialUpd = {
+      plan_id:             planoId,
+      plan_name:           planoNome + ' (Teste grátis)',
+      plan_active:         true,
+      plan_started_at:     new Date().toISOString(),
+      subscription_status: null,
+      subscription_id:     null,
+      trial_ends_at:       new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+    if (celular) trialUpd.phone = celular;
+    await sb.from('hosts').update(trialUpd).eq('id', userId);
+
+    location.href = 'painel.html';
+    return;
+  }
+
+  // Começar agora: cobrança imediata, segue para o Mercado Pago
   const planoUpd = {
     plan_id:             planoId,
     plan_name:           planoNome + ' ' + (planoPeriodo === 'anual' ? '(Anual)' : '(Mensal)'),
@@ -247,7 +271,7 @@ async function continuar() {
     const res = await fetch(SB_URL + '/functions/v1/criar-assinatura', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SB_KEY },
-      body: JSON.stringify({ email, planoId, planoPeriodo, withTrial, hostId: userId }),
+      body: JSON.stringify({ email, planoId, planoPeriodo, withTrial: false, hostId: userId }),
     });
     result = await res.json();
   } catch (e) {
@@ -262,11 +286,7 @@ async function continuar() {
 
   await sb.from('hosts').update({
     subscription_id: result.subscriptionId,
-    trial_ends_at:   result.trialEndsAt || null,
   }).eq('id', userId);
-
-  ['zreg_email','zreg_senha','zreg_celular','zreg_plano_id','zreg_plano_nome','zreg_plano_preco','zreg_plano_periodo','zreg_invite']
-    .forEach(k => sessionStorage.removeItem(k));
 
   document.getElementById('overlay-redirect').classList.remove('hidden');
   location.href = result.initPoint;

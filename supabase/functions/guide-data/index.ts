@@ -51,11 +51,16 @@ serve(async (req) => {
 
     const { data: host } = await sb
       .from("hosts")
-      .select("id, property_name, subscription_status, is_demo, is_admin")
+      .select("id, property_name, subscription_status, trial_ends_at, is_demo, is_admin")
       .eq("id", gt.host_id)
       .single();
 
-    if (host && host.subscription_status && host.subscription_status !== "authorized" && !host.is_demo && !host.is_admin) {
+    const trialExpired = !!host?.trial_ends_at
+      && new Date(host.trial_ends_at) < new Date()
+      && host.subscription_status !== "authorized";
+
+    if (host && !host.is_demo && !host.is_admin
+      && ((host.subscription_status && host.subscription_status !== "authorized") || trialExpired)) {
       return json({ ok: false, error: "inactive" }, 403);
     }
 

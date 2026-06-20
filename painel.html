@@ -1042,8 +1042,11 @@ async function init() {
     document.getElementById('cancelar-assinatura-wrap').classList.remove('hidden');
   }
 
-  const subStatus = hostData.subscription_status;
-  const subBlocked = subStatus && subStatus !== 'authorized' && !hostData.is_demo && !hostData.is_admin;
+  const subStatus    = hostData.subscription_status;
+  const trialEndsAt  = hostData.trial_ends_at ? new Date(hostData.trial_ends_at).getTime() : null;
+  const trialExpired = trialEndsAt !== null && trialEndsAt < Date.now() && subStatus !== 'authorized';
+  const subBlocked   = !hostData.is_demo && !hostData.is_admin
+    && ((subStatus && subStatus !== 'authorized') || trialExpired);
   if (subBlocked) {
     document.getElementById('sub-block-modal').classList.remove('hidden');
     if (subStatus === 'pending') {
@@ -1057,6 +1060,17 @@ async function init() {
       document.getElementById('sub-block-action').classList.remove('bg-red-500', 'hover:bg-red-600', 'shadow-red-500/25');
       document.getElementById('sub-block-action').classList.add('bg-primary', 'hover:bg-primary-light', 'shadow-primary/25');
       document.getElementById('sub-block-action').onclick = () => location.reload();
+    } else if (trialExpired && !(subStatus && subStatus !== 'authorized')) {
+      document.getElementById('sub-block-icon-wrap').className = 'w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4';
+      document.getElementById('sub-block-icon').className = 'material-icons-outlined text-primary';
+      document.getElementById('sub-block-icon').textContent = 'schedule';
+      document.getElementById('sub-block-title').textContent = 'Seu período de teste acabou';
+      document.getElementById('sub-block-text').textContent = 'Seus 7 dias grátis terminaram. Escolha um plano para continuar usando o painel e manter o guia disponível para seus hóspedes.';
+      document.getElementById('sub-block-action').textContent = 'Ver planos →';
+      document.getElementById('sub-block-action').setAttribute('href', 'planos.html');
+      document.getElementById('sub-block-action').classList.remove('bg-red-500', 'hover:bg-red-600', 'shadow-red-500/25');
+      document.getElementById('sub-block-action').classList.add('bg-primary', 'hover:bg-primary-light', 'shadow-primary/25');
+      document.getElementById('sub-block-action').onclick = null;
     }
   }
 
