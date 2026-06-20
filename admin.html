@@ -497,7 +497,7 @@ function renderHosts(hosts) {
 
         <!-- Actions: envolve para baixo no mobile, fica ao lado no desktop -->
         <div class="flex items-center gap-2 w-full sm:w-auto border-t border-gray-100 sm:border-0 pt-3 sm:pt-0 mt-1 sm:mt-0">
-          <a href="index.html" target="_blank"
+          <a href="guia.html" target="_blank"
             class="action-btn bg-gray-100 text-gray-600 hover:bg-gray-200 flex-1 sm:flex-none justify-center sm:justify-start">
             <span class="material-icons-outlined" style="font-size:14px">open_in_new</span>
             Ver Guia
@@ -533,8 +533,8 @@ function gerarCartaoAdmin(hostId) {
   const propName  = c.property_name || h.property_name || 'Propriedade';
   const slug      = h.slug || '';
   const guideUrl  = slug
-    ? location.href.replace('admin.html', 'index.html') + '?h=' + slug
-    : location.href.replace('admin.html', 'index.html');
+    ? location.href.replace('admin.html', 'guia.html') + '?h=' + slug
+    : location.href.replace('admin.html', 'guia.html');
   const cor       = (c.theme_color || '#4A6741').replace('#', '');
   const corHex    = '#' + cor;
   const wifiQrData = 'WIFI:T:WPA;S:' + wifiName + ';P:' + wifiPass + ';;';

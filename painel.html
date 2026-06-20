@@ -60,7 +60,7 @@ tailwind.config = {
     <span id="header-prop" class="text-sm font-semibold text-gray-500 hidden sm:block">Carregando...</span>
   </div>
   <div class="flex items-center gap-3">
-    <a id="ver-guia-link" href="index.html" target="_blank"
+    <a id="ver-guia-link" href="guia.html" target="_blank"
       class="flex items-center gap-1.5 text-xs font-bold text-primary border-2 border-primary/30 px-3 py-2 rounded-xl hover:bg-primary hover:text-white hover:border-primary transition-all">
       <span class="material-icons-outlined" style="font-size:16px">visibility</span>
       <span class="hidden sm:inline">Ver Guia</span>
@@ -268,7 +268,7 @@ tailwind.config = {
         <div>
           <label class="field-label">Slug (link do guia)</label>
           <div class="flex gap-2">
-            <span class="flex items-center text-sm text-gray-400 bg-gray-100 rounded-l-xl px-3 border border-r-0 border-gray-200 flex-shrink-0 rounded-xl" style="border-radius:12px 0 0 12px">index.html?h=</span>
+            <span class="flex items-center text-sm text-gray-400 bg-gray-100 rounded-l-xl px-3 border border-r-0 border-gray-200 flex-shrink-0 rounded-xl" style="border-radius:12px 0 0 12px">guia.html?h=</span>
             <input id="g-slug" class="field-input" style="border-radius:0 12px 12px 0;border-left:none" placeholder="zamio" type="text" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')"/>
           </div>
           <p class="text-xs text-gray-400 mt-1.5">Somente letras minúsculas, números e hífens. Ex: <strong>casa-praia</strong></p>
@@ -897,7 +897,7 @@ let editIndex = -1;
 const LIST_KEYS = ['restaurantes','mercados','farmacias','atividades','academias','lavanderias','emergencia'];
 
 // ── Reservas (tokens de hóspede) ─────────────────────────────────────
-const GUIDE_BASE = location.origin + '/index.html';
+const GUIDE_BASE = location.origin + '/guia.html';
 
 async function loadReservas() {
   const { data: tokens } = await sb.from('guest_tokens')
@@ -2428,7 +2428,7 @@ async function saveAcesso() {
 function guiaBaseUrl(withVersion) {
   const slug = hostData.slug || '';
   const base = location.href.replace(/painel\.html.*$/, '');
-  let url = base + 'index.html' + (slug ? '?h=' + encodeURIComponent(slug) : '');
+  let url = base + 'guia.html' + (slug ? '?h=' + encodeURIComponent(slug) : '');
   if (withVersion) url += (slug ? '&' : '?') + 'v=' + Date.now();
   return url;
 }
@@ -2458,7 +2458,7 @@ function gerarCartao() {
   const wifiName  = g('w-name') || content.wifi_name     || '';
   const wifiPass  = g('w-pass') || content.wifi_password || '';
   const propName  = hostData.property_name || 'Minha Propriedade';
-  const guideUrl  = location.href.replace('painel.html', 'index.html');
+  const guideUrl  = location.href.replace('painel.html', 'guia.html');
   const cor       = (content.theme_color || '#4A6741').replace('#', '');
   const corHex    = '#' + cor;
   const qrSrc     = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=${cor}&bgcolor=ffffff&data=${encodeURIComponent(guideUrl)}&margin=0`;

@@ -1,1355 +1,545 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-<meta http-equiv="Pragma" content="no-cache"/>
-<meta http-equiv="Expires" content="0"/>
-<title>Guia de Boas-Vindas</title>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AirGuia — Guia digital para hóspedes de Airbnb e temporada</title>
+<meta name="description" content="Crie em minutos um guia digital para seus hóspedes: wifi, acesso, regras e dicas da região, sem precisar de app. O link expira automaticamente após o check-out. 7 dias grátis."/>
+<meta name="theme-color" content="#4A6741"/>
+<link rel="canonical" href="https://airguia.com.br/"/>
+
+<meta property="og:type" content="website"/>
+<meta property="og:locale" content="pt_BR"/>
+<meta property="og:title" content="AirGuia — Guia digital para hóspedes de Airbnb e temporada"/>
+<meta property="og:description" content="Pare de responder a mesma pergunta no WhatsApp pra cada hóspede novo. O AirGuia entrega wifi, acesso, regras e dicas da região automaticamente — e o link expira sozinho após o check-out."/>
+<meta property="og:url" content="https://airguia.com.br/"/>
+<meta property="og:image" content="https://airguia.com.br/assets/Zamiofotoprincipal.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="AirGuia — Guia digital para hóspedes de Airbnb e temporada"/>
+<meta name="twitter:description" content="O guia que responde por você — mesmo enquanto você dorme. Link expira automaticamente após o check-out."/>
+<meta name="twitter:image" content="https://airguia.com.br/assets/Zamiofotoprincipal.png"/>
+
 <link href="assets/airguia-favicon.png" rel="icon" type="image/png"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&amp;family=DM+Serif+Display&amp;family=Nunito+Sans:wght@300;400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#4A6741", // Deep Olive Green from image
-                        "primary-light": "#6B8E61",
-                        "background-light": "#FDFCF5", // Creamy paper color
-                        "background-dark": "#1A1D1A", // Dark charcoal/forest
-                        "card-light": "rgb(var(--card-light-rgb) / <alpha-value>)",
-                        "card-dark": "rgb(var(--card-dark-rgb) / <alpha-value>)",
-                        "text-dark": "#2D3B2A",
-                        "text-light": "#F0F2EB"
-                    },
-                    fontFamily: {
-                        script: ["'Dancing Script'", "cursive"],
-                        serif: ["'DM Serif Display'", "serif"],
-                        sans: ["'Nunito Sans'", "sans-serif"],
-                    },
-                    boxShadow: {
-                        'soft': '0 4px 20px -2px rgba(74, 103, 65, 0.15)',
-                        'inner-soft': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)',
-                    }
-                },
-            },
-        };
-    </script>
-<style>
-        .pennant-card {
-            clip-path: polygon(0% 0%, 100% 0%, 100% 85%, 50% 100%, 0% 85%);
-        }
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(2deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-        .leaf-animate {
-            animation: float 6s ease-in-out infinite;
-        }
-        .hero-zoom {
-            animation: heroZoom 18s ease-in-out infinite alternate;
-        }
-        @keyframes heroZoom {
-            from { transform: scale(1); }
-            to { transform: scale(1.08); }
-        }
-        .album-slide {
-            opacity: 0;
-            transition: opacity 900ms ease;
-        }
-        .album-slide.is-active {
-            opacity: 1;
-        }
-        @keyframes starShimmer {
-            0%, 100% { opacity: 0.55; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.15); }
-        }
-        .star-anim {
-            display: inline-block;
-            animation: starShimmer 2.8s ease-in-out infinite;
-        }
-        @keyframes sunSpin {
-            from { transform: rotate(0deg) scale(1); }
-            50%  { transform: rotate(180deg) scale(1.08); }
-            to   { transform: rotate(360deg) scale(1); }
-        }
-        @keyframes rainDrop {
-            0%, 100% { transform: translateY(0); opacity: 1; }
-            50% { transform: translateY(5px); opacity: 0.6; }
-        }
-        @keyframes cloudDrift {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(5px); }
-        }
-        @keyframes rainFall {
-            0%   { transform: translateY(-16px) skewX(-8deg); opacity: 0; }
-            12%  { opacity: 0.72; }
-            82%  { opacity: 0.72; }
-            100% { transform: translateY(320px) skewX(-8deg); opacity: 0; }
-        }
-        .rdrop { position: absolute; width: 2.5px; border-radius: 999px; pointer-events: none; animation: rainFall linear infinite; }
-        .sun-spin { display: inline-block; animation: sunSpin 6s ease-in-out infinite; }
-        .rain-drop { animation: rainDrop 1.4s ease-in-out infinite; }
-        .cloud-drift { animation: cloudDrift 4s ease-in-out infinite; }
-    </style>
-<style id="theme-vars">
-/* CSS variables para tema dinâmico — sobrescreve as classes Tailwind de primary */
-:root {
-  --p: #4A6741; --pl: #6B8E61;
-  /* tons "card" — tingidos com a cor do tema (atualizados via JS), fallback = sage padrão */
-  --card-light-rgb: 233 238 217;
-  --card-light2-rgb: 224 230 196;
-  --card-dark-rgb: 44 51 43;
-  --card-dark2-rgb: 53 61 49;
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: { primary: "#4A6741", "primary-light": "#6B8E61" },
+      fontFamily: { serif: ["'DM Serif Display'","serif"], sans: ["'Nunito Sans'","sans-serif"] }
+    }
+  }
 }
-.bg-primary                    { background-color: var(--p)  !important; }
-.text-primary                  { color:            var(--p)  !important; }
-.border-primary                { border-color:     var(--p)  !important; }
-.bg-primary-light              { background-color: var(--pl) !important; }
-.text-primary-light            { color:            var(--pl) !important; }
-.border-primary-light          { border-color:     var(--pl) !important; }
-.hover\:bg-primary:hover       { background-color: var(--p)  !important; }
-.hover\:text-primary:hover     { color:            var(--p)  !important; }
-.hover\:bg-primary-light:hover { background-color: var(--pl) !important; }
-.selection\:bg-primary::selection { background-color: var(--p) !important; }
-.ring-primary                  { --tw-ring-color:  var(--p)  !important; }
-.bg-primary\/5  { background-color: color-mix(in srgb, var(--p)  5%,  transparent) !important; }
-.bg-primary\/10 { background-color: color-mix(in srgb, var(--p)  10%, transparent) !important; }
-.bg-primary\/80 { background-color: color-mix(in srgb, var(--p)  80%, transparent) !important; }
-.text-primary\/50 { color: color-mix(in srgb, var(--p) 50%, transparent) !important; }
-.text-primary\/70 { color: color-mix(in srgb, var(--p) 70%, transparent) !important; }
-.text-primary\/80 { color: color-mix(in srgb, var(--p) 80%, transparent) !important; }
-.border-primary\/10 { border-color: color-mix(in srgb, var(--p) 10%, transparent) !important; }
-.border-primary\/20 { border-color: color-mix(in srgb, var(--p) 20%, transparent) !important; }
-.border-primary-light\/50 { border-color: color-mix(in srgb, var(--pl) 50%, transparent) !important; }
-.hover\:shadow-\[0_12px_30px_-16px_rgba\(74\,103\,65\,0\.5\)\]:hover { box-shadow: 0 12px 30px -16px color-mix(in srgb, var(--p) 50%, transparent) !important; }
+</script>
+<style>
+body { font-family: 'Nunito Sans', sans-serif; scroll-behavior: smooth; }
+.toggle-track { width:48px; height:26px; background:#d1d5db; border-radius:999px; position:relative; cursor:pointer; transition:background .2s; }
+.toggle-track.on { background:#4A6741; }
+.toggle-thumb { width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:3px; left:3px; transition:left .2s; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+.toggle-track.on .toggle-thumb { left:25px; }
+.plan-card { border:2px solid #f3f4f6; }
+.plan-card.destaque { border-color:#4A6741; }
+details > summary { list-style: none; cursor: pointer; }
+details > summary::-webkit-details-marker { display: none; }
+details summary .chevron { transition: transform .2s; }
+details[open] summary .chevron { transform: rotate(180deg); }
+.phone-frame { box-shadow: 0 30px 60px -20px rgba(74,103,65,.35), 0 0 0 1px rgba(0,0,0,.04); }
+@keyframes float { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-10px); } }
+.float { animation: float 5s ease-in-out infinite; }
 </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-text-dark dark:text-text-light transition-colors duration-300 font-sans min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-white scroll-smooth">
-<main class="relative z-10 max-w-7xl mx-auto px-6 pb-20 pt-4">
-<header class="relative overflow-hidden -mx-6 md:-mx-8 lg:-mx-12" style="min-height:96vh">
-<div class="absolute inset-0">
-<img src="assets/Zamiofotoprincipal.png" alt="Zamio" class="hero-zoom w-full h-full object-cover object-center"/>
-<!-- gradiente lateral esquerdo — legibilidade do texto -->
-<div class="absolute inset-0" style="background:linear-gradient(to right,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.45) 45%,rgba(0,0,0,0.05) 100%)"></div>
-<!-- gradiente inferior — fade para fundo da página -->
-<div class="absolute inset-x-0 bottom-0" style="height:65%;background:linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.65) 28%,rgba(0,0,0,0.2) 60%,transparent 100%)"></div>
-<!-- fade final para cor de fundo da página -->
-<div class="absolute inset-x-0 bottom-0 h-24" style="background:linear-gradient(to top,#FDFCF5 0%,transparent 100%)"></div>
-</div>
+<body class="bg-stone-50 text-gray-800">
 
-<!-- badge topo esquerdo -->
-<div class="absolute top-12 md:top-6 left-6 md:left-14 z-10">
-<span class="text-xs font-bold uppercase tracking-[0.35em] text-primary-light border border-primary-light/50 px-4 py-2 rounded-sm backdrop-blur-sm bg-black/20" data-i18n="badge.guest_guide">Guia do Hóspede</span>
-</div>
-
-<!-- seletor de idioma topo direito -->
-<div class="absolute top-12 md:top-6 right-6 md:right-14 z-20 flex items-center gap-1 bg-white/90 backdrop-blur-sm shadow-lg rounded-full px-3 py-2 border border-primary/25 ring-1 ring-black/5" id="lang-picker">
-  <span class="material-icons-outlined text-primary mr-1" style="font-size:17px">language</span>
-  <button onclick="_setLang('pt')" data-lang="pt" class="lang-btn w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-150 hover:scale-110 hover:bg-primary/10" title="Português">🇧🇷</button>
-  <button onclick="_setLang('en')" data-lang="en" class="lang-btn w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-150 hover:scale-110 hover:bg-primary/10" title="English">🇺🇸</button>
-  <button onclick="_setLang('es')" data-lang="es" class="lang-btn w-8 h-8 rounded-full flex items-center justify-center text-base transition-all duration-150 hover:scale-110 hover:bg-primary/10" title="Español">🇪🇸</button>
-</div>
-
-<!-- conteúdo principal — embaixo-esquerda estilo Netflix -->
-<div class="relative z-10 flex flex-col justify-end px-6 md:px-14 pb-20 md:pb-28" style="min-height:96vh">
-<h1 id="dyn-hero-title" class="font-serif font-bold text-white leading-none mb-4 text-2xl sm:text-4xl lg:text-5xl xl:text-[4rem]" style="text-shadow:0 6px 50px rgba(0,0,0,0.55)">Bem-vindo ao Zamio</h1>
-<p class="text-white/80 text-base md:text-lg leading-relaxed max-w-md mb-8" data-i18n="hero.tagline">
-Tudo que você precisa para uma chegada tranquila: acesso, Wi-Fi, regras e direções reunidos aqui.
-</p>
-<div class="flex flex-wrap gap-3 items-center">
-<a href="#guia" class="inline-flex items-center gap-2 bg-white text-primary-light font-bold px-8 py-3 rounded-full font-sans text-sm md:text-base hover:bg-white/90 transition-colors shadow-lg">
-<span class="material-icons-outlined text-xl">play_arrow</span>
-<span data-i18n="hero.cta">Acessar Guia</span>
-</a>
-</div>
-</div>
-
-<!-- scroll hint -->
-<div class="absolute bottom-28 right-8 md:right-14 z-10 flex flex-col items-center gap-1 text-white/30 pointer-events-none">
-<span class="text-[9px] uppercase tracking-widest" data-i18n="hero.scroll_hint">rolar</span>
-<span class="material-icons-outlined animate-bounce text-sm">keyboard_arrow_down</span>
-</div>
+<!-- ════════════════ HEADER ════════════════ -->
+<header class="sticky top-0 z-40 bg-white/90 backdrop-blur-sm border-b border-gray-100">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+    <img src="assets/airguia-logo-horizontal.png" alt="AirGuia" class="h-7"/>
+    <nav class="hidden md:flex items-center gap-7 text-sm font-bold text-gray-600">
+      <a href="#como-funciona" class="hover:text-primary transition-colors">Como funciona</a>
+      <a href="#funcionalidades" class="hover:text-primary transition-colors">Funcionalidades</a>
+      <a href="#seguranca" class="hover:text-primary transition-colors">Segurança</a>
+      <a href="#planos" class="hover:text-primary transition-colors">Planos</a>
+      <a href="#faq" class="hover:text-primary transition-colors">FAQ</a>
+    </nav>
+    <div class="flex items-center gap-2 sm:gap-3">
+      <a href="login.html" class="hidden sm:inline text-sm font-bold text-gray-500 hover:text-primary transition-colors">Entrar</a>
+      <a href="cadastro.html" class="bg-primary text-white text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl hover:bg-primary-light transition-colors shadow-sm">
+        Criar conta grátis
+      </a>
+    </div>
+  </div>
 </header>
-<section class="mt-10 max-w-3xl mx-auto text-center">
-<p class="font-script text-4xl md:text-5xl text-primary/80 mb-6" data-i18n="welcome.heading">- Boas-Vindas -</p>
-<div class="inline-block bg-primary text-white px-8 py-3 rounded-full shadow-lg">
-<p class="font-sans text-sm md:text-base font-medium tracking-wide" data-i18n="welcome.tagline">
-                    Preparamos este guia para tornar a sua estadia mais confortável e tranquila.
-                </p>
-</div>
-</section>
-<section class="mt-12 w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4" id="guia">
-<div class="group bg-card-light/70 dark:bg-card-dark/70 rounded-[2rem] p-6 shadow-soft border border-primary/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-16px_rgba(74,103,65,0.5)]">
-<span class="material-icons-outlined text-primary text-4xl mb-3 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110 group-hover:rotate-[-4deg]">schedule</span>
-<h3 class="font-serif text-2xl text-primary font-bold mb-2" data-i18n="card.checkin.title">Check-in / Check-out</h3>
-<p class="text-sm text-text-dark/75 dark:text-text-light/75 leading-relaxed" data-i18n="card.checkin.desc">Check-in 13:00 e check-out 11:00. A chegada é pela porta com fechadura eletrônica e o código de acesso é informado neste guia.</p>
-</div>
-<div class="group bg-card-light/70 dark:bg-card-dark/70 rounded-[2rem] p-6 shadow-soft border border-primary/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-16px_rgba(74,103,65,0.5)]">
-<span class="material-icons-outlined text-primary text-4xl mb-3 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110 group-hover:rotate-[-4deg]">wifi</span>
-<h3 class="font-serif text-2xl text-primary font-bold mb-2" data-i18n="card.wifi.title">Wi-Fi</h3>
-<p class="text-sm text-text-dark/75 dark:text-text-light/75 leading-relaxed" data-i18n="card.wifi.desc">Internet de alta velocidade disponível em toda a propriedade, Rede e senha logo abaixo.</p>
-</div>
-<div class="group bg-card-light/70 dark:bg-card-dark/70 rounded-[2rem] p-6 shadow-soft border border-primary/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-16px_rgba(74,103,65,0.5)]">
-<span class="material-icons-outlined text-primary text-4xl mb-3 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110 group-hover:rotate-[-4deg]">directions_car</span>
-<h3 class="font-serif text-2xl text-primary font-bold mb-2" data-i18n="card.parking.title">Estacionamento</h3>
-<p class="text-sm text-text-dark/75 dark:text-text-light/75 leading-relaxed" data-i18n="card.parking.desc">Não há vaga privativa de garagem. Os veículos podem ser estacionados em frente ao imóvel, na área pública disponível.</p>
-</div>
-<div class="group bg-card-light/70 dark:bg-card-dark/70 rounded-[2rem] p-6 shadow-soft border border-primary/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_30px_-16px_rgba(74,103,65,0.5)]">
-<span class="material-icons-outlined text-primary text-4xl mb-3 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110 group-hover:rotate-[-4deg]">support_agent</span>
-<h3 class="font-serif text-2xl text-primary font-bold mb-2" data-i18n="card.support.title">Suporte</h3>
-<p class="text-sm text-text-dark/75 dark:text-text-light/75 leading-relaxed" data-i18n="card.support.desc">Se precisar de ajuda, o anfitrião responde rápido. Tudo que importa está reunido neste guia, sem precisar navegar por várias páginas.</p>
-</div>
-</section>
-<section class="mt-12 w-full fotos-zamio">
-<div class="flex items-end justify-between gap-4 mb-5">
-<div>
-<p class="text-sm uppercase tracking-[0.35em] text-primary/50 dark:text-primary-light/70 mb-2" data-i18n="photos.subtitle">Conheça mais do nosso espaço</p>
-<h2 id="dyn-fotos-title" class="font-serif text-3xl md:text-4xl text-primary dark:text-primary-light font-bold">Fotos do Zamio</h2>
-</div>
-</div>
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-<article class="relative overflow-hidden rounded-[2rem] border border-primary/10 shadow-soft bg-card-light dark:bg-card-dark min-h-[340px] md:min-h-[420px]">
-<div class="absolute inset-0 album-slot" id="album-bedroom"></div>
-<div class="absolute inset-0 bg-gradient-to-t from-black/25 via-black/5 to-transparent"></div>
-<div class="absolute top-5 left-5 z-10 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md text-xs md:text-sm uppercase tracking-[0.28em] text-white/90" data-i18n="photos.room.bedroom">Quarto</div>
-</article>
-<article class="relative overflow-hidden rounded-[2rem] border border-primary/10 shadow-soft bg-card-light dark:bg-card-dark min-h-[340px] md:min-h-[420px]">
-<div class="absolute inset-0 album-slot" id="album-kitchen"></div>
-<div class="absolute inset-0 bg-gradient-to-t from-black/25 via-black/5 to-transparent"></div>
-<div class="absolute top-5 left-5 z-10 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md text-xs md:text-sm uppercase tracking-[0.28em] text-white/90" data-i18n="photos.room.kitchen">Cozinha</div>
-</article>
-<article class="relative overflow-hidden rounded-[2rem] border border-primary/10 shadow-soft bg-card-light dark:bg-card-dark min-h-[340px] md:min-h-[420px]">
-<div class="absolute inset-0 album-slot" id="album-bathroom"></div>
-<div class="absolute inset-0 bg-gradient-to-t from-black/25 via-black/5 to-transparent"></div>
-<div class="absolute top-5 left-5 z-10 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md text-xs md:text-sm uppercase tracking-[0.28em] text-white/90" data-i18n="photos.room.bathroom">Banheiro</div>
-</article>
-</div>
-</section>
-<section class="mt-16 w-full">
-<div class="mb-5">
-<p class="text-sm uppercase tracking-[0.35em] text-primary/50 dark:text-primary-light/70 mb-2" data-i18n="video.subtitle">Tutorial de entrada</p>
-<h2 class="font-serif text-3xl md:text-4xl text-primary dark:text-primary-light font-bold" data-i18n="video.title">Como entrar na casa</h2>
-</div>
-<div class="relative rounded-[2rem] overflow-hidden border border-primary/10 shadow-soft bg-card-light dark:bg-card-dark" style="min-height: 340px;">
-<div id="video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center gap-5 p-8 text-center" style="background:linear-gradient(135deg,rgb(var(--card-light-rgb)) 0%,rgb(var(--card-light2-rgb)) 100%)">
-  <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-    <span class="material-icons-outlined text-primary/50" style="font-size:2.5rem">play_circle</span>
+
+<!-- ════════════════ HERO ════════════════ -->
+<section class="relative overflow-hidden">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 py-14 sm:py-24 grid lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <span class="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full mb-5">
+        <span class="material-icons-outlined" style="font-size:14px">home</span>
+        Para anfitriões de Airbnb e temporada
+      </span>
+      <h1 class="font-serif text-4xl sm:text-5xl lg:text-[3.4rem] leading-[1.08] text-gray-900 mb-5">
+        Pare de ser o <span class="text-primary">suporte 24h</span> do seu próprio Airbnb
+      </h1>
+      <p class="text-base sm:text-lg text-gray-500 leading-relaxed mb-8 max-w-lg">
+        Wifi, como chegar, código da fechadura, regras da casa, restaurantes por perto... seu guia responde tudo isso pelo hóspede — automaticamente, mesmo enquanto você dorme ou está com outro hóspede no telefone.
+      </p>
+      <div class="flex flex-wrap items-center gap-3 mb-8">
+        <a href="cadastro.html" class="bg-primary text-white font-bold px-7 py-4 rounded-2xl hover:bg-primary-light active:scale-[.98] transition-all shadow-xl shadow-primary/25 flex items-center gap-2">
+          <span class="material-icons-outlined" style="font-size:18px">rocket_launch</span>
+          Criar meu guia grátis
+        </a>
+        <a href="guia.html?h=zamio" target="_blank" class="border-2 border-primary/30 text-primary font-bold px-7 py-4 rounded-2xl hover:bg-primary/5 transition-all flex items-center gap-2">
+          <span class="material-icons-outlined" style="font-size:18px">visibility</span>
+          Ver demo real
+        </a>
+      </div>
+      <p class="text-xs text-gray-400 flex items-center gap-1.5">
+        <span class="material-icons-outlined" style="font-size:14px">check_circle</span>
+        7 dias grátis · sem cartão de crédito pra testar · cancele quando quiser
+      </p>
+    </div>
+
+    <div class="relative flex justify-center lg:justify-end">
+      <div class="float w-[260px] sm:w-[300px] bg-white rounded-[2.2rem] p-2.5 phone-frame">
+        <div class="rounded-[1.7rem] overflow-hidden bg-gray-900 relative">
+          <img src="assets/Zamiofotoprincipal.png" alt="Exemplo real de guia AirGuia" class="w-full h-[460px] sm:h-[540px] object-cover"/>
+          <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70"></div>
+          <div class="absolute top-4 left-4 right-4 text-white">
+            <p class="text-[10px] uppercase tracking-[0.3em] opacity-80">Guia do Hóspede</p>
+            <p class="font-serif text-xl">Zamio</p>
+          </div>
+          <div class="absolute bottom-4 left-4 right-4 bg-white/95 rounded-2xl px-3 py-2.5 flex items-center gap-2 shadow-lg">
+            <span class="material-icons-outlined text-primary" style="font-size:18px">lock_clock</span>
+            <p class="text-[11px] font-bold text-gray-700 leading-tight">Este link expira<br/>após o check-out</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div>
-    <p class="font-serif text-2xl text-primary font-bold mb-2" data-i18n="video.placeholder.title">Tutorial em vídeo</p>
-    <p class="font-sans text-sm leading-relaxed max-w-xs" style="color:#2D3B2A;opacity:.5" data-i18n="video.placeholder.desc">Em breve disponível. Confira as instruções de acesso passo a passo logo abaixo.</p>
+</section>
+
+<!-- ════════════════ O PROBLEMA ════════════════ -->
+<section class="bg-white border-y border-gray-100">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <h2 class="font-serif text-3xl sm:text-4xl text-gray-900 mb-3">Você já respondeu isso hoje?</h2>
+      <p class="text-gray-500">"Qual a senha do wifi?" "Como funciona a fechadura?" "Que horas é o check-in?" Toda estadia nova, as mesmas perguntas — e o seu tempo some no caminho.</p>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <div class="bg-stone-50 rounded-2xl p-6 border border-gray-100">
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:28px">chat_bubble_outline</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">As mesmas perguntas, sempre</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Wifi, acesso, horários — você digita a mesma resposta no WhatsApp toda vez que troca de hóspede.</p>
+      </div>
+      <div class="bg-stone-50 rounded-2xl p-6 border border-gray-100">
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:28px">sentiment_dissatisfied</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Hóspede perdido na chegada</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Sem informação clara, o hóspede chega inseguro — e isso pesa na avaliação que ele deixa depois.</p>
+      </div>
+      <div class="bg-stone-50 rounded-2xl p-6 border border-gray-100">
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:28px">hourglass_empty</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Seu tempo, sempre de plantão</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Cada mensagem respondida é tempo que você não recupera — em vários imóveis, isso vira um segundo trabalho.</p>
+      </div>
+    </div>
   </div>
-</div>
-<!-- VÍDEO: substitua o src pelo link de embed do YouTube -->
-<!-- Exemplo: src="https://www.youtube.com/embed/SEU_VIDEO_ID" -->
-<iframe id="video-acesso" src="" title="Como entrar na casa" class="w-full absolute inset-0" style="min-height: 340px; border: 0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<!-- Vídeo enviado pelo anfitrião pelo painel (substitui o placeholder/iframe quando existir) -->
-<video id="video-acesso-upload" class="hidden w-full h-full absolute inset-0 object-cover" style="min-height: 340px;" controls playsinline></video>
-</div>
-</section>
-<section class="mt-16 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="bg-white/70 dark:bg-card-dark/50 rounded-[2rem] p-8 border border-primary/10 shadow-soft">
-<h2 class="font-serif text-3xl text-primary font-bold mb-5" data-i18n="access.title">Check-in e acesso</h2>
-<div class="grid grid-cols-2 gap-4 mb-6">
-<div class="bg-card-light dark:bg-card-dark rounded-2xl p-5">
-<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-1" data-i18n="access.time_label">Horário</p>
-<p id="dyn-checkin-time" class="font-serif text-2xl font-bold text-primary">13:00 / 11:00</p>
-</div>
-<div id="dyn-code-card" class="bg-primary text-white rounded-2xl p-5">
-<p id="dyn-code-label" class="text-xs uppercase tracking-[0.3em] text-white/60 mb-1">Código</p>
-<p id="dyn-code-value" class="font-mono text-3xl font-bold tracking-[0.2em]">—</p>
-</div>
-</div>
-<div id="dyn-access-info" class="space-y-3 text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed"></div>
-</div>
-<div class="bg-white/70 dark:bg-card-dark/50 rounded-[2rem] p-8 border border-primary/10 shadow-soft">
-<h2 class="font-serif text-3xl text-primary font-bold mb-5" data-i18n="wifi.title">Wi-Fi e suporte</h2>
-<div class="space-y-4">
-<div class="bg-card-light dark:bg-card-dark rounded-2xl p-5">
-<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-1" data-i18n="wifi.network_label">Rede</p>
-<p id="dyn-wifi-name" class="font-serif text-2xl font-bold text-primary">••••••</p>
-</div>
-<div class="bg-primary/5 dark:bg-primary/10 rounded-2xl p-5 border border-primary/10">
-<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-1" data-i18n="wifi.password_label">Senha</p>
-<div class="flex items-center justify-between gap-3">
-  <p id="dyn-wifi-pass" class="font-mono text-3xl font-bold text-primary">••••••••</p>
-  <button onclick="copyWifiPass()" id="btn-copy-wifi" class="flex items-center gap-1.5 text-xs font-bold text-primary border border-primary/20 px-3 py-2 rounded-xl hover:bg-primary hover:text-white transition-colors flex-shrink-0">
-    <span class="material-icons-outlined text-base">content_copy</span><span data-i18n="wifi.copy_btn">Copiar</span>
-  </button>
-</div>
-</div>
-<div class="bg-card-light dark:bg-card-dark rounded-2xl p-5">
-<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-3" data-i18n="wifi.qr_label">QR Code Wi-Fi</p>
-<!-- QR CODE: adicione a imagem do QR code descomentando a linha abaixo e substituindo o src -->
-<!-- <img src="assets/qrcode-wifi.png" alt="QR Code Wi-Fi" class="mx-auto w-40 h-40 rounded-xl" /> -->
-<div class="flex flex-col items-center justify-center border-2 border-dashed border-primary/20 rounded-xl py-6 gap-2 text-primary/30">
-<span class="material-icons-outlined" style="font-size: 3rem;">qr_code_2</span>
-<p class="text-xs text-center px-4" data-i18n="wifi.qr_placeholder">Substitua pela imagem do QR code (ver comentário no HTML)</p>
-</div>
-</div>
-<div class="bg-card-light dark:bg-card-dark rounded-2xl p-5">
-<p class="text-xs uppercase tracking-[0.3em] text-primary/50 mb-2" data-i18n="wifi.contact_label">Contato</p>
-<p class="text-sm md:text-base text-text-dark/80 dark:text-text-light/80" data-i18n="wifi.contact_desc">Fale com o anfitrião sempre que precisar de ajuda. A resposta costuma ser rápida e o suporte está preparado para tirar dúvidas do check-in ao check-out.</p>
-</div>
-</div>
-</div>
-</section>
-<section class="mt-16 w-full bg-card-light/50 dark:bg-card-dark/50 rounded-[2.5rem] p-8 md:p-10 border border-primary/10 shadow-soft">
-<h2 class="font-serif text-3xl md:text-4xl text-primary font-bold mb-6" data-i18n="rules.title">Regras da casa</h2>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="bg-white/70 dark:bg-background-dark/50 rounded-2xl p-6 border border-primary/10">
-<h3 class="font-serif text-2xl text-primary font-bold mb-3" data-i18n="rules.general.title">Geral e segurança</h3>
-<ul class="space-y-3 text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed">
-<li data-i18n="rules.general.item1">• Tranque portas e janelas ao sair.</li>
-<li data-i18n="rules.general.item2">• Desligue ar-condicionado e luzes quando não estiver em casa.</li>
-<li data-i18n="rules.general.item3">• Número máximo de hóspedes: 2 pessoas.</li>
-</ul>
-</div>
-<div class="bg-white/70 dark:bg-background-dark/50 rounded-2xl p-6 border border-primary/10">
-<h3 class="font-serif text-2xl text-primary font-bold mb-3" data-i18n="rules.trash.title">Lixo e Organização</h3>
-<ul class="space-y-3 text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed">
-<li data-i18n="rules.trash.item1">• Ao final da estadia, pedimos a gentileza de retirar o lixo da cozinha e do banheiro.</li>
-<li data-i18n="rules.trash.item2">• Antes de sair, confira portas, janelas, luzes e ar-condicionado para deixar tudo organizado para o próximo hóspede.</li>
-<li data-i18n="rules.trash.item3">• Obrigado pela colaboração e por cuidar do espaço.</li>
-</ul>
-</div>
-</div>
-</section>
-<section class="mt-16 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="bg-white/70 dark:bg-card-dark/50 rounded-[2rem] p-8 border border-primary/10 shadow-soft">
-<h2 class="font-serif text-3xl text-primary font-bold mb-4" data-i18n="amenities.title">Comodidades e extras</h2>
-<p class="text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed mb-4" data-i18n="amenities.desc1">A casa oferece cozinha equipada, Wi-Fi rápido, roupa de cama, toalhas, secador, itens de banho e TV.</p>
-<p class="text-sm md:text-base text-text-dark/80 dark:text-text-light/80 leading-relaxed" data-i18n="amenities.desc2">Se precisar de algo extra, o anfitrião pode orientar sobre os itens disponíveis e como usar cada espaço com tranquilidade.</p>
-</div>
-<div class="bg-primary text-white rounded-[2rem] p-8 border border-primary/10 shadow-soft relative overflow-hidden">
-<div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
-<h2 class="font-serif text-3xl font-bold mb-4" data-i18n="feedback.title">Feedback e avaliação</h2>
-<div class="flex items-center gap-3 mb-5">
-<div class="flex gap-0.5">
-<span class="star-anim material-icons-outlined text-yellow-300 text-2xl" style="animation-delay:0s">star</span>
-<span class="star-anim material-icons-outlined text-yellow-300 text-2xl" style="animation-delay:0.3s">star</span>
-<span class="star-anim material-icons-outlined text-yellow-300 text-2xl" style="animation-delay:0.6s">star</span>
-<span class="star-anim material-icons-outlined text-yellow-300 text-2xl" style="animation-delay:0.9s">star</span>
-<span class="star-anim material-icons-outlined text-yellow-300 text-2xl" style="animation-delay:1.2s">star</span>
-</div>
-<span class="font-sans text-white/50 text-sm tracking-wide">5.0</span>
-</div>
-<p class="text-sm md:text-base text-white/90 leading-relaxed mb-4" data-i18n="feedback.desc1">Depois da estadia, sua avaliação ajuda a manter o padrão de acolhimento e melhora a experiência para os próximos hóspedes.</p>
-<p class="text-sm md:text-base text-white/90 leading-relaxed" data-i18n="feedback.desc2">Se algo não saiu como esperado, o ideal é avisar o anfitrião imediatamente para que a situação seja resolvida ainda durante a estadia.</p>
-</div>
-</section>
-<section class="mt-16 w-full bg-card-light/50 dark:bg-card-dark/50 rounded-[2.5rem] overflow-hidden border border-primary/10 shadow-soft">
-<div class="p-8 md:p-10">
-<h2 class="font-serif text-3xl md:text-4xl text-primary font-bold mb-6" data-i18n="directions.title">Direções e localização</h2>
-</div>
-<div class="flex flex-col lg:flex-row">
-<div class="p-8 lg:p-12 lg:w-1/3 flex flex-col justify-center bg-card-light/30 dark:bg-black/10">
-<div class="inline-block p-3 bg-primary/10 rounded-full w-fit mb-6">
-<span class="material-icons-outlined text-primary text-3xl">location_on</span>
-</div>
-<h3 id="dyn-prop-name" class="font-serif text-2xl text-primary dark:text-primary-light mb-2">Zamio</h3>
-<address class="font-sans text-lg text-text-dark dark:text-text-light not-italic mb-8 leading-relaxed opacity-90">
-<span id="dyn-address" data-i18n="directions.loading">Carregando endereço...</span>
-</address>
-<div class="flex flex-col gap-3">
-<a id="dyn-maps-link" href="#" target="_blank" class="w-full py-3 px-6 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-colors shadow-md flex items-center justify-center gap-2">
-<span class="material-icons-outlined text-sm">map</span> <span data-i18n="directions.open_maps">Abrir no Maps</span>
-</a>
-<button onclick="navigator.clipboard.writeText(window._dynAddress||'')" class="w-full py-3 px-6 bg-white dark:bg-card-dark border-2 border-primary/20 text-primary dark:text-primary-light rounded-xl font-bold hover:bg-primary/5 transition-colors flex items-center justify-center gap-2">
-<span class="material-icons-outlined text-sm">content_copy</span> <span data-i18n="directions.copy_address">Copiar Endereço</span>
-</button>
-</div>
-</div>
-<div class="lg:w-2/3 min-h-[350px] relative bg-[#E5E3DF]">
-<iframe id="dyn-maps-embed" allowfullscreen="" height="100%" loading="lazy" src="" style="border:0; filter: grayscale(0.2) sepia(0.1) hue-rotate(80deg) saturate(0.8);" title="Localização no Google Maps" width="100%">
-</iframe>
-</div>
-</div>
-</section>
-<section id="clima-section" class="mt-16 w-full" style="display:none">
-<div class="mb-6 flex items-end justify-between gap-4 flex-wrap">
-<div>
-<p class="font-script text-3xl text-primary/70 mb-1" data-i18n="clima.subtitle">Como estará o tempo?</p>
-<h2 class="font-serif text-3xl md:text-4xl text-primary dark:text-primary-light font-bold">Clima em Natal</h2>
-</div>
-<div class="flex items-center gap-2 text-sm text-text-dark/50 dark:text-text-light/50">
-<span class="material-icons-outlined text-base sun-spin text-primary/60">wb_sunny</span>
-<span>Nova Parnamirim · ~28°C média · 2.400h de sol/ano</span>
-</div>
-</div>
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-<div id="clima-jan-fev" class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm flex flex-col gap-3 transition-all duration-300">
-<div class="flex items-center justify-between flex-wrap gap-1">
-<span class="font-serif text-base font-bold text-text-dark dark:text-text-light">Jan · Fev</span>
-<span class="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Sol intenso</span>
-</div>
-<span class="material-icons-outlined text-6xl text-amber-400 sun-spin self-center">wb_sunny</span>
-<div class="space-y-1.5 text-sm">
-<div class="flex items-center justify-between"><span class="opacity-60">Temperatura</span><span class="font-bold text-primary">28 – 32°C</span></div>
-<div class="flex items-center justify-between"><span class="opacity-60">Chuva</span><span class="font-bold text-green-600">Baixa</span></div>
-</div>
-<p class="text-xs opacity-60 leading-relaxed border-t border-primary/10 pt-3">Protetor solar FPS 50+ é essencial. Hidrate-se bem nas saídas.</p>
-</div>
-<div id="clima-mar-jun" class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm flex flex-col gap-3 transition-all duration-300 relative overflow-hidden">
-<div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;">
-  <span class="rdrop" style="left:5%;height:24px;background:linear-gradient(to bottom,rgba(30,64,175,0.12),#1d4ed8);animation-duration:.52s;animation-delay:0s"></span>
-  <span class="rdrop" style="left:14%;height:22px;background:linear-gradient(to bottom,rgba(29,78,216,0.12),#1e40af);animation-duration:.60s;animation-delay:.18s"></span>
-  <span class="rdrop" style="left:22%;height:28px;background:linear-gradient(to bottom,rgba(30,64,175,0.12),#1d4ed8);animation-duration:.55s;animation-delay:.36s"></span>
-  <span class="rdrop" style="left:31%;height:23px;background:linear-gradient(to bottom,rgba(29,78,216,0.12),#1e40af);animation-duration:.58s;animation-delay:.08s"></span>
-  <span class="rdrop" style="left:41%;height:26px;background:linear-gradient(to bottom,rgba(30,64,175,0.12),#1d4ed8);animation-duration:.62s;animation-delay:.28s"></span>
-  <span class="rdrop" style="left:52%;height:22px;background:linear-gradient(to bottom,rgba(29,78,216,0.12),#1e40af);animation-duration:.50s;animation-delay:.44s"></span>
-  <span class="rdrop" style="left:62%;height:25px;background:linear-gradient(to bottom,rgba(30,64,175,0.12),#1d4ed8);animation-duration:.57s;animation-delay:.12s"></span>
-  <span class="rdrop" style="left:73%;height:28px;background:linear-gradient(to bottom,rgba(29,78,216,0.12),#1e40af);animation-duration:.64s;animation-delay:.32s"></span>
-  <span class="rdrop" style="left:83%;height:23px;background:linear-gradient(to bottom,rgba(30,64,175,0.12),#1d4ed8);animation-duration:.54s;animation-delay:.50s"></span>
-  <span class="rdrop" style="left:92%;height:26px;background:linear-gradient(to bottom,rgba(29,78,216,0.12),#1e40af);animation-duration:.59s;animation-delay:.22s"></span>
-</div>
-<div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:0.75rem;">
-<div class="flex items-center justify-between flex-wrap gap-1">
-<span class="font-serif text-base font-bold text-text-dark dark:text-text-light">Mar · Jun</span>
-<span class="text-[10px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Chuvoso</span>
-</div>
-<span class="material-icons-outlined text-6xl text-blue-400 rain-drop self-center">rainy</span>
-<div class="space-y-1.5 text-sm">
-<div class="flex items-center justify-between"><span class="opacity-60">Temperatura</span><span class="font-bold text-primary">25 – 28°C</span></div>
-<div class="flex items-center justify-between"><span class="opacity-60">Chuva</span><span class="font-bold text-blue-600">Alta</span></div>
-</div>
-<p class="text-xs opacity-60 leading-relaxed border-t border-primary/10 pt-3">Leve guarda-chuva. As manhãs costumam ser secas — ótimo para sair cedo.</p>
-</div>
-</div>
-<div id="clima-jul-ago" class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm flex flex-col gap-3 transition-all duration-300 relative overflow-hidden">
-<div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;">
-  <span class="rdrop" style="left:10%;height:18px;background:linear-gradient(to bottom,rgba(14,116,144,0.12),#0e7490);animation-duration:1.2s;animation-delay:0s"></span>
-  <span class="rdrop" style="left:28%;height:20px;background:linear-gradient(to bottom,rgba(8,145,178,0.12),#0891b2);animation-duration:1.35s;animation-delay:.45s"></span>
-  <span class="rdrop" style="left:50%;height:18px;background:linear-gradient(to bottom,rgba(14,116,144,0.12),#0e7490);animation-duration:1.15s;animation-delay:.85s"></span>
-  <span class="rdrop" style="left:70%;height:19px;background:linear-gradient(to bottom,rgba(8,145,178,0.12),#0891b2);animation-duration:1.3s;animation-delay:.25s"></span>
-  <span class="rdrop" style="left:88%;height:20px;background:linear-gradient(to bottom,rgba(14,116,144,0.12),#0e7490);animation-duration:1.25s;animation-delay:.65s"></span>
-</div>
-<div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:0.75rem;">
-<div class="flex items-center justify-between flex-wrap gap-1">
-<span class="font-serif text-base font-bold text-text-dark dark:text-text-light">Jul · Ago</span>
-<span class="text-[10px] font-bold text-teal-700 bg-teal-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Transição</span>
-</div>
-<span class="material-icons-outlined text-6xl text-teal-400 cloud-drift self-center">partly_cloudy_day</span>
-<div class="space-y-1.5 text-sm">
-<div class="flex items-center justify-between"><span class="opacity-60">Temperatura</span><span class="font-bold text-primary">25 – 29°C</span></div>
-<div class="flex items-center justify-between"><span class="opacity-60">Chuva</span><span class="font-bold text-teal-600">Moderada</span></div>
-</div>
-<p class="text-xs opacity-60 leading-relaxed border-t border-primary/10 pt-3">Clima ameno e ventoso. Perfeito para explorar Genipabu e Ponta Negra.</p>
-</div>
-</div>
-<div id="clima-set-dez" class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm flex flex-col gap-3 transition-all duration-300">
-<div class="flex items-center justify-between flex-wrap gap-1">
-<span class="font-serif text-base font-bold text-text-dark dark:text-text-light">Set · Dez</span>
-<span class="text-[10px] font-bold text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full uppercase tracking-wider">Calor seco</span>
-</div>
-<span class="material-icons-outlined text-6xl text-orange-400 sun-spin self-center" style="animation-duration:7s">light_mode</span>
-<div class="space-y-1.5 text-sm">
-<div class="flex items-center justify-between"><span class="opacity-60">Temperatura</span><span class="font-bold text-primary">29 – 33°C</span></div>
-<div class="flex items-center justify-between"><span class="opacity-60">Chuva</span><span class="font-bold text-orange-600">Muito baixa</span></div>
-</div>
-<p class="text-xs opacity-60 leading-relaxed border-t border-primary/10 pt-3">Temporada alta. Sol forte o dia todo — prefira praias de manhã cedo.</p>
-</div>
-</div>
 </section>
 
-<section id="explore-section" class="mt-16 w-full" style="display:none">
-<div class="mb-6">
-<p class="font-script text-3xl text-primary/70 mb-1" data-i18n="explore.script">Tudo perto de você</p>
-<h2 class="font-serif text-3xl md:text-4xl text-primary dark:text-primary-light font-bold" data-i18n="explore.title">Explore a Região</h2>
-</div>
-<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 mb-8" id="explore-tabs">
-<button onclick="switchTab('comer')" id="tab-comer" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-orange-50 text-orange-700 border-2 border-orange-200 hover:-translate-y-1 hover:shadow-md">
-<span class="material-icons-outlined text-3xl">restaurant</span>
-<span class="text-xs font-bold" data-i18n="tab.comer">Onde Comer</span>
-</button>
-<button onclick="switchTab('mercado')" id="tab-mercado" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-green-50 text-green-700 border-2 border-green-200 hover:-translate-y-1 hover:shadow-md">
-<span class="material-icons-outlined text-3xl">shopping_cart</span>
-<span class="text-xs font-bold" data-i18n="tab.mercado">Mercado</span>
-</button>
-<button onclick="switchTab('farmacia')" id="tab-farmacia" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-blue-50 text-blue-700 border-2 border-blue-200 hover:-translate-y-1 hover:shadow-md">
-<span class="material-icons-outlined text-3xl">local_pharmacy</span>
-<span class="text-xs font-bold" data-i18n="tab.farmacia">Farmácias</span>
-</button>
-<button onclick="switchTab('fazer')" id="tab-fazer" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-cyan-50 text-cyan-700 border-2 border-cyan-200 hover:-translate-y-1 hover:shadow-md">
-<span class="material-icons-outlined text-3xl">explore</span>
-<span class="text-xs font-bold" data-i18n="tab.fazer">O que Fazer</span>
-</button>
-<button onclick="switchTab('academias')" id="tab-academias" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-violet-50 text-violet-700 border-2 border-violet-200 hover:-translate-y-1 hover:shadow-md">
-<span class="material-icons-outlined text-3xl">fitness_center</span>
-<span class="text-xs font-bold" data-i18n="tab.academias">Academias</span>
-</button>
-<button onclick="switchTab('lavanderias')" id="tab-lavanderias" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-indigo-50 text-indigo-700 border-2 border-indigo-200 hover:-translate-y-1 hover:shadow-md">
-<span class="material-icons-outlined text-3xl">local_laundry_service</span>
-<span class="text-xs font-bold" data-i18n="tab.lavanderias">Lavanderias</span>
-</button>
-<button onclick="switchTab('emergencia')" id="tab-emergencia" class="tab-btn flex flex-col items-center justify-center gap-2 p-4 rounded-2xl font-bold text-sm transition-all duration-200 bg-red-50 text-red-700 border-2 border-red-200 hover:-translate-y-1 hover:shadow-md">
-<span class="material-icons-outlined text-3xl">emergency</span>
-<span class="text-xs font-bold" data-i18n="tab.emergencia">Emergência</span>
-</button>
-</div>
-
-<div id="panel-comer" class="tab-panel grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Sushi Nemo - Mar e Fogo</h4>
-<span class="bg-blue-100 text-blue-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Japonesa</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Sushi criativo com frutos do mar frescos. Uma das melhores experiências japonesas de Natal.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 3 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Sushi+Nemo+Mar+e+Fogo+Cidade+Verde+Natal" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Pizzaria Famiglia Reis Magos</h4>
-<span class="bg-red-100 text-red-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Pizza</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Pizzas artesanais com receitas italianas e ingredientes selecionados. Ambiente familiar e aconchegante.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 3 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Pizzaria+Famiglia+Reis+Magos+Cidade+Verde+Natal" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Jolie Café Pâtisserie</h4>
-<span class="bg-amber-100 text-amber-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Café</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Cafés especiais, bolos artesanais e pâtisserie francesa. Perfeito para o café da manhã ou um lanche.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 3 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Jolie+Caf%C3%A9+P%C3%A2tisserie+Cidade+Verde+Natal" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Sal e Brasa Natal</h4>
-<span class="bg-orange-100 text-orange-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Churrasco</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Churrascaria completa com cortes nobres e buffet de saladas. Ambiente sofisticado para um jantar especial.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 13 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Sal+e+Brasa+Natal+Engenheiro+Roberto+Freire" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Lengo Tengo Culinária Regional</h4>
-<span class="bg-green-100 text-green-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Regional</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Comida regional nordestina autêntica com sabores do interior do RN. Pratos fartos e bem temperados.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 10 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Lengo+Tengo+Culin%C3%A1ria+Regional+Abel+Cabral+Natal" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-
-</div>
-
-<div id="panel-mercado" class="tab-panel hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Rede Mais Select</h4>
-<span class="bg-green-100 text-green-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Rápido</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Supermercado com padaria própria. Ótima opção para compras rápidas e produtos frescos do dia.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> ~8 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Rede+Mais+Select+Cidade+Verde+Natal" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Favorito Supermercado</h4>
-<span class="bg-blue-100 text-blue-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Atacado</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Preços de atacado para compras em quantidade. Bom para reabastecer bebidas, laticínios e não-perecíveis.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> ~10 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Favorito+Supermercado+Ayrton+Senna+Natal" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Carrefour Hipermercado</h4>
-<span class="bg-amber-100 text-amber-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Hiper</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Grande variedade de produtos, eletrodomésticos, roupas e hortifrúti completo. Tudo em um só lugar.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> ~12 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Carrefour+Hipermercado+Natal+BR+101" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Nordestão Nova Parnamirim</h4>
-<span class="bg-green-100 text-green-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Completo</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Supermercado regional com foco em produtos locais. Bom açougue e ótimos preços em peixes e frutos do mar.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> ~5 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Nordest%C3%A3o+Nova+Parnamirim+Maria+Lacerda" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-</div>
-
-<div id="panel-farmacia" class="tab-panel hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Drogasil Cidade Verde</h4>
-<span class="bg-red-100 text-red-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">24h</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Aberta 24 horas, atendimento rápido e boa variedade de medicamentos e produtos de higiene.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 3 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Drogasil+Cidade+Verde+Natal" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Trabalhador Farma</h4>
-<span class="bg-green-100 text-green-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Popular</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Medicamentos a preços acessíveis com atendimento humanizado. Boa opção para receitas e genéricos.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 4 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Farm%C3%A1cias+Trabalhador+Farma+Maria+Lacerda+Nova+Parnamirim" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Farmácia Pague Menos</h4>
-<span class="bg-purple-100 text-purple-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Delivery</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Delivery disponível e grande variedade de produtos. Rede nacional com boa relação custo-benefício.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 4 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Farm%C3%A1cia+Pague+Menos+Nova+Parnamirim" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Drogaria Globo - Cidade Verde</h4>
-<span class="bg-blue-100 text-blue-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Completa</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Amplo estoque de medicamentos, perfumaria e suplementos. Atendimento farmacêutico de qualidade.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 3 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Drogaria+Globo+Cidade+Verde+Natal" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-</div>
-
-<div id="panel-fazer" class="tab-panel hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border-l-4 border-primary shadow-sm hover:-translate-y-1 transition-transform duration-200">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-xl text-text-dark dark:text-text-light font-bold">Ponta Negra</h4>
-<span class="bg-primary/10 text-primary text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0 whitespace-nowrap">11 min</span>
-</div>
-<p class="text-sm opacity-70">A praia mais famosa de Natal. Morro do Careca, bares à beira-mar e muito agito a qualquer hora do dia.</p>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border-l-4 border-primary shadow-sm hover:-translate-y-1 transition-transform duration-200">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-xl text-text-dark dark:text-text-light font-bold">Genipabu</h4>
-<span class="bg-primary/10 text-primary text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0 whitespace-nowrap">50 min</span>
-</div>
-<p class="text-sm opacity-70">Dunas douradas, passeio de camelo e um pôr do sol inesquecível sobre o litoral potiguar.</p>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border-l-4 border-primary shadow-sm hover:-translate-y-1 transition-transform duration-200">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-xl text-text-dark dark:text-text-light font-bold">Cajueiro de Pirangi</h4>
-<span class="bg-primary/10 text-primary text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0 whitespace-nowrap">22 min</span>
-</div>
-<p class="text-sm opacity-70">O maior cajueiro do mundo ocupa mais de dois mil metros quadrados. Uma maravilha da natureza.</p>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border-l-4 border-primary shadow-sm hover:-translate-y-1 transition-transform duration-200">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-xl text-text-dark dark:text-text-light font-bold">Midway Mall</h4>
-<span class="bg-primary/10 text-primary text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0 whitespace-nowrap">22 min</span>
-</div>
-<p class="text-sm opacity-70">Shopping completo com cinema, lojas nacionais e internacionais, praça de alimentação variada.</p>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border-l-4 border-primary shadow-sm hover:-translate-y-1 transition-transform duration-200">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-xl text-text-dark dark:text-text-light font-bold">Maracajaú</h4>
-<span class="bg-primary/10 text-primary text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0 whitespace-nowrap">1h16</span>
-</div>
-<p class="text-sm opacity-70">Piscinas naturais em alto-mar. Snorkel, mergulho e peixes coloridos — uma experiência única no RN.</p>
-</div>
-</div>
-<div id="panel-academias" class="tab-panel hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Selfit Nova Parnamirim</h4>
-<span class="bg-green-100 text-green-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Academia</span>
-</div>
-<div class="flex items-center gap-1.5 mb-3">
-<span class="material-icons-outlined text-sm text-violet-500">verified</span>
-<span class="text-xs font-bold text-violet-700 bg-violet-100 px-2 py-0.5 rounded-full">Aceita Gympass</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Academia completa com musculação, aulas e equipamentos modernos. Boa opção no bairro.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 3 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Selfit+Nova+Parnamirim+Parnamirim" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Burn Fit</h4>
-<span class="bg-orange-100 text-orange-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Academia</span>
-</div>
-<div class="flex items-center gap-1.5 mb-3">
-<span class="material-icons-outlined text-sm text-violet-500">verified</span>
-<span class="text-xs font-bold text-violet-700 bg-violet-100 px-2 py-0.5 rounded-full">Aceita Gympass</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Treinos intensos e aulas funcionais. Ambiente motivador para quem quer resultados rápidos.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 2 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Burn+Fit+Nova+Parnamirim+Parnamirim" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Smart Fit Maria Lacerda</h4>
-<span class="bg-yellow-100 text-yellow-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Academia</span>
-</div>
-<div class="flex items-center gap-1.5 mb-3">
-<span class="material-icons-outlined text-sm text-blue-500">verified</span>
-<span class="text-xs font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">Aceita TotalPass</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Rede nacional com equipamentos de ponta, musculação e aulas coletivas. Estrutura completa.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 7 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Smart+Fit+Maria+Lacerda+Parnamirim" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">
-<div class="flex items-start justify-between mb-3 gap-2">
-<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">Box QG Crossfit</h4>
-<span class="bg-red-100 text-red-800 text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">Crossfit</span>
-</div>
-<div class="flex items-center gap-1.5 mb-3">
-<span class="material-icons-outlined text-sm text-blue-500">verified</span>
-<span class="text-xs font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">Aceita TotalPass</span>
-</div>
-<p class="text-sm opacity-70 mb-4 flex-1">Box de crossfit com WODs desafiadores e comunidade forte. Treinos de alta intensidade para todos os níveis.</p>
-<div class="flex items-center justify-between pt-3 border-t border-primary/10">
-<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car</span> 3 min</div>
-<a href="https://www.google.com/maps/search/?api=1&query=Box+QG+Crossfit+Parnamirim" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map</span> Maps</a>
-</div>
-</div>
-</div>
-<div id="panel-lavanderias" class="tab-panel hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-<div id="panel-emergencia" class="tab-panel hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-<div class="bg-red-50 dark:bg-red-900/20 rounded-2xl p-6 border border-red-200 dark:border-red-800/40 hover:-translate-y-1 transition-transform duration-200">
-<div class="flex items-center gap-3 mb-2">
-<span class="material-icons-outlined text-red-500 text-2xl">medical_services</span>
-<h4 class="font-serif text-lg font-bold text-red-700 dark:text-red-400">SAMU</h4>
-</div>
-<p class="text-sm opacity-70 mb-3">Urgências e emergências médicas</p>
-<a href="tel:192" class="font-mono text-3xl font-bold text-red-600 dark:text-red-400 hover:text-red-800 transition-colors">192</a>
-</div>
-<div class="bg-orange-50 dark:bg-orange-900/20 rounded-2xl p-6 border border-orange-200 dark:border-orange-800/40 hover:-translate-y-1 transition-transform duration-200">
-<div class="flex items-center gap-3 mb-2">
-<span class="material-icons-outlined text-orange-500 text-2xl">local_fire_department</span>
-<h4 class="font-serif text-lg font-bold text-orange-700 dark:text-orange-400">Bombeiros</h4>
-</div>
-<p class="text-sm opacity-70 mb-3">Incêndios, resgates e acidentes</p>
-<a href="tel:193" class="font-mono text-3xl font-bold text-orange-600 dark:text-orange-400 hover:text-orange-800 transition-colors">193</a>
-</div>
-<div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 border border-blue-200 dark:border-blue-800/40 hover:-translate-y-1 transition-transform duration-200">
-<div class="flex items-center gap-3 mb-2">
-<span class="material-icons-outlined text-blue-500 text-2xl">local_police</span>
-<h4 class="font-serif text-lg font-bold text-blue-700 dark:text-blue-400">Polícia Militar</h4>
-</div>
-<p class="text-sm opacity-70 mb-3">Segurança pública e ocorrências</p>
-<a href="tel:190" class="font-mono text-3xl font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 transition-colors">190</a>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 hover:-translate-y-1 transition-transform duration-200">
-<div class="flex items-center gap-3 mb-2">
-<span class="material-icons-outlined text-primary text-2xl">local_hospital</span>
-<h4 class="font-serif text-lg font-bold text-primary dark:text-primary-light">UPA Nova Parnamirim</h4>
-</div>
-<p class="text-sm opacity-70 mb-3">Unidade de Pronto Atendimento mais próxima</p>
-<a href="tel:08432320000" class="font-mono text-xl font-bold text-primary dark:text-primary-light hover:text-primary-light transition-colors">(84) 3232-0000</a>
-</div>
-<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 hover:-translate-y-1 transition-transform duration-200">
-<div class="flex items-center gap-3 mb-2">
-<span class="material-icons-outlined text-primary text-2xl">emergency</span>
-<h4 class="font-serif text-lg font-bold text-primary dark:text-primary-light">Defesa Civil</h4>
-</div>
-<p class="text-sm opacity-70 mb-3">Riscos de deslizamento, alagamento ou desastres naturais</p>
-<a href="tel:199" class="font-mono text-3xl font-bold text-primary dark:text-primary-light hover:text-primary-light transition-colors">199</a>
-</div>
-</div>
+<!-- ════════════════ COMO FUNCIONA ════════════════ -->
+<section id="como-funciona" class="py-16 sm:py-20">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <h2 class="font-serif text-3xl sm:text-4xl text-gray-900 mb-3">Como funciona</h2>
+      <p class="text-gray-500">Sem aplicativo pra instalar, sem treinamento. Leva menos tempo do que responder uma mensagem.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="text-center">
+        <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center mx-auto mb-4 font-serif text-xl">1</div>
+        <h3 class="font-bold text-gray-900 mb-1.5">Monte seu guia</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Cadastre wifi, acesso, regras e dicas da região no painel — leva poucos minutos.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center mx-auto mb-4 font-serif text-xl">2</div>
+        <h3 class="font-bold text-gray-900 mb-1.5">Gere o link do hóspede</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Crie um link (ou QR code) único pra cada reserva, com data de check-out.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center mx-auto mb-4 font-serif text-xl">3</div>
+        <h3 class="font-bold text-gray-900 mb-1.5">Hóspede acessa sozinho</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Sem app, direto no navegador. Tudo que ele precisa saber está ali.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center mx-auto mb-4 font-serif text-xl">4</div>
+        <h3 class="font-bold text-gray-900 mb-1.5">O link expira sozinho</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">No check-out, o acesso some — e você ganhou de volta o seu tempo.</p>
+      </div>
+    </div>
+  </div>
 </section>
-<footer class="text-center py-8 opacity-60 text-sm font-sans z-10 relative mt-16">
-        © 2026 <span id="dyn-footer">Casa Verde Zamio</span>. <span data-i18n="footer.enjoy">Tenha uma ótima estadia!</span>
-    </footer>
 
-    <!-- i18n engine -->
-    <script>
-    (function() {
-        var LANGS = ['pt', 'en', 'es'];
-        var _lang = (localStorage.getItem('guia-lang') || (navigator.language || 'pt').split('-')[0]).toLowerCase();
-        if (!LANGS.includes(_lang)) _lang = 'pt';
-        var _data = {};
+<!-- ════════════════ FUNCIONALIDADES ════════════════ -->
+<section id="funcionalidades" class="bg-white border-y border-gray-100">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <h2 class="font-serif text-3xl sm:text-4xl text-gray-900 mb-3">Tudo que seu hóspede pergunta, num só lugar</h2>
+      <p class="text-gray-500">Recursos reais do produto — nada de promessa vazia.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
-        window._t = function(key, fallback) {
-            return _data[key] || fallback || key;
-        };
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">menu_book</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Guia completo da região</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Restaurantes, mercados, farmácias, atividades, academias, lavanderias e contatos de emergência — tudo num guia só.</p>
+      </div>
 
-        window._applyI18n = function() {
-            document.querySelectorAll('[data-i18n]').forEach(function(el) {
-                var key = el.getAttribute('data-i18n');
-                if (_data[key]) el.textContent = _data[key];
-            });
-            document.querySelectorAll('.lang-btn').forEach(function(b) {
-                var active = b.dataset.lang === _lang;
-                b.classList.toggle('bg-primary', active);
-                b.classList.toggle('scale-110', active);
-                b.classList.toggle('shadow-sm', active);
-                b.classList.toggle('opacity-45', !active);
-            });
-        };
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">cleaning_services</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Checklist de limpeza + WhatsApp</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Monte a checklist de limpeza e envie pronta pra sua diarista direto no WhatsApp, em um clique.</p>
+      </div>
 
-        window._reApplyDynamic = function() {
-            var name = window._dynPropName;
-            if (name) {
-                var heroEl = document.getElementById('dyn-hero-title');
-                if (heroEl) heroEl.textContent = window._t('hero.welcome_to', 'Bem-vindo ao') + ' ' + name;
-                var fotosEl = document.getElementById('dyn-fotos-title');
-                if (fotosEl) fotosEl.textContent = window._t('photos.title_of', 'Fotos do') + ' ' + name;
-            }
-            var codeLabelEl = document.getElementById('dyn-code-label');
-            if (codeLabelEl && window._dynAccessType) {
-                codeLabelEl.textContent = window._dynAccessType === 'cofre'
-                    ? window._t('access.code_label_safe', 'Código do cofre')
-                    : window._t('access.code_label', 'Código');
-            }
-            var copyBtn = document.getElementById('btn-copy-wifi');
-            if (copyBtn) {
-                copyBtn.innerHTML = '<span class="material-icons-outlined text-base">content_copy<\/span><span data-i18n="wifi.copy_btn">' + window._t('wifi.copy_btn', 'Copiar') + '<\/span>';
-            }
-            window._applyI18n();
-        };
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative">
+        <span class="absolute top-4 right-4 bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-full">Pro</span>
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">build</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Manutenção com lembrete automático</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Troca de enxoval, limpeza de ar-condicionado, dedetização, pintura, filtro de água, chuveiro e gás — o painel avisa quando vencer.</p>
+      </div>
 
-        window._setLang = function(lang) {
-            if (!LANGS.includes(lang)) lang = 'pt';
-            _lang = lang;
-            localStorage.setItem('guia-lang', lang);
-            fetch('i18n/' + lang + '.json', { cache: 'no-store' })
-                .then(function(r) {
-                    if (!r.ok) throw new Error('HTTP ' + r.status + ' ao buscar i18n/' + lang + '.json');
-                    return r.json();
-                })
-                .then(function(d) {
-                    _data = d;
-                    window._reApplyDynamic();
-                })
-                .catch(function(err) {
-                    console.error('[i18n] Falha ao carregar traduções de "' + lang + '":', err);
-                    window._applyI18n();
-                });
-        };
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">key</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Acesso flexível</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Fechadura eletrônica, chave física, portaria ou outro método — com passo a passo claro pro hóspede.</p>
+      </div>
 
-        window._setLang(_lang);
-    })();
-    </script>
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative">
+        <span class="absolute top-4 right-4 bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-full">Pro</span>
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">palette</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Temas de cores exclusivos</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">6 paletas pra deixar o guia com a identidade de cada propriedade: Oceano, Terracota, Lavanda, Vinho, Ardósia e Oliva.</p>
+      </div>
+
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">print</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Cartão imprimível com QR duplo</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Um cartão pra deixar na propriedade, com QR do wifi e QR do guia — pra quem prefere físico ao digital.</p>
+      </div>
+
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">translate</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Multilíngue</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">O guia se adapta automaticamente em português, inglês ou espanhol — sem hóspede precisar configurar nada.</p>
+      </div>
+
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">vpn_key</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Um link por reserva</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Gere um link com nome do hóspede e data de check-out. Quer revogar antes? Um clique e o acesso cai.</p>
+      </div>
+
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative">
+        <span class="absolute top-4 right-4 bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-full">Pro</span>
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">password</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Senha de fechadura por hóspede</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Defina um código de fechadura diferente pra cada hóspede — ele só fica visível durante a estadia.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ SEGURANÇA (DIFERENCIAL) ════════════════ -->
+<section id="seguranca" class="py-16 sm:py-20">
+  <div class="max-w-5xl mx-auto px-5 sm:px-8">
+    <div class="bg-primary rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden">
+      <span class="material-icons-outlined absolute -right-6 -top-6 opacity-10" style="font-size:220px">shield</span>
+      <div class="relative max-w-2xl">
+        <span class="inline-flex items-center gap-1.5 bg-white/15 text-xs font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full mb-5">
+          <span class="material-icons-outlined" style="font-size:14px">lock_clock</span>
+          Diferencial de segurança
+        </span>
+        <h2 class="font-serif text-3xl sm:text-4xl mb-4 leading-tight">Você sabe quem ainda tem o código da sua fechadura?</h2>
+        <p class="text-white/85 leading-relaxed mb-8">
+          Com link fixo e permanente, o hóspede do mês passado pode continuar com acesso ao wifi e ao código da fechadura — mesmo depois de já ter ido embora. No AirGuia, cada link nasce com uma data de check-out e <strong>expira automaticamente</strong> nesse momento. Sem ação manual, sem esquecer de trocar senha.
+        </p>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="bg-white/10 rounded-2xl p-5">
+            <p class="text-xs font-extrabold uppercase tracking-widest text-white/60 mb-2">Link comum</p>
+            <p class="text-sm text-white/90 leading-relaxed">Fica ativo pra sempre. Hóspedes antigos continuam com acesso aos seus dados, indefinidamente.</p>
+          </div>
+          <div class="bg-white rounded-2xl p-5">
+            <p class="text-xs font-extrabold uppercase tracking-widest text-primary/70 mb-2">Link AirGuia</p>
+            <p class="text-sm text-gray-700 leading-relaxed">Expira sozinho no check-out. Cada hóspede novo recebe um acesso novo, isolado dos anteriores.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ PROVA / PRODUTO REAL ════════════════ -->
+<section class="bg-white border-y border-gray-100">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <h2 class="font-serif text-3xl sm:text-4xl text-gray-900 mb-3">Produto real, em uso real</h2>
+      <p class="text-gray-500">O AirGuia é novo no mercado — em vez de inventar depoimento, preferimos te mostrar o produto funcionando de verdade.</p>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-5 mb-10">
+      <div class="rounded-2xl overflow-hidden border border-gray-100">
+        <img src="assets/Quarto/quarto1.jpeg" alt="Quarto cadastrado no guia AirGuia" class="w-full h-48 object-cover"/>
+      </div>
+      <div class="rounded-2xl overflow-hidden border border-gray-100">
+        <img src="assets/Cozinha/cozinha1.jpeg" alt="Cozinha cadastrada no guia AirGuia" class="w-full h-48 object-cover"/>
+      </div>
+      <div class="rounded-2xl overflow-hidden border border-gray-100">
+        <img src="assets/Banheiro/banheiro1.jpeg" alt="Banheiro cadastrado no guia AirGuia" class="w-full h-48 object-cover"/>
+      </div>
+    </div>
+    <div class="text-center">
+      <a href="guia.html?h=zamio" target="_blank" class="inline-flex items-center gap-2 border-2 border-primary text-primary font-bold px-6 py-3 rounded-xl hover:bg-primary hover:text-white transition-all">
+        <span class="material-icons-outlined" style="font-size:18px">open_in_new</span>
+        Ver o guia completo do Zamio
+      </a>
+    </div>
+    <!--
+      Espaço reservado para depoimentos reais de anfitriões.
+      Quando tiver os primeiros clientes, adicione cards aqui no mesmo padrão:
+
+      <div class="rounded-2xl border border-gray-100 p-6">
+        <p class="text-sm text-gray-600 leading-relaxed mb-4">"Depoimento real aqui."</p>
+        <p class="font-bold text-gray-900 text-sm">Nome do anfitrião</p>
+        <p class="text-xs text-gray-400">Cidade · Tipo de imóvel</p>
+      </div>
+    -->
+  </div>
+</section>
+
+<!-- ════════════════ PLANOS ════════════════ -->
+<section id="planos" class="py-16 sm:py-20">
+  <div class="max-w-5xl mx-auto px-5 sm:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <h2 class="font-serif text-3xl sm:text-4xl text-gray-900 mb-3">Planos simples, sem pegadinha</h2>
+      <p class="text-gray-500">Cancele quando quiser, sem multa. 7 dias grátis para testar.</p>
+    </div>
+
+    <div class="flex items-center justify-center gap-3 mb-8">
+      <span id="lp-lbl-mensal" class="text-sm font-bold text-gray-900">Mensal</span>
+      <div class="toggle-track" id="lp-toggle" onclick="lpAlternarPeriodo()">
+        <div class="toggle-thumb"></div>
+      </div>
+      <span id="lp-lbl-anual" class="text-sm font-bold text-gray-400">Anual</span>
+      <span id="lp-badge-economia" class="hidden bg-green-100 text-green-700 text-xs font-extrabold px-2.5 py-1 rounded-full">economize 20%</span>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" id="lp-planos-grid"></div>
+
+    <p class="text-center text-xs text-gray-400 mt-8">
+      <span class="material-icons-outlined align-middle" style="font-size:13px">lock</span>
+      Pagamento seguro · Cancele quando quiser · 7 dias grátis
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════ FAQ ════════════════ -->
+<section id="faq" class="bg-white border-y border-gray-100">
+  <div class="max-w-3xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+    <div class="text-center mb-10">
+      <h2 class="font-serif text-3xl sm:text-4xl text-gray-900 mb-3">Perguntas frequentes</h2>
+    </div>
+    <div class="space-y-3">
+
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+        <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
+          O hóspede precisa baixar algum aplicativo?
+          <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
+        </summary>
+        <p class="text-sm text-gray-500 leading-relaxed mt-3">Não. O guia abre direto no navegador do celular, pelo link ou QR code — sem instalar nada.</p>
+      </details>
+
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+        <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
+          Funciona se a internet da casa cair?
+          <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
+        </summary>
+        <p class="text-sm text-gray-500 leading-relaxed mt-3">O hóspede acessa o guia pela internet do próprio celular (dados móveis), então ele consegue ver as informações de acesso mesmo antes de entrar e conectar ao wifi da casa.</p>
+      </details>
+
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+        <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
+          Como funciona a expiração do link?
+          <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
+        </summary>
+        <p class="text-sm text-gray-500 leading-relaxed mt-3">Ao gerar o link pra um hóspede, você informa a data e hora do check-out. Depois desse momento, o link para de funcionar automaticamente — sem você precisar trocar senha ou desativar nada manualmente.</p>
+      </details>
+
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+        <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
+          Funciona para hóspedes que não falam português?
+          <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
+        </summary>
+        <p class="text-sm text-gray-500 leading-relaxed mt-3">Sim. O guia está disponível em português, inglês e espanhol, e se adapta automaticamente ao idioma do celular do hóspede.</p>
+      </details>
+
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+        <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
+          Posso usar em mais de uma propriedade?
+          <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
+        </summary>
+        <p class="text-sm text-gray-500 leading-relaxed mt-3">O plano Individual cobre 1 propriedade. O plano Pro permite até 5 propriedades dentro do mesmo painel, cada uma com seu próprio guia.</p>
+      </details>
+
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+        <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
+          Preciso saber programar ou ter conhecimento técnico?
+          <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
+        </summary>
+        <p class="text-sm text-gray-500 leading-relaxed mt-3">Não. O painel foi pensado pra anfitrião, não pra programador — você preenche campos e escolhe opções, como num formulário.</p>
+      </details>
+
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+        <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
+          O que acontece depois dos 7 dias grátis?
+          <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
+        </summary>
+        <p class="text-sm text-gray-500 leading-relaxed mt-3">Você escolhe começar com o teste grátis (sem cobrança nos primeiros 7 dias) ou assinar direto. Pode cancelar quando quiser, sem multa.</p>
+      </details>
+
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+        <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
+          Posso cancelar quando quiser?
+          <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
+        </summary>
+        <p class="text-sm text-gray-500 leading-relaxed mt-3">Sim, direto pelo painel, sem precisar ligar pra ninguém e sem multa de cancelamento.</p>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ CTA FINAL ════════════════ -->
+<section class="py-16 sm:py-20">
+  <div class="max-w-4xl mx-auto px-5 sm:px-8 text-center">
+    <h2 class="font-serif text-3xl sm:text-4xl text-gray-900 mb-4">Seu primeiro guia leva menos tempo que essa leitura</h2>
+    <p class="text-gray-500 mb-8 max-w-md mx-auto">7 dias grátis, sem cartão de crédito. Cancele quando quiser.</p>
+    <a href="cadastro.html" class="inline-flex items-center gap-2 bg-primary text-white font-bold px-8 py-4 rounded-2xl hover:bg-primary-light active:scale-[.98] transition-all shadow-xl shadow-primary/25">
+      <span class="material-icons-outlined" style="font-size:18px">rocket_launch</span>
+      Criar meu guia grátis
+    </a>
+  </div>
+</section>
+
+<!-- ════════════════ FOOTER ════════════════ -->
+<footer class="bg-white border-t border-gray-100">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+    <img src="assets/airguia-logo-horizontal.png" alt="AirGuia" class="h-6"/>
+    <div class="flex flex-wrap items-center justify-center gap-5 text-sm text-gray-500 font-bold">
+      <a href="planos.html" class="hover:text-primary transition-colors">Planos</a>
+      <a href="login.html" class="hover:text-primary transition-colors">Entrar</a>
+      <a href="#" class="hover:text-primary transition-colors">Política de Privacidade</a>
+      <a href="#" class="hover:text-primary transition-colors">Termos de Uso</a>
+    </div>
+    <p class="text-xs text-gray-400">&copy; <span id="lp-year"></span> AirGuia</p>
+  </div>
+</footer>
 
 <script>
-        const albumGroups = [
-            {
-                key: 'bedroom',
-                interval: 7000,
-                slides: [
-                    { src: 'assets/Quarto/quarto1.jpeg', caption: 'Descanso e conforto' },
-                    { src: 'assets/Quarto/quarto2.jpeg', caption: 'Detalhes da suíte' },
-                    { src: 'assets/Quarto/quarto3.jpeg', caption: 'Ambiente acolhedor' },
-                    { src: 'assets/Quarto/quarto4.jpeg', caption: 'Outro ângulo do espaço' },
-                    { src: 'assets/Quarto/quarto5.jpeg', caption: 'Conforto para a estadia' },
-                    { src: 'assets/Quarto/quarto6.jpeg', caption: 'Detalhes que acolhem' },
-                    { src: 'assets/Quarto/quarto7.jpeg', caption: 'Último ângulo do quarto' },
-                ],
-            },
-            {
-                key: 'kitchen',
-                interval: 7600,
-                slides: [
-                    { src: 'assets/Cozinha/cozinha1.jpeg', caption: 'Espaço funcional' },
-                    { src: 'assets/Cozinha/cozinha2.jpeg', caption: 'Bem equipada' },
-                    { src: 'assets/Cozinha/cozinha3.jpeg', caption: 'Detalhes da cozinha' },
-                ],
-            },
-            {
-                key: 'bathroom',
-                interval: 8200,
-                slides: [
-                    { src: 'assets/Banheiro/banheiro1.jpeg', caption: 'Banheiro principal' },
-                    { src: 'assets/Banheiro/banheiro2.jpeg', caption: 'Acabamentos do banheiro' },
-                ],
-            },
-        ];
+document.getElementById('lp-year').textContent = new Date().getFullYear();
 
-        const albumIntervals = {};
+const LP_PLANOS = [
+  {
+    id: 'individual', nome: 'Individual', descricao: '1 propriedade',
+    precoMensal: '34,90', precoAnual: '27,90', economia: 'R$ 84 de economia no ano',
+    destaque: false, badge: null,
+    itens: [
+      { ok: true,  texto: 'Guia digital completo' },
+      { ok: true,  texto: 'Checklist de limpeza + WhatsApp' },
+      { ok: true,  texto: 'Cartão imprimível com QR duplo' },
+      { ok: true,  texto: '1 tema de cor (Oliva)' },
+      { ok: false, texto: 'Múltiplas propriedades' },
+      { ok: false, texto: 'Aparência (6 temas de cores exclusivos)' },
+      { ok: false, texto: 'Tela de manutenção (lembretes de enxoval, ar-condicionado, dedetização, pintura e mais)' },
+      { ok: false, texto: 'Acesso (fechadura eletrônica com senha expirável por hóspede)' },
+    ],
+  },
+  {
+    id: 'pro', nome: 'Pro', descricao: 'Até 5 propriedades', maxPropriedades: 5,
+    precoMensal: '69,90', precoAnual: '54,90', economia: 'R$ 180 de economia no ano',
+    destaque: true, badge: 'Mais popular',
+    itens: [
+      { ok: true, texto: 'Tudo do Individual incluso, em cada propriedade' },
+      { ok: true, texto: 'Até 5 propriedades em um painel só' },
+      { ok: true, texto: 'Aparência (Com 6 temas de cores exclusivos: Oceano, Terracota, Lavanda, Vinho, Ardósia e Oliva)' },
+      { ok: true, texto: 'Tela de manutenção (Com lembrete e aviso sobre: Enxoval, ar-condicionado, dedetização, pintura e mais)' },
+      { ok: true, texto: 'Acesso (Instrução de acesso a propriedade como Fechadura eletrônica com senha expirável por hóspede)' },
+    ],
+  },
+];
 
-        function renderAlbum(group) {
-            const container = document.getElementById(`album-${group.key}`);
-            if (!container) {
-                return;
-            }
+let lpAnual = false;
 
-            container.innerHTML = group.slides.map((slide, index) => {
-                const media = slide.type === 'video'
-                    ? `<video src="${slide.src}" class="hero-zoom w-full h-full object-cover object-center brightness-110 saturate-105" autoplay muted loop playsinline></video>`
-                    : `<img
-                        src="${slide.src}"
-                        alt="${group.key} do Zamio"
-                        class="hero-zoom w-full h-full object-cover object-center brightness-110 saturate-105"
-                        loading="${index === 0 ? 'eager' : 'lazy'}"
-                    />`;
-                return `
-                <figure class="album-slide absolute inset-0 ${index === 0 ? 'is-active' : ''}">
-                    ${media}
-                    <div class="absolute inset-0 bg-gradient-to-r from-[#132015]/65 via-[#132015]/20 to-[#132015]/5"></div>
-                    <div class="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#132015]/70 to-transparent"></div>
-                </figure>
-            `;
-            }).join('');
+function lpAlternarPeriodo() {
+  lpAnual = !lpAnual;
+  const toggle = document.getElementById('lp-toggle');
+  const lblM   = document.getElementById('lp-lbl-mensal');
+  const lblA   = document.getElementById('lp-lbl-anual');
+  const badge  = document.getElementById('lp-badge-economia');
+  toggle.classList.toggle('on', lpAnual);
+  lblM.className = 'text-sm font-bold ' + (lpAnual ? 'text-gray-400' : 'text-gray-900');
+  lblA.className = 'text-sm font-bold ' + (lpAnual ? 'text-gray-900' : 'text-gray-400');
+  badge.classList.toggle('hidden', !lpAnual);
+  lpRenderPlanos();
+}
 
-            if (albumIntervals[group.key]) {
-                clearInterval(albumIntervals[group.key]);
-                delete albumIntervals[group.key];
-            }
+function lpRenderPlanos() {
+  const grid = document.getElementById('lp-planos-grid');
+  grid.innerHTML = LP_PLANOS.map(p => {
+    const preco    = lpAnual ? p.precoAnual : p.precoMensal;
+    const economia = lpAnual ? '<p class="text-xs text-green-600 font-bold mt-0.5">' + p.economia + '</p>' : '';
+    const badgeHtml = p.badge
+      ? '<div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-extrabold uppercase tracking-widest px-4 py-1 rounded-full shadow whitespace-nowrap">' + p.badge + '</div>'
+      : '';
+    const itens = p.itens.map(i =>
+      '<li class="flex items-center gap-2 text-sm ' + (i.ok ? 'text-gray-700' : 'text-gray-300 line-through') + '">'
+      + '<span class="material-icons-outlined ' + (i.ok ? 'text-primary' : 'text-gray-200') + '" style="font-size:15px">'
+      + (i.ok ? 'check_circle' : 'remove_circle_outline') + '</span>' + i.texto + '</li>'
+    ).join('');
+    const porPropriedade = p.maxPropriedades > 1
+      ? '<div class="bg-green-50 border border-green-100 rounded-xl px-3 py-2 flex items-center gap-2 mb-3">'
+        + '<span class="material-icons-outlined text-green-600" style="font-size:16px">savings</span>'
+        + '<div>'
+        + '<p class="text-xs font-bold text-green-700">Sai mais barato por propriedade</p>'
+        + '<p class="text-[11px] text-green-600/80">R$ ' + (Number(preco.replace(',', '.')) / p.maxPropriedades).toFixed(2).replace('.', ',') + '/propriedade com as ' + p.maxPropriedades + ' ativas</p>'
+        + '</div></div>'
+      : '';
+    const btnClass = p.destaque
+      ? 'w-full py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-light transition-all shadow-lg shadow-primary/20'
+      : 'w-full py-3 rounded-xl border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all';
 
-            let current = 0;
-            if (group.slides.length > 1) {
-                albumIntervals[group.key] = setInterval(() => {
-                    const slides = Array.from(container.querySelectorAll('.album-slide'));
-                    if (!slides.length) {
-                        return;
-                    }
+    return '<a href="cadastro.html" class="plan-card bg-white rounded-2xl p-6 flex flex-col relative shadow-sm block ' + (p.destaque ? 'destaque shadow-primary/10' : '') + '">'
+      + badgeHtml
+      + '<div class="mb-4">'
+      + '<p class="text-xs font-extrabold uppercase tracking-widest ' + (p.destaque ? 'text-primary' : 'text-gray-400') + ' mb-0.5">' + p.nome + '</p>'
+      + '<p class="font-sans text-4xl text-gray-900 font-black tracking-tight">R$ ' + preco + '<span class="text-base font-sans font-semibold text-gray-400">/mês</span></p>'
+      + '<p class="text-xs text-gray-400 mt-0.5">' + (lpAnual ? 'Cobrado anualmente' : 'Cobrado mensalmente') + '</p>'
+      + economia
+      + '</div>'
+      + '<p class="text-xs font-bold text-gray-400 mb-3 flex items-center gap-1"><span class="material-icons-outlined" style="font-size:13px">home</span>' + p.descricao + '</p>'
+      + '<ul class="space-y-2 flex-1 mb-5">' + itens + '</ul>'
+      + porPropriedade
+      + '<div class="bg-primary/5 border border-primary/15 rounded-xl px-3 py-2 flex items-center gap-2 mb-4">'
+      + '<span class="material-icons-outlined text-primary" style="font-size:16px">card_giftcard</span>'
+      + '<span class="text-xs font-bold text-primary">7 dias grátis para testar</span>'
+      + '</div>'
+      + '<span class="' + btnClass + '">Escolher ' + p.nome + '</span>'
+      + '</a>';
+  }).join('');
+}
 
-                    current = (current + 1) % slides.length;
-                    slides.forEach((slide, index) => {
-                        slide.classList.toggle('is-active', index === current);
-                    });
-                }, group.interval);
-            }
-        }
-
-        albumGroups.forEach(renderAlbum);
-
-        function applyRoomMedia(mediaList) {
-            const entradaVideo = (mediaList || []).find((m) => m.room === 'entrada' && m.type === 'video');
-            if (entradaVideo) {
-                const vidUpload = document.getElementById('video-acesso-upload');
-                const vidIframe = document.getElementById('video-acesso');
-                const vidPlaceholder = document.getElementById('video-placeholder');
-                if (vidUpload) {
-                    vidUpload.src = entradaVideo.url;
-                    vidUpload.classList.remove('hidden');
-                }
-                if (vidIframe) vidIframe.style.display = 'none';
-                if (vidPlaceholder) vidPlaceholder.style.display = 'none';
-            }
-            if (!mediaList || !mediaList.length) return;
-            const byRoom = { bedroom: [], kitchen: [], bathroom: [] };
-            mediaList.forEach((m) => { if (byRoom[m.room]) byRoom[m.room].push(m); });
-            albumGroups.forEach((group) => {
-                const media = byRoom[group.key];
-                if (!media || !media.length) return;
-                media.sort((a, b) => (a.position || 0) - (b.position || 0));
-                group.slides = media.map((m) => ({ src: m.url, type: m.type === 'video' ? 'video' : 'image' }));
-                renderAlbum(group);
-            });
-        }
-        window.applyRoomMedia = applyRoomMedia;
-
-        // Video placeholder logic
-        const vid = document.getElementById('video-acesso');
-        const vidPlaceholder = document.getElementById('video-placeholder');
-        if (vid && vidPlaceholder) {
-            if (vid.getAttribute('src')) {
-                vidPlaceholder.style.display = 'none';
-            } else {
-                vid.style.display = 'none';
-            }
-        }
-
-        // Clima - destacar período atual
-        (function() {
-            var m = new Date().getMonth();
-            var id = m <= 1 ? 'clima-jan-fev'
-                   : m <= 5 ? 'clima-mar-jun'
-                   : m <= 7 ? 'clima-jul-ago'
-                   : 'clima-set-dez';
-            var card = document.getElementById(id);
-            if (card) {
-                card.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
-                var badge = document.createElement('span');
-                badge.className = 'text-[10px] font-bold text-white bg-primary px-2 py-0.5 rounded-full uppercase tracking-wider w-fit';
-                badge.textContent = 'Agora';
-                card.querySelector('.flex').appendChild(badge);
-            }
-        })();
-
-        // Mover Clima e Explore Natal acima das Fotos do Zamio
-        (function() {
-            var fotos = document.querySelector('.fotos-zamio');
-            var explore = document.getElementById('explore-section');
-            var clima = document.getElementById('clima-section');
-            if (explore && fotos) {
-                fotos.parentNode.insertBefore(explore, fotos);
-                explore.style.display = '';
-            }
-            if (clima && explore) {
-                explore.parentNode.insertBefore(clima, explore);
-                clima.style.display = '';
-            }
-        })();
-
-        // Explore Natal tabs — card-based UI
-        var tabColors = {
-            comer:     { base: ['bg-orange-50','text-orange-700','border-orange-200'], active: ['bg-orange-500','text-white','border-orange-500','shadow-lg'] },
-            mercado:   { base: ['bg-green-50','text-green-700','border-green-200'],   active: ['bg-green-600','text-white','border-green-600','shadow-lg'] },
-            farmacia:  { base: ['bg-blue-50','text-blue-700','border-blue-200'],      active: ['bg-blue-600','text-white','border-blue-600','shadow-lg'] },
-            fazer:     { base: ['bg-cyan-50','text-cyan-700','border-cyan-200'],      active: ['bg-cyan-600','text-white','border-cyan-600','shadow-lg'] },
-            academias:   { base: ['bg-violet-50','text-violet-700','border-violet-200'], active: ['bg-violet-600','text-white','border-violet-600','shadow-lg'] },
-            lavanderias: { base: ['bg-indigo-50','text-indigo-700','border-indigo-200'],active: ['bg-indigo-600','text-white','border-indigo-600','shadow-lg'] },
-            emergencia:  { base: ['bg-red-50','text-red-700','border-red-200'],         active: ['bg-red-600','text-white','border-red-600','shadow-lg'] },
-        };
-        function switchTab(name) {
-            document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.add('hidden'); });
-            document.querySelectorAll('.tab-btn').forEach(function(b) {
-                var key = b.id.replace('tab-', '');
-                var cfg = tabColors[key];
-                if (!cfg) return;
-                b.classList.remove.apply(b.classList, cfg.active);
-                b.classList.add.apply(b.classList, cfg.base);
-                b.classList.remove('-translate-y-1');
-            });
-            var panel = document.getElementById('panel-' + name);
-            if (panel) panel.classList.remove('hidden');
-            var btn = document.getElementById('tab-' + name);
-            if (btn && tabColors[name]) {
-                btn.classList.remove.apply(btn.classList, tabColors[name].base);
-                btn.classList.add.apply(btn.classList, tabColors[name].active);
-                btn.classList.add('-translate-y-1');
-            }
-        }
-    </script>
-
-    <!-- Carregamento dinâmico via Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-    (function() {
-        var _params    = new URLSearchParams(location.search);
-        var TOKEN      = _params.get('t');
-        var OWNER_SLUG = _params.get('h') || null;
-
-        var SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
-        var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
-        var sb = window.supabase.createClient(SB_URL, SB_KEY);
-
-        function showAccessError(type) {
-            var icon  = document.getElementById('access-error-icon');
-            var title = document.getElementById('access-error-title');
-            var msg   = document.getElementById('access-error-msg');
-            if (type === 'expired') {
-                if (icon)  icon.textContent  = 'event_busy';
-                if (title) title.textContent = 'Acesso expirado';
-                if (msg)   msg.textContent   = 'O link do guia expirou após o checkout. Obrigado pela visita e até a próxima!';
-            } else if (type === 'inactive') {
-                if (icon)  icon.textContent  = 'pause_circle';
-                if (title) title.textContent = 'Guia indisponível';
-                if (msg)   msg.textContent   = 'Este guia não está disponível no momento. Peça ao anfitrião para verificar o acesso.';
-            } else {
-                if (icon)  icon.textContent  = 'link_off';
-                if (title) title.textContent = 'Link inválido';
-                if (msg)   msg.textContent   = 'Este link não é válido. Peça um novo link ao anfitrião.';
-            }
-            document.getElementById('access-error-screen').classList.remove('hidden');
-        }
-
-        function setText(id, val) {
-            var el = document.getElementById(id);
-            if (el && val) el.textContent = val;
-        }
-
-        function infoCard(label, icon, value) {
-            return '<div class="flex items-start gap-3 bg-card-light dark:bg-card-dark rounded-2xl p-4">'
-                + '<span class="material-icons-outlined text-primary mt-0.5" style="font-size:18px">' + icon + '<\/span>'
-                + '<div><p class="text-xs uppercase tracking-widest text-primary/50 mb-0.5">' + label + '<\/p>'
-                + '<p class="font-semibold text-text-dark dark:text-text-light">' + value + '<\/p><\/div><\/div>';
-        }
-        function renderAccessLines(text) {
-            var lines = text.split('\n').filter(function(l){ return l.trim(); });
-            if (lines.length === 0) return '';
-            if (lines.length === 1) return '<p class="text-sm leading-relaxed">' + lines[0] + '<\/p>';
-            return '<ol class="space-y-3 text-sm leading-relaxed">' + lines.map(function(l, i){
-                return '<li class="flex gap-3"><span class="font-bold text-primary">' + (i+1) + '.<\/span><span>' + l + '<\/span><\/li>';
-            }).join('') + '<\/ol>';
-        }
-
-        async function loadDynamic() {
-            var host, c;
-
-            if (TOKEN) {
-                // Acesso via link de hóspede com token
-                var res;
-                try {
-                    res = await fetch(SB_URL + '/functions/v1/guide-data?t=' + encodeURIComponent(TOKEN), {
-                        headers: { 'Authorization': 'Bearer ' + SB_KEY }
-                    });
-                } catch (e) {
-                    showAccessError('invalid');
-                    return;
-                }
-                var data = await res.json();
-                if (!data.ok) { showAccessError(data.error || 'invalid'); return; }
-                host = data.host;
-                c    = data.content;
-            } else if (OWNER_SLUG) {
-                // Acesso via slug (preview do anfitrião / demo)
-                var hostRes = await sb.from('hosts').select('id, property_name, subscription_status, is_demo, is_admin').eq('slug', OWNER_SLUG).single();
-                if (!hostRes.data) { showAccessError('invalid'); return; }
-                host = hostRes.data;
-                if (host.subscription_status && host.subscription_status !== 'authorized' && !host.is_demo && !host.is_admin) {
-                    showAccessError('inactive');
-                    return;
-                }
-
-                var contentRes = await sb.from('guide_content')
-                    .select('property_name, wifi_name, wifi_password, address, maps_url, maps_embed, theme_color, theme_color_light, checkin_time, checkout_time, lock_code, lock_code_valid_until, access_type, access_location, access_contact, access_instructions, welcome_message, hero_image_url, rules, restaurantes, mercados, farmacias, atividades, academias, lavanderias, emergencia, room_items')
-                    .eq('host_id', host.id).single();
-                if (!contentRes.data) { showAccessError('invalid'); return; }
-                c = contentRes.data;
-
-                var mediaRes = await sb.from('room_media')
-                    .select('room, type, url, position')
-                    .eq('host_id', host.id).order('position', { ascending: true });
-                c.room_media = mediaRes.data || [];
-            } else {
-                // Sem token e sem slug — nada a exibir
-                showAccessError('invalid');
-                return;
-            }
-
-            function _esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-            function _renderListPanel(panelId, items) {
-                if (!items || !items.length) return;
-                var panel = document.getElementById(panelId);
-                if (!panel) return;
-                panel.innerHTML = items.map(function(item) {
-                    var catBadge = item.category
-                        ? '<span class="bg-primary/10 text-primary text-[10px] uppercase tracking-wider px-2 py-1 rounded font-bold flex-shrink-0">' + _esc(item.category) + '<\/span>'
-                        : '';
-                    var desc  = item.description
-                        ? '<p class="text-sm opacity-70 mb-4 flex-1">' + _esc(item.description) + '<\/p>' : '';
-                    var time  = item.time
-                        ? '<div class="flex items-center gap-2 text-sm text-primary font-bold"><span class="material-icons-outlined text-base">directions_car<\/span> ' + _esc(item.time) + '<\/div>'
-                        : '<div><\/div>';
-                    var mapsBtn = item.maps_url
-                        ? '<a href="' + _esc(item.maps_url) + '" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary border border-primary\/20 px-3 py-1.5 rounded-lg hover:bg-primary hover:text-white transition-colors"><span class="material-icons-outlined text-sm">map<\/span> Maps<\/a>'
-                        : '';
-                    return '<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary\/10 shadow-sm hover:-translate-y-1 transition-transform duration-200 flex flex-col">'
-                        + '<div class="flex items-start justify-between mb-3 gap-2">'
-                        + '<h4 class="font-serif text-lg text-text-dark dark:text-text-light font-bold">' + _esc(item.name) + '<\/h4>'
-                        + catBadge + '<\/div>'
-                        + desc
-                        + '<div class="flex items-center justify-between pt-3 border-t border-primary\/10 mt-auto">' + time + mapsBtn + '<\/div>'
-                        + '<\/div>';
-                }).join('');
-            }
-            _renderListPanel('panel-comer',       c.restaurantes);
-            _renderListPanel('panel-mercado',      c.mercados);
-            _renderListPanel('panel-farmacia',     c.farmacias);
-            _renderListPanel('panel-fazer',        c.atividades);
-            _renderListPanel('panel-academias',    c.academias);
-            _renderListPanel('panel-lavanderias',  c.lavanderias);
-            if (c.emergencia && c.emergencia.length) {
-                var ep = document.getElementById('panel-emergencia');
-                if (ep) ep.innerHTML = c.emergencia.map(function(item) {
-                    var tel = item.maps_url || '';
-                    var telLink = tel ? '<a href="' + _esc(tel) + '" class="font-bold text-red-600 dark:text-red-400 hover:text-red-800 transition-colors text-sm">' + _esc(tel) + '<\/a>' : '';
-                    return '<div class="bg-red-50 dark:bg-red-900\/20 rounded-2xl p-6 border border-red-200 dark:border-red-800\/40 hover:-translate-y-1 transition-transform duration-200">'
-                        + '<div class="flex items-center gap-3 mb-2"><span class="material-icons-outlined text-red-500 text-2xl">emergency<\/span>'
-                        + '<h4 class="font-serif text-lg font-bold text-red-700 dark:text-red-400">' + _esc(item.name) + '<\/h4><\/div>'
-                        + (item.description ? '<p class="text-sm opacity-70 mb-3">' + _esc(item.description) + '<\/p>' : '')
-                        + telLink
-                        + '<\/div>';
-                }).join('');
-            }
-
-            // Room items overlay on photo articles
-            if (c.room_items) {
-                var _roomSlots = [
-                    { id: 'album-bedroom',  key: 'bedroom'  },
-                    { id: 'album-kitchen',  key: 'kitchen'  },
-                    { id: 'album-bathroom', key: 'bathroom' },
-                ];
-                _roomSlots.forEach(function(slot) {
-                    var items = c.room_items[slot.key] || [];
-                    if (!items.length) return;
-                    var slotEl = document.getElementById(slot.id);
-                    if (!slotEl) return;
-                    var article = slotEl.closest('article');
-                    if (!article) return;
-                    var MAX_VISIBLE_ITEMS = 6;
-                    var visibleItems = items.length > MAX_VISIBLE_ITEMS ? items.slice(0, MAX_VISIBLE_ITEMS - 1) : items;
-                    var extraCount    = items.length > MAX_VISIBLE_ITEMS ? items.length - visibleItems.length : 0;
-                    var overlay = document.createElement('div');
-                    overlay.style.cssText = 'position:absolute;left:0;right:0;bottom:0;z-index:20;padding:1.75rem 1.1rem 0.9rem;border-radius:0 0 2rem 2rem;background:linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.38) 60%, rgba(0,0,0,0) 100%);';
-                    overlay.innerHTML = '<p style="font-size:9px;text-transform:uppercase;letter-spacing:0.3em;color:rgba(255,255,255,0.55);margin:0 0 6px" data-i18n="photos.items_label">Itens disponíveis<\/p>'
-                        + '<ul style="display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin:0;padding:0;list-style:none">'
-                        + visibleItems.map(function(item) {
-                            return '<li style="color:rgba(255,255,255,0.9);font-size:11px;display:flex;align-items:center;gap:4px;text-shadow:0 1px 2px rgba(0,0,0,0.4)"><span class="material-icons-outlined" style="font-size:10px;color:var(--pl,#6B8E61)">check_circle<\/span>' + _esc(item) + '<\/li>';
-                          }).join('')
-                        + (extraCount > 0 ? '<li style="color:rgba(255,255,255,0.65);font-size:11px;font-weight:700">+' + extraCount + (extraCount === 1 ? ' item' : ' itens') + '<\/li>' : '')
-                        + '<\/ul>';
-                    article.appendChild(overlay);
-                });
-            }
-
-            // Galeria dinâmica: substitui fotos fixas pelas enviadas pelo anfitrião, quando existirem
-            applyRoomMedia(c.room_media);
-
-            // Aplica tema sempre, com fallback para oliva padrão
-            var r = document.documentElement;
-            var themeHex = c.theme_color || '#4A6741';
-            r.style.setProperty('--p',  themeHex);
-            r.style.setProperty('--pl', c.theme_color_light || themeHex || '#6B8E61');
-
-            // Tinge os fundos "card" (boas-vindas, fotos, vídeo etc.) bem suavemente com a cor do tema,
-            // em vez do verde-sálvia fixo — sem prejudicar a legibilidade do texto por cima.
-            (function() {
-                function hexToRgb(hex) {
-                    hex = String(hex || '').replace('#', '');
-                    if (hex.length === 3) hex = hex.split('').map(function(ch){ return ch + ch; }).join('');
-                    var num = parseInt(hex, 16);
-                    if (isNaN(num)) return null;
-                    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
-                }
-                function mix(a, b, t) {
-                    return {
-                        r: Math.round(a.r + (b.r - a.r) * t),
-                        g: Math.round(a.g + (b.g - a.g) * t),
-                        b: Math.round(a.b + (b.b - a.b) * t)
-                    };
-                }
-                function rgbStr(o) { return o.r + ' ' + o.g + ' ' + o.b; }
-
-                var theme = hexToRgb(themeHex) || { r: 74, g: 103, b: 65 };
-                var lightBg = { r: 253, g: 252, b: 245 }; // tom do background-light
-                var darkBg  = { r: 26,  g: 29,  b: 26  }; // tom do background-dark
-
-                r.style.setProperty('--card-light-rgb',  rgbStr(mix(lightBg, theme, 0.07)));
-                r.style.setProperty('--card-light2-rgb', rgbStr(mix(lightBg, theme, 0.14)));
-                r.style.setProperty('--card-dark-rgb',   rgbStr(mix(darkBg,  theme, 0.22)));
-                r.style.setProperty('--card-dark2-rgb',  rgbStr(mix(darkBg,  theme, 0.30)));
-            })();
-
-            var name = c.property_name || host.property_name || 'Zamio';
-            window._dynPropName = name;
-
-            setText('dyn-hero-title',  (window._t ? window._t('hero.welcome_to', 'Bem-vindo ao') : 'Bem-vindo ao') + ' ' + name);
-            setText('dyn-fotos-title', (window._t ? window._t('photos.title_of', 'Fotos do') : 'Fotos do') + ' ' + name);
-            setText('dyn-prop-name',   name);
-            setText('dyn-footer',      name);
-            setText('dyn-wifi-name',   c.wifi_name     || '');
-            setText('dyn-wifi-pass',   c.wifi_password || '');
-
-            // Check-in / acesso
-            setText('dyn-checkin-time', (c.checkin_time || '13:00') + ' / ' + (c.checkout_time || '11:00'));
-            var accessType = c.access_type || 'fechadura';
-            window._dynAccessType = accessType;
-            var codeCard   = document.getElementById('dyn-code-card');
-            var accessInfo = document.getElementById('dyn-access-info');
-
-            if (accessType === 'fechadura' || accessType === 'cofre') {
-                setText('dyn-code-label', accessType === 'cofre'
-                    ? (window._t ? window._t('access.code_label_safe', 'Código do cofre') : 'Código do cofre')
-                    : (window._t ? window._t('access.code_label', 'Código') : 'Código'));
-                setText('dyn-code-value', c.lock_code || '—');
-                if (codeCard) codeCard.style.display = '';
-            } else {
-                if (codeCard) codeCard.style.display = 'none';
-            }
-
-            if (accessInfo) {
-                var infoHtml = '';
-                if (accessType === 'fechadura') {
-                    if (c.access_instructions) {
-                        infoHtml = renderAccessLines(c.access_instructions);
-                    } else {
-                        infoHtml = '<p class="text-sm text-text-dark/70 leading-relaxed">' + (window._t ? window._t('access.default_instruction', 'Digite o código acima na fechadura eletrônica e aguarde o bipe para destrancar.') : 'Digite o código acima na fechadura eletrônica e aguarde o bipe para destrancar.') + '<\/p>';
-                    }
-                } else if (accessType === 'cofre') {
-                    if (c.access_location) infoHtml += infoCard(window._t ? window._t('access.safe_location', 'Localização do cofre') : 'Localização do cofre', 'lock_open', c.access_location);
-                    if (c.access_instructions) infoHtml += '<div class="mt-2">' + renderAccessLines(c.access_instructions) + '<\/div>';
-                } else if (accessType === 'chave') {
-                    if (c.access_location) infoHtml += infoCard(window._t ? window._t('access.key_location', 'Onde retirar a chave') : 'Onde retirar a chave', 'key', c.access_location);
-                    if (c.access_contact)  infoHtml += infoCard(window._t ? window._t('access.contact', 'Contato') : 'Contato', 'phone', c.access_contact);
-                } else if (accessType === 'portaria') {
-                    if (c.access_instructions) infoHtml += renderAccessLines(c.access_instructions);
-                    if (c.access_contact)      infoHtml += infoCard(window._t ? window._t('access.lobby_contact', 'Contato da portaria') : 'Contato da portaria', 'phone', c.access_contact);
-                } else {
-                    if (c.access_instructions) infoHtml += renderAccessLines(c.access_instructions);
-                }
-                accessInfo.innerHTML = infoHtml;
-            }
-
-            if (c.address) {
-                var addrEl = document.getElementById('dyn-address');
-                if (addrEl) { addrEl.textContent = c.address; addrEl.removeAttribute('data-i18n'); }
-                window._dynAddress = c.address;
-            }
-            if (c.maps_url) {
-                var mapsLink = document.getElementById('dyn-maps-link');
-                if (mapsLink) mapsLink.href = c.maps_url;
-            }
-            if (c.maps_embed) {
-                var embed = document.getElementById('dyn-maps-embed');
-                if (embed) embed.src = c.maps_embed;
-            }
-
-            if (window._reApplyDynamic) window._reApplyDynamic();
-        }
-
-        loadDynamic();
-    })();
-    </script>
-    <script>
-    function copyWifiPass() {
-      var pass = document.getElementById('dyn-wifi-pass').textContent;
-      navigator.clipboard.writeText(pass).then(function() {
-        var btn = document.getElementById('btn-copy-wifi');
-        btn.innerHTML = '<span class="material-icons-outlined text-base">check<\/span>' + (window._t ? window._t('wifi.copied_btn', 'Copiado!') : 'Copiado!');
-        setTimeout(function() {
-          btn.innerHTML = '<span class="material-icons-outlined text-base">content_copy<\/span><span data-i18n="wifi.copy_btn">' + (window._t ? window._t('wifi.copy_btn', 'Copiar') : 'Copiar') + '<\/span>';
-        }, 2000);
-      });
-    }
-
-    </script>
-
-<!-- Tela de acesso expirado / inválido (cobre tudo) -->
-<div id="access-error-screen" class="hidden fixed inset-0 z-[999] bg-white flex flex-col items-center justify-center p-8 text-center">
-  <div class="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-    <span id="access-error-icon" class="material-icons-outlined text-primary" style="font-size:44px">event_busy</span>
-  </div>
-  <h1 id="access-error-title" class="font-serif text-3xl text-gray-900 mb-3">Acesso expirado</h1>
-  <p id="access-error-msg" class="text-gray-500 max-w-xs leading-relaxed">
-    O link do guia expirou após o checkout. Obrigado pela visita e até a próxima!
-  </p>
-</div>
-</body></html>
+lpRenderPlanos();
+</script>
+</body>
+</html>
