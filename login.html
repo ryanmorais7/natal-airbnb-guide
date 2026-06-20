@@ -93,10 +93,16 @@ const SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
-// Already logged in? Go straight to panel
-sb.auth.getSession().then(({ data: { session } }) => {
-  if (session) location.href = 'painel.html';
-});
+const wantsDemo = new URLSearchParams(location.search).get('demo') === '1';
+
+if (wantsDemo) {
+  entrarDemo();
+} else {
+  // Already logged in? Go straight to panel
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) location.href = 'painel.html';
+  });
+}
 
 async function doLogin() {
   const email    = document.getElementById('email').value.trim();
