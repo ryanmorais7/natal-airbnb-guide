@@ -1067,9 +1067,9 @@ async function init() {
       document.getElementById('sub-block-icon').textContent = 'schedule';
       document.getElementById('sub-block-title').textContent = 'Seu período de acesso acabou';
       document.getElementById('sub-block-text').textContent = subStatus === 'convidada'
-        ? 'O prazo de acesso que foi liberado para você terminou. Escolha um plano para continuar usando o painel, ou fale com quem te convidou para renovar o acesso.'
-        : 'Seus dias de teste grátis terminaram. Escolha um plano para continuar usando o painel e manter o guia disponível para seus hóspedes.';
-      document.getElementById('sub-block-action').textContent = 'Ver planos →';
+        ? 'O prazo de acesso liberado para você terminou. Para continuar usando o painel e manter o guia disponível para seus hóspedes, faça sua assinatura agora.'
+        : 'Seus dias de teste grátis terminaram. Faça sua assinatura agora para continuar usando o painel e manter o guia disponível para seus hóspedes.';
+      document.getElementById('sub-block-action').textContent = 'Fazer minha assinatura →';
       document.getElementById('sub-block-action').setAttribute('href', 'planos.html');
       document.getElementById('sub-block-action').classList.remove('bg-red-500', 'hover:bg-red-600', 'shadow-red-500/25');
       document.getElementById('sub-block-action').classList.add('bg-primary', 'hover:bg-primary-light', 'shadow-primary/25');
