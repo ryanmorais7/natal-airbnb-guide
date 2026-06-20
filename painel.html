@@ -279,6 +279,11 @@ tailwind.config = {
           </button>
         </div>
       </div>
+      <div id="cancelar-assinatura-wrap" class="hidden mt-4 text-right">
+        <button onclick="cancelarMinhaAssinatura()" class="text-xs text-gray-300 hover:text-red-400 transition-colors inline-flex items-center gap-1">
+          Cancelar assinatura<span class="material-icons-outlined" style="font-size:13px">arrow_forward</span>
+        </button>
+      </div>
     </div>
 
     <!-- === LIMPEZA === -->
@@ -1032,6 +1037,10 @@ async function init() {
   }
 
   applyProLock();
+
+  if (hostData.subscription_status === 'authorized' && !hostData.is_demo && !hostData.is_admin) {
+    document.getElementById('cancelar-assinatura-wrap').classList.remove('hidden');
+  }
 
   const subStatus = hostData.subscription_status;
   const subBlocked = subStatus && subStatus !== 'authorized' && !hostData.is_demo && !hostData.is_admin;
@@ -1826,6 +1835,27 @@ async function saveGeral() {
   document.getElementById('header-prop').textContent = hostData.property_name || 'Minha Propriedade';
   updateVerGuiaLink();
   showToast('✓ Salvo com sucesso!');
+}
+
+// ── Cancelar assinatura ─────────────────────────────────────────────────
+async function cancelarMinhaAssinatura() {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
+  if (!confirm('Cancelar sua assinatura?\n\nAs cobranças futuras param imediatamente, e o acesso ao painel e ao guia do hóspede será bloqueado.')) return;
+
+  const { data: { session } } = await sb.auth.getSession();
+  try {
+    const res = await fetch(SB_URL + '/functions/v1/cancelar-assinatura', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ hostId }),
+    });
+    const result = await res.json();
+    if (!result.ok) { showToast(result.message || 'Erro ao cancelar.'); return; }
+    showToast('Assinatura cancelada.');
+    setTimeout(() => location.reload(), 1500);
+  } catch (e) {
+    showToast('Erro de conexão.');
+  }
 }
 
 // ── Maps: conversão automática link → embed ───────────────────────────

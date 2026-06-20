@@ -16,16 +16,18 @@ serve(async (req) => {
   try {
     const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-    // Só admin do site pode chamar — valida o token do chamador, não a anon key
+    // Só o próprio anfitrião ou um admin do site pode chamar — valida o token do chamador, não a anon key
     const token = (req.headers.get("Authorization") ?? "").replace("Bearer ", "");
     const { data: userData, error: userErr } = await sb.auth.getUser(token);
     if (userErr || !userData?.user) return json({ ok: false, message: "Não autenticado." }, 401);
 
-    const { data: caller } = await sb.from("hosts").select("is_admin").eq("id", userData.user.id).single();
-    if (!caller?.is_admin) return json({ ok: false, message: "Acesso restrito a administradores." }, 403);
-
     const { hostId } = await req.json();
     if (!hostId) return json({ ok: false, message: "hostId obrigatório." }, 400);
+
+    const { data: caller } = await sb.from("hosts").select("is_admin").eq("id", userData.user.id).single();
+    const isAdmin = caller?.is_admin === true;
+    const isSelf  = userData.user.id === hostId;
+    if (!isAdmin && !isSelf) return json({ ok: false, message: "Sem permissão para cancelar esta assinatura." }, 403);
 
     const { data: host } = await sb
       .from("hosts")
