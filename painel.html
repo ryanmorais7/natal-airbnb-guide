@@ -1038,7 +1038,7 @@ async function init() {
 
   applyProLock();
 
-  if (hostData.subscription_status === 'authorized' && !hostData.is_demo && !hostData.is_admin) {
+  if (hostData.subscription_status === 'authorized' || hostData.is_demo || hostData.is_admin) {
     document.getElementById('cancelar-assinatura-wrap').classList.remove('hidden');
   }
 
