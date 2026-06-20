@@ -1042,11 +1042,12 @@ async function init() {
     document.getElementById('cancelar-assinatura-wrap').classList.remove('hidden');
   }
 
+  const NON_BLOCKING_STATUSES = new Set(['authorized', 'convidada']);
   const subStatus    = hostData.subscription_status;
   const trialEndsAt  = hostData.trial_ends_at ? new Date(hostData.trial_ends_at).getTime() : null;
   const trialExpired = trialEndsAt !== null && trialEndsAt < Date.now() && subStatus !== 'authorized';
-  const subBlocked   = !hostData.is_demo && !hostData.is_admin
-    && ((subStatus && subStatus !== 'authorized') || trialExpired);
+  const realBlock    = subStatus && !NON_BLOCKING_STATUSES.has(subStatus);
+  const subBlocked   = !hostData.is_demo && !hostData.is_admin && (realBlock || trialExpired);
   if (subBlocked) {
     document.getElementById('sub-block-modal').classList.remove('hidden');
     if (subStatus === 'pending') {
@@ -1060,7 +1061,7 @@ async function init() {
       document.getElementById('sub-block-action').classList.remove('bg-red-500', 'hover:bg-red-600', 'shadow-red-500/25');
       document.getElementById('sub-block-action').classList.add('bg-primary', 'hover:bg-primary-light', 'shadow-primary/25');
       document.getElementById('sub-block-action').onclick = () => location.reload();
-    } else if (trialExpired && !(subStatus && subStatus !== 'authorized')) {
+    } else if (!realBlock && trialExpired) {
       document.getElementById('sub-block-icon-wrap').className = 'w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4';
       document.getElementById('sub-block-icon').className = 'material-icons-outlined text-primary';
       document.getElementById('sub-block-icon').textContent = 'schedule';

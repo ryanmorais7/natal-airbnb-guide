@@ -1123,8 +1123,10 @@ Tudo que vocÃª precisa para uma chegada tranquila: acesso, Wi-Fi, regras e direÃ
                 var hostRes = await sb.from('hosts').select('id, property_name, subscription_status, trial_ends_at, is_demo, is_admin').eq('slug', OWNER_SLUG).single();
                 if (!hostRes.data) { showAccessError('invalid'); return; }
                 host = hostRes.data;
+                var nonBlockingStatuses = ['authorized', 'convidada'];
                 var trialExpired = host.trial_ends_at && new Date(host.trial_ends_at) < new Date() && host.subscription_status !== 'authorized';
-                if (!host.is_demo && !host.is_admin && ((host.subscription_status && host.subscription_status !== 'authorized') || trialExpired)) {
+                var realBlock = host.subscription_status && nonBlockingStatuses.indexOf(host.subscription_status) === -1;
+                if (!host.is_demo && !host.is_admin && (realBlock || trialExpired)) {
                     showAccessError('inactive');
                     return;
                 }

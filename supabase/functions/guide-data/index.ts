@@ -55,12 +55,13 @@ serve(async (req) => {
       .eq("id", gt.host_id)
       .single();
 
+    const NON_BLOCKING_STATUSES = new Set(["authorized", "convidada"]);
     const trialExpired = !!host?.trial_ends_at
       && new Date(host.trial_ends_at) < new Date()
       && host.subscription_status !== "authorized";
+    const realBlock = !!host?.subscription_status && !NON_BLOCKING_STATUSES.has(host.subscription_status);
 
-    if (host && !host.is_demo && !host.is_admin
-      && ((host.subscription_status && host.subscription_status !== "authorized") || trialExpired)) {
+    if (host && !host.is_demo && !host.is_admin && (realBlock || trialExpired)) {
       return json({ ok: false, error: "inactive" }, 403);
     }
 

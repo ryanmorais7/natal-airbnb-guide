@@ -177,6 +177,7 @@ tailwind.config = {
           <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Status da Assinatura</label>
           <select id="m-sub-status" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
             <option value="">— sem assinatura —</option>
+            <option value="convidada">Convidada</option>
             <option value="authorized">Ativa</option>
             <option value="paused">Pausada</option>
             <option value="cancelled">Cancelada</option>
@@ -896,6 +897,7 @@ async function saveModal() {
   const trialEndsAt  = trialDaysRaw
     ? new Date(Date.now() + Number(trialDaysRaw) * 86400000).toISOString()
     : null;
+  const planActive = subStatus === 'authorized' || subStatus === 'convidada';
   await sb.from('hosts').update({
     property_name:       updates.property_name,
     owner_name:          document.getElementById('m-owner').value.trim(),
@@ -903,7 +905,7 @@ async function saveModal() {
     plan_id:             planId || null,
     plan_name:           planName,
     subscription_status: subStatus || null,
-    plan_active:         subStatus === 'authorized',
+    plan_active:         planActive,
     is_demo:             document.getElementById('m-is-demo').checked,
     trial_ends_at:       trialEndsAt,
   }).eq('id', editingHostId);
@@ -916,7 +918,7 @@ async function saveModal() {
     host.plan_id       = planId || null;
     host.plan_name     = planName;
     host.subscription_status = subStatus || null;
-    host.plan_active   = subStatus === 'authorized';
+    host.plan_active   = planActive;
     host.is_demo       = document.getElementById('m-is-demo').checked;
     host.trial_ends_at = trialEndsAt;
   }
