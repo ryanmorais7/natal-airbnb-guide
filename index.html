@@ -48,9 +48,10 @@ body { font-family: 'Nunito Sans', sans-serif; scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
 }
-#mock-field-pass.mock-hover-field > div { border-color: #4A6741; box-shadow: 0 0 0 3px rgba(74,103,65,.15); }
-.mock-hover-theme { transform: scale(1.18); box-shadow: 0 0 0 3px rgba(74,103,65,.35); }
-#mock-save-btn.mock-hover-save { background: #3d5536; box-shadow: 0 6px 14px -4px rgba(74,103,65,.5); transform: translateY(-1px); }
+#mock-field-pass.mock-hover > div { border-color: #4A6741; box-shadow: 0 0 0 3px rgba(74,103,65,.15); }
+.mock-hover { box-shadow: 0 0 0 3px rgba(74,103,65,.35); transform: scale(1.06); }
+.mock-nav.mock-nav-active { background: rgba(74,103,65,.1); color: #4A6741; }
+.mock-panel.hidden { display: none; }
 details > summary { list-style: none; cursor: pointer; }
 details > summary::-webkit-details-marker { display: none; }
 details summary .chevron { transition: transform .2s; }
@@ -254,12 +255,12 @@ details[open] summary .chevron { transform: rotate(180deg); }
     </div>
 
     <div class="max-w-3xl mx-auto reveal">
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+      <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden relative" id="mock-stage">
 
         <div class="flex items-center justify-between px-5 py-3 border-b border-gray-100">
           <div class="flex items-center gap-2">
             <img src="assets/airguia-favicon.png" class="w-6 h-6 rounded-lg" alt=""/>
-            <span class="font-bold text-sm text-gray-800">Zamio</span>
+            <span class="font-bold text-sm text-gray-800">Casa Vista Mar</span>
           </div>
           <span class="text-[11px] font-bold text-primary border-2 border-primary/30 rounded-lg px-3 py-1.5 flex items-center gap-1">
             <span class="material-icons-outlined" style="font-size:14px">visibility</span>
@@ -269,50 +270,105 @@ details[open] summary .chevron { transform: rotate(180deg); }
 
         <div class="flex">
           <div class="hidden sm:block w-36 border-r border-gray-100 py-3 px-2 flex-shrink-0">
-            <div class="px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 mb-1"><span class="material-icons-outlined" style="font-size:16px">tune</span>Geral</div>
-            <div class="px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 mb-1"><span class="material-icons-outlined" style="font-size:16px">cleaning_services</span>Limpeza</div>
-            <div class="px-2.5 py-2 rounded-lg text-xs font-bold text-primary bg-primary/10 flex items-center gap-2 mb-1"><span class="material-icons-outlined" style="font-size:16px">wifi</span>Wi-Fi</div>
-            <div class="px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 mb-1"><span class="material-icons-outlined" style="font-size:16px">palette</span>Aparência</div>
-            <div class="px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2"><span class="material-icons-outlined" style="font-size:16px">key</span>Acesso</div>
+            <button type="button" class="mock-nav w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 mb-1 transition-colors" data-mock-section="geral" onclick="mockUserClick('geral')"><span class="material-icons-outlined" style="font-size:16px">tune</span>Geral</button>
+            <button type="button" class="mock-nav w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 mb-1 transition-colors" data-mock-section="limpeza" onclick="mockUserClick('limpeza')"><span class="material-icons-outlined" style="font-size:16px">cleaning_services</span>Limpeza</button>
+            <button type="button" class="mock-nav w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 mb-1 transition-colors" data-mock-section="wifi" onclick="mockUserClick('wifi')"><span class="material-icons-outlined" style="font-size:16px">wifi</span>Wi-Fi</button>
+            <button type="button" class="mock-nav w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 mb-1 transition-colors" data-mock-section="aparencia" onclick="mockUserClick('aparencia')"><span class="material-icons-outlined" style="font-size:16px">palette</span>Aparência</button>
+            <button type="button" class="mock-nav w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 transition-colors" data-mock-section="acesso" onclick="mockUserClick('acesso')"><span class="material-icons-outlined" style="font-size:16px">key</span>Acesso</button>
           </div>
 
-          <div class="flex-1 p-5 sm:p-6 relative" id="mock-stage">
-            <p class="font-serif text-lg text-gray-900 mb-1">Wi-Fi</p>
-            <p class="text-xs text-gray-400 mb-4">Dados da rede que aparecem no guia do hóspede.</p>
+          <div class="flex-1 p-5 sm:p-6" style="min-height:300px">
 
-            <div class="space-y-3 mb-5">
-              <div>
-                <label class="text-[10px] font-bold uppercase text-gray-400">Nome da Rede</label>
-                <div class="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white mt-1">Zamio_5G</div>
+            <div class="mock-panel" data-mock-panel="geral">
+              <p class="font-serif text-lg text-gray-900 mb-1">Geral</p>
+              <p class="text-xs text-gray-400 mb-4">Nome da propriedade e link do guia.</p>
+              <div class="space-y-3 mb-5">
+                <div>
+                  <label class="text-[10px] font-bold uppercase text-gray-400">Nome da Propriedade</label>
+                  <div class="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white mt-1">Casa Vista Mar</div>
+                </div>
+                <div>
+                  <label class="text-[10px] font-bold uppercase text-gray-400">Link do guia</label>
+                  <div class="border-2 border-gray-200 rounded-lg px-3 py-2 text-xs text-primary bg-white mt-1 truncate">airguia.com.br/guia.html?h=demo</div>
+                </div>
               </div>
-              <div id="mock-field-pass">
-                <label class="text-[10px] font-bold uppercase text-gray-400">Senha</label>
-                <div class="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white mt-1 transition-all">••••••••</div>
+              <span id="mock-save-geral" class="inline-flex items-center gap-2 bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                <span class="material-icons-outlined" style="font-size:15px">save</span>Salvar
+              </span>
+            </div>
+
+            <div class="mock-panel hidden" data-mock-panel="limpeza">
+              <p class="font-serif text-lg text-gray-900 mb-1">Limpeza</p>
+              <p class="text-xs text-gray-400 mb-4">Checklist para a diarista, com envio direto pelo WhatsApp.</p>
+              <div class="space-y-2 mb-5">
+                <div class="flex items-center gap-2 text-sm text-gray-600 border-2 border-gray-200 rounded-lg px-3 py-2"><span class="material-icons-outlined text-primary" style="font-size:18px">check_box</span>Trocar lençóis e toalhas</div>
+                <div class="flex items-center gap-2 text-sm text-gray-600 border-2 border-gray-200 rounded-lg px-3 py-2"><span class="material-icons-outlined text-primary" style="font-size:18px">check_box</span>Repor papel higiênico e amenities</div>
+                <div class="flex items-center gap-2 text-sm text-gray-400 border-2 border-gray-200 rounded-lg px-3 py-2"><span class="material-icons-outlined text-gray-300" style="font-size:18px">check_box_outline_blank</span>Limpar área externa</div>
               </div>
+              <span id="mock-save-limpeza" class="inline-flex items-center gap-2 bg-green-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                <span class="material-icons-outlined" style="font-size:15px">send</span>Enviar para diarista
+              </span>
             </div>
 
-            <p class="text-[10px] font-bold uppercase text-gray-400 mb-2">Tema</p>
-            <div class="flex gap-2 mb-6">
-              <span class="w-7 h-7 rounded-full bg-[#4A6741] border-2 border-white shadow transition-all"></span>
-              <span id="mock-theme-2" class="w-7 h-7 rounded-full bg-[#3D6680] border-2 border-white shadow transition-all"></span>
-              <span class="w-7 h-7 rounded-full bg-[#A45A3C] border-2 border-white shadow transition-all"></span>
-              <span class="w-7 h-7 rounded-full bg-[#6B4E71] border-2 border-white shadow transition-all"></span>
+            <div class="mock-panel hidden" data-mock-panel="wifi">
+              <p class="font-serif text-lg text-gray-900 mb-1">Wi-Fi</p>
+              <p class="text-xs text-gray-400 mb-4">Dados da rede que aparecem no guia do hóspede.</p>
+              <div class="space-y-3 mb-5">
+                <div>
+                  <label class="text-[10px] font-bold uppercase text-gray-400">Nome da Rede</label>
+                  <div class="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white mt-1">VistaMar_5G</div>
+                </div>
+                <div id="mock-field-pass">
+                  <label class="text-[10px] font-bold uppercase text-gray-400">Senha</label>
+                  <div class="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white mt-1 transition-all">••••••••</div>
+                </div>
+              </div>
+              <span id="mock-save-wifi" class="inline-flex items-center gap-2 bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                <span class="material-icons-outlined" style="font-size:15px">save</span>Salvar
+              </span>
             </div>
 
-            <span id="mock-save-btn" class="inline-flex items-center gap-2 bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
-              <span class="material-icons-outlined" style="font-size:15px">save</span>Salvar
-            </span>
-
-            <div id="mock-cursor" class="absolute pointer-events-none transition-all duration-700 ease-in-out" style="left:0; top:0; opacity:0;">
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 3px rgba(0,0,0,.35))">
-                <path d="M2 1L2 18L6.5 14.5L9.5 20.5L12.5 19L9.5 13L15.5 12.5L2 1Z" fill="white" stroke="#1f2937" stroke-width="1.2" stroke-linejoin="round"/>
-              </svg>
+            <div class="mock-panel hidden" data-mock-panel="aparencia">
+              <p class="font-serif text-lg text-gray-900 mb-1">Aparência</p>
+              <p class="text-xs text-gray-400 mb-4">Escolha o tema de cores do guia do hóspede.</p>
+              <p class="text-[10px] font-bold uppercase text-gray-400 mb-2">Tema</p>
+              <div class="flex gap-2 mb-6">
+                <span class="w-7 h-7 rounded-full bg-[#3D6680] border-2 border-white shadow transition-all" style="box-shadow:0 0 0 2px #3D6680"></span>
+                <span id="mock-theme-2" class="w-7 h-7 rounded-full bg-[#4A6741] border-2 border-white shadow transition-all"></span>
+                <span class="w-7 h-7 rounded-full bg-[#A45A3C] border-2 border-white shadow transition-all"></span>
+                <span class="w-7 h-7 rounded-full bg-[#6B4E71] border-2 border-white shadow transition-all"></span>
+              </div>
+              <span id="mock-save-aparencia" class="inline-flex items-center gap-2 bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                <span class="material-icons-outlined" style="font-size:15px">save</span>Salvar Tema
+              </span>
             </div>
+
+            <div class="mock-panel hidden" data-mock-panel="acesso">
+              <p class="font-serif text-lg text-gray-900 mb-1">Acesso</p>
+              <p class="text-xs text-gray-400 mb-4">Como o hóspede acessa a propriedade.</p>
+              <div class="flex gap-2 mb-5">
+                <span id="mock-access-fechadura" class="flex flex-col items-center gap-1 px-3 py-2.5 rounded-lg border-2 border-primary bg-primary/5 text-primary text-[10px] font-bold transition-all"><span class="material-icons-outlined" style="font-size:18px">lock</span>Fechadura</span>
+                <span class="flex flex-col items-center gap-1 px-3 py-2.5 rounded-lg border-2 border-gray-200 text-gray-400 text-[10px] font-bold"><span class="material-icons-outlined" style="font-size:18px">key</span>Chave</span>
+                <span class="flex flex-col items-center gap-1 px-3 py-2.5 rounded-lg border-2 border-gray-200 text-gray-400 text-[10px] font-bold"><span class="material-icons-outlined" style="font-size:18px">security</span>Portaria</span>
+              </div>
+              <label class="text-[10px] font-bold uppercase text-gray-400">Código da Fechadura</label>
+              <div class="border-2 border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white mt-1 mb-5 font-mono tracking-widest w-24">4821</div>
+              <span id="mock-save-acesso" class="inline-flex items-center gap-2 bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                <span class="material-icons-outlined" style="font-size:15px">save</span>Salvar
+              </span>
+            </div>
+
           </div>
+        </div>
+
+        <div id="mock-cursor" class="absolute pointer-events-none transition-all duration-700 ease-in-out z-30" style="left:0; top:0; opacity:0;">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 3px rgba(0,0,0,.35))">
+            <path d="M2 1L2 18L6.5 14.5L9.5 20.5L12.5 19L9.5 13L15.5 12.5L2 1Z" fill="white" stroke="#1f2937" stroke-width="1.2" stroke-linejoin="round"/>
+          </svg>
         </div>
       </div>
 
-      <p class="text-center text-xs text-gray-400 mt-4">Demonstração ilustrativa do painel — não conectada a dados reais</p>
+      <p class="text-center text-xs text-gray-400 mt-4">Demonstração ilustrativa do painel — não conectada a dados reais. Clique nas abas pra explorar.</p>
     </div>
   </div>
 </section>
@@ -747,7 +803,27 @@ lpRenderPlanos();
   counters.forEach(function (el) { counterObserver.observe(el); });
 })();
 
-// ── Mockup do painel: cursor animado ────────────────────────────────────
+// ── Mockup do painel: navegação entre abas ──────────────────────────────
+function mockShowSection(name) {
+  document.querySelectorAll('.mock-nav').forEach(function (b) {
+    b.classList.toggle('mock-nav-active', b.getAttribute('data-mock-section') === name);
+  });
+  document.querySelectorAll('.mock-panel').forEach(function (p) {
+    p.classList.toggle('hidden', p.getAttribute('data-mock-panel') !== name);
+  });
+}
+
+mockShowSection('geral');
+
+var mockUserTookOver = false;
+function mockUserClick(name) {
+  mockUserTookOver = true;
+  var cursor = document.getElementById('mock-cursor');
+  if (cursor) cursor.style.opacity = '0';
+  mockShowSection(name);
+}
+
+// ── Mockup do painel: cursor animado percorrendo as abas ────────────────
 (function initPanelMockup() {
   var section = document.getElementById('painel-preview');
   var stage   = document.getElementById('mock-stage');
@@ -756,40 +832,61 @@ lpRenderPlanos();
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var points = [
-    { el: document.getElementById('mock-field-pass'), hoverClass: 'mock-hover-field' },
-    { el: document.getElementById('mock-theme-2'),    hoverClass: 'mock-hover-theme' },
-    { el: document.getElementById('mock-save-btn'),   hoverClass: 'mock-hover-save'  }
+  var SEQUENCE = [
+    { section: 'geral',     hovers: ['#mock-save-geral'] },
+    { section: 'limpeza',   hovers: ['#mock-save-limpeza'] },
+    { section: 'wifi',      hovers: ['#mock-field-pass', '#mock-save-wifi'] },
+    { section: 'aparencia', hovers: ['#mock-theme-2', '#mock-save-aparencia'] },
+    { section: 'acesso',    hovers: ['#mock-access-fechadura', '#mock-save-acesso'] }
   ];
 
   function moveCursorTo(el) {
     var stageRect = stage.getBoundingClientRect();
     var elRect    = el.getBoundingClientRect();
-    cursor.style.left = (elRect.left - stageRect.left + elRect.width  * 0.55) + 'px';
-    cursor.style.top  = (elRect.top  - stageRect.top  + elRect.height * 0.55) + 'px';
+    cursor.style.left = (elRect.left - stageRect.left + elRect.width  * 0.5) + 'px';
+    cursor.style.top  = (elRect.top  - stageRect.top  + elRect.height * 0.5) + 'px';
     cursor.style.opacity = '1';
   }
 
-  var idx = 0;
   var running = false;
   var timer = null;
 
-  function tick() {
-    var point = points[idx];
-    moveCursorTo(point.el);
-    point.el.classList.add(point.hoverClass);
+  function runHovers(selectors, i, done) {
+    if (mockUserTookOver) return;
+    if (i >= selectors.length) { done(); return; }
+    var el = document.querySelector(selectors[i]);
+    if (!el) { runHovers(selectors, i + 1, done); return; }
+    moveCursorTo(el);
     timer = setTimeout(function () {
-      point.el.classList.remove(point.hoverClass);
-      idx = (idx + 1) % points.length;
-      timer = setTimeout(tick, 250);
-    }, 1500);
+      if (mockUserTookOver) return;
+      el.classList.add('mock-hover');
+      timer = setTimeout(function () {
+        el.classList.remove('mock-hover');
+        runHovers(selectors, i + 1, done);
+      }, 1100);
+    }, 650);
+  }
+
+  function runStep(stepIndex) {
+    if (mockUserTookOver) return;
+    var step = SEQUENCE[stepIndex % SEQUENCE.length];
+    var navBtn = document.querySelector('.mock-nav[data-mock-section="' + step.section + '"]');
+    if (!navBtn) return;
+    moveCursorTo(navBtn);
+    timer = setTimeout(function () {
+      if (mockUserTookOver) return;
+      mockShowSection(step.section);
+      runHovers(step.hovers, 0, function () {
+        if (mockUserTookOver) return;
+        timer = setTimeout(function () { runStep(stepIndex + 1); }, 500);
+      });
+    }, 650);
   }
 
   function start() {
-    if (running) return;
+    if (running || mockUserTookOver) return;
     running = true;
-    moveCursorTo(points[0].el);
-    timer = setTimeout(tick, 700);
+    timer = setTimeout(function () { runStep(0); }, 600);
   }
 
   var sectionObserver = new IntersectionObserver(function (entries) {
@@ -798,10 +895,6 @@ lpRenderPlanos();
     });
   }, { threshold: 0.3 });
   sectionObserver.observe(section);
-
-  window.addEventListener('resize', function () {
-    if (running) moveCursorTo(points[idx].el);
-  });
 })();
 </script>
 </body>
