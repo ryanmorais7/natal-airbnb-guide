@@ -1,0 +1,1985 @@
+const SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
+const sb = window.supabase.createClient(SB_URL, SB_KEY);
+
+let hostId = null;
+let hostData = {};
+let activePropertyId = null;
+let propertyData = {};
+let properties = [];
+let content  = {};
+let editList  = null;
+let editIndex = -1;
+
+const LIST_KEYS = ['restaurantes','mercados','farmacias','atividades','academias','lavanderias','emergencia'];
+
+// ── Reservas (tokens de hóspede) ─────────────────────────────────────
+const GUIDE_BASE = location.origin + '/guia.html';
+
+async function loadReservas() {
+  const { data: tokens } = await sb.from('guest_tokens')
+    .select('id, token, guest_name, expires_at, created_at, lock_code')
+    .eq('host_id', activePropertyId)
+    .order('created_at', { ascending: false });
+  renderReservas(tokens || []);
+}
+
+function renderReservas(tokens) {
+  const el = document.getElementById('res-list');
+  if (!tokens.length) {
+    el.innerHTML = '<p class="text-sm text-gray-400 text-center py-6">Nenhum link gerado ainda.</p>';
+    return;
+  }
+  const now = new Date();
+  el.innerHTML = tokens.map(t => {
+    const exp     = new Date(t.expires_at);
+    const expired = exp < now;
+    const dateStr = exp.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    const badge   = expired
+      ? '<span class="text-[10px] font-extrabold uppercase bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">Expirado</span>'
+      : '<span class="text-[10px] font-extrabold uppercase bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Ativo</span>';
+    const link = GUIDE_BASE + '?t=' + t.token;
+    return `<div class="flex items-center gap-3 py-3 border-b border-gray-100 last:border-0">
+      <span class="material-icons-outlined text-primary flex-shrink-0" style="font-size:18px">vpn_key</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-bold text-sm text-gray-900">${t.guest_name || 'Hóspede'} ${badge}</p>
+        <p class="text-xs text-gray-400 mt-0.5">Expira: ${dateStr}</p>
+        <p class="text-xs text-primary/70 truncate mt-0.5">${link}</p>
+        ${t.lock_code ? `<p class="text-xs text-gray-400 mt-0.5">Fechadura: <span class="font-mono font-bold text-gray-600">${escHtml(t.lock_code)}</span></p>` : ''}
+      </div>
+      <div class="flex items-center gap-1 flex-shrink-0">
+        <button onclick="copiarLinkReserva('${t.token}')" title="Copiar link"
+          class="item-btn p-2 rounded-xl hover:bg-primary/10">
+          <span class="material-icons-outlined" style="font-size:18px">content_copy</span>
+        </button>
+        <button onclick="deletarToken('${t.id}')" title="Revogar link"
+          class="item-btn del p-2 rounded-xl hover:bg-red-50">
+          <span class="material-icons-outlined" style="font-size:18px">delete</span>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function gerarToken() {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
+  const guestName = document.getElementById('res-guest-name').value.trim();
+  const expiresAt = document.getElementById('res-expires-at').value;
+  const lockCodeEl = document.getElementById('res-lock-code');
+  const lockCode   = (lockCodeEl && !lockCodeEl.closest('#res-lockcode-wrap').classList.contains('hidden'))
+    ? lockCodeEl.value.trim() : '';
+  if (!expiresAt) { showToast('Informe a data de checkout'); return; }
+  const expiresIso = new Date(expiresAt).toISOString();
+  const { error } = await sb.from('guest_tokens').insert({
+    host_id:    activePropertyId,
+    token:      crypto.randomUUID(),
+    guest_name: guestName || null,
+    expires_at: expiresIso,
+    lock_code:  lockCode || null,
+  });
+  if (error) { console.error('Erro ao gerar link:', error); showToast(error.message || 'Erro ao gerar link'); return; }
+  document.getElementById('res-guest-name').value  = '';
+  document.getElementById('res-expires-at').value  = '';
+  if (lockCodeEl) lockCodeEl.value = '';
+  showToast('Link gerado!');
+  await loadReservas();
+}
+
+async function deletarToken(id) {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
+  if (!confirm('Revogar este link? O hóspede perderá acesso imediatamente.')) return;
+  await sb.from('guest_tokens').delete().eq('id', id).eq('host_id', activePropertyId);
+  showToast('Link revogado');
+  await loadReservas();
+}
+
+function copiarLinkReserva(token) {
+  const link = GUIDE_BASE + '?t=' + token;
+  navigator.clipboard.writeText(link).then(() => showToast('Link copiado!'));
+}
+
+// ── Init ─────────────────────────────────────────────────────────────
+async function init() {
+  let { data: { session } } = await sb.auth.getSession();
+  if (!session) { location.href = 'login.html'; return; }
+  // Renova o token preventivamente se estiver próximo de expirar
+  const expiresAt = session.expires_at ?? 0;
+  if (expiresAt - Date.now() / 1000 < 300) {
+    const { data: refreshed } = await sb.auth.refreshSession();
+    if (refreshed.session) session = refreshed.session;
+  }
+  hostId = session.user.id;
+
+  const { data: h } = await sb.from('hosts').select('*').eq('id', hostId).single();
+  hostData = h || {};
+
+  if (hostData.is_demo) {
+    window.isDemoMode = true;
+    document.getElementById('demo-banner').classList.remove('hidden');
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      const m = (btn.getAttribute('onclick') || '').match(/showSection\('(\w+)'\)/);
+      if (m && !DEMO_ALLOWED_SECTIONS.has(m[1])) {
+        btn.style.opacity = '0.45';
+        const lock = document.createElement('span');
+        lock.className = 'material-icons-outlined';
+        lock.style.cssText = 'font-size:14px;margin-left:auto;flex-shrink:0';
+        lock.textContent = 'lock';
+        btn.appendChild(lock);
+      }
+    });
+
+    const verGuia = document.getElementById('ver-guia-link');
+    if (verGuia) {
+      verGuia.classList.remove('text-primary', 'border-primary/30', 'px-3', 'py-2', 'text-xs', 'hover:bg-primary', 'hover:text-white', 'hover:border-primary');
+      verGuia.classList.add('bg-amber-500', 'border-amber-500', 'text-white', 'px-5', 'py-3', 'text-sm', 'shadow-lg', 'shadow-amber-500/30', 'hover:bg-amber-600', 'hover:border-amber-600');
+      const verGuiaIcon = verGuia.querySelector('.material-icons-outlined');
+      if (verGuiaIcon) verGuiaIcon.style.fontSize = '20px';
+    }
+
+    document.querySelectorAll('.demo-pro-banner').forEach(b => b.classList.remove('hidden'));
+  }
+
+  applyProLock();
+
+  if (hostData.subscription_status === 'authorized' || hostData.is_demo || hostData.is_admin) {
+    document.getElementById('cancelar-assinatura-wrap').classList.remove('hidden');
+  }
+
+  const NON_BLOCKING_STATUSES = new Set(['authorized', 'convidada']);
+  const subStatus    = hostData.subscription_status;
+  const trialEndsAt  = hostData.trial_ends_at ? new Date(hostData.trial_ends_at).getTime() : null;
+  const trialExpired = trialEndsAt !== null && trialEndsAt < Date.now() && subStatus !== 'authorized';
+  const realBlock    = subStatus && !NON_BLOCKING_STATUSES.has(subStatus);
+  const subBlocked   = !hostData.is_demo && !hostData.is_admin && (realBlock || trialExpired);
+  if (subBlocked) {
+    document.getElementById('sub-block-modal').classList.remove('hidden');
+    if (subStatus === 'pending') {
+      document.getElementById('sub-block-icon-wrap').className = 'w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4';
+      document.getElementById('sub-block-icon').className = 'material-icons-outlined text-primary';
+      document.getElementById('sub-block-icon').textContent = 'hourglass_top';
+      document.getElementById('sub-block-title').textContent = 'Confirmando pagamento';
+      document.getElementById('sub-block-text').textContent = 'Estamos aguardando a confirmação do Mercado Pago. Isso costuma levar só alguns instantes — assim que o pagamento for aprovado, o painel libera automaticamente.';
+      document.getElementById('sub-block-action').textContent = 'Atualizar';
+      document.getElementById('sub-block-action').removeAttribute('href');
+      document.getElementById('sub-block-action').classList.remove('bg-red-500', 'hover:bg-red-600', 'shadow-red-500/25');
+      document.getElementById('sub-block-action').classList.add('bg-primary', 'hover:bg-primary-light', 'shadow-primary/25');
+      document.getElementById('sub-block-action').onclick = () => location.reload();
+    } else if (!realBlock && trialExpired) {
+      document.getElementById('sub-block-icon-wrap').className = 'w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4';
+      document.getElementById('sub-block-icon').className = 'material-icons-outlined text-primary';
+      document.getElementById('sub-block-icon').textContent = 'schedule';
+      document.getElementById('sub-block-title').textContent = 'Seu período de acesso acabou';
+      document.getElementById('sub-block-text').textContent = subStatus === 'convidada'
+        ? 'O prazo de acesso liberado para você terminou. Para continuar usando o painel e manter o guia disponível para seus hóspedes, faça sua assinatura agora.'
+        : 'Seus dias de teste grátis terminaram. Faça sua assinatura agora para continuar usando o painel e manter o guia disponível para seus hóspedes.';
+      document.getElementById('sub-block-action').textContent = 'Fazer minha assinatura →';
+      document.getElementById('sub-block-action').setAttribute('href', 'planos.html');
+      document.getElementById('sub-block-action').classList.remove('bg-red-500', 'hover:bg-red-600', 'shadow-red-500/25');
+      document.getElementById('sub-block-action').classList.add('bg-primary', 'hover:bg-primary-light', 'shadow-primary/25');
+      document.getElementById('sub-block-action').onclick = null;
+    }
+  }
+
+  await loadProperties();
+
+  const storedProp = localStorage.getItem('airguia_active_property_' + hostId);
+  activePropertyId = (storedProp && properties.some(p => p.id === storedProp)) ? storedProp : hostId;
+
+  await loadActiveProperty();
+
+  document.getElementById('loading-state').style.display = 'none';
+  showSection('geral');
+  checkOnboarding();
+}
+
+// ── Propriedades (plano Pro: até 5 propriedades por conta) ─────────────
+async function loadProperties() {
+  const isPro = hostData.is_admin || hostData.plan_id === 'pro';
+  if (!isPro) {
+    properties = [{ id: hostId, property_name: hostData.property_name, slug: hostData.slug }];
+    renderPropertySwitcher();
+    return;
+  }
+  const { data } = await sb.from('hosts')
+    .select('id, property_name, slug, owner_id, created_at')
+    .or(`id.eq.${hostId},owner_id.eq.${hostId}`)
+    .order('created_at', { ascending: true });
+  properties = (data && data.length) ? data : [{ id: hostId, property_name: hostData.property_name, slug: hostData.slug }];
+  renderPropertySwitcher();
+}
+
+async function loadActiveProperty() {
+  if (activePropertyId === hostId) {
+    propertyData = hostData;
+  } else {
+    const { data: p } = await sb.from('hosts').select('*').eq('id', activePropertyId).single();
+    propertyData = p || { id: activePropertyId };
+  }
+
+  const { data: c } = await sb.from('guide_content').select('*').eq('host_id', activePropertyId).single();
+  if (!c) {
+    await sb.from('guide_content').upsert({ host_id: activePropertyId });
+    const { data: c2 } = await sb.from('guide_content').select('*').eq('host_id', activePropertyId).single();
+    content = c2 || {};
+  } else {
+    content = c;
+  }
+
+  populateForms();
+  loadLimpeza();
+  loadManutencao();
+  loadReservas();
+  renderAlertaBanner();
+  renderPropertySwitcher();
+}
+
+function togglePropertySwitcher() {
+  const menu = document.getElementById('property-switcher-menu');
+  if (!menu) return;
+  const isPro = hostData.is_admin || hostData.plan_id === 'pro';
+  if (!isPro) return;
+  menu.classList.toggle('hidden');
+}
+
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('property-switcher-menu');
+  const btn  = document.getElementById('header-prop-btn');
+  if (!menu || menu.classList.contains('hidden')) return;
+  if (!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.add('hidden');
+});
+
+function renderPropertySwitcher() {
+  const caret = document.getElementById('header-prop-caret');
+  const menu  = document.getElementById('property-switcher-menu');
+  const isPro = hostData.is_admin || hostData.plan_id === 'pro';
+  if (caret) caret.classList.toggle('hidden', !isPro);
+  if (!menu) return;
+  if (!isPro) { menu.innerHTML = ''; return; }
+
+  const atLimit = properties.length >= 5;
+  menu.innerHTML = properties.map(p => `
+    <div class="flex items-center gap-1 px-2">
+      <button onclick="switchProperty('${p.id}')"
+        class="flex-1 text-left px-2.5 py-2 rounded-lg text-sm font-semibold transition-colors ${p.id === activePropertyId ? 'bg-primary/10 text-primary' : 'text-gray-600 hover:bg-gray-50'}">
+        ${escHtml(p.property_name || 'Sem nome')}
+      </button>
+      ${p.id !== hostId ? `<button onclick="excluirPropriedade('${p.id}', '${escAttr(p.property_name || 'Sem nome')}')" title="Excluir propriedade" class="item-btn del p-1.5 rounded-lg hover:bg-red-50 flex-shrink-0"><span class="material-icons-outlined" style="font-size:16px">delete_outline</span></button>` : ''}
+    </div>
+  `).join('') + `
+    <div class="border-t border-gray-100 mt-2 pt-2 px-2">
+      <button onclick="criarPropriedade()" ${atLimit ? 'disabled' : ''}
+        class="w-full text-left px-2.5 py-2 rounded-lg text-sm font-bold flex items-center gap-1.5 ${atLimit ? 'text-gray-300 cursor-not-allowed' : 'text-primary hover:bg-primary/5'}">
+        <span class="material-icons-outlined" style="font-size:16px">add_circle_outline</span>
+        ${atLimit ? 'Limite de 5 propriedades atingido' : 'Adicionar propriedade'}
+      </button>
+    </div>
+  `;
+}
+
+async function switchProperty(id) {
+  if (id === activePropertyId) { document.getElementById('property-switcher-menu').classList.add('hidden'); return; }
+  activePropertyId = id;
+  localStorage.setItem('airguia_active_property_' + hostId, id);
+  document.getElementById('property-switcher-menu').classList.add('hidden');
+  document.getElementById('loading-state').style.display = '';
+  await loadActiveProperty();
+  document.getElementById('loading-state').style.display = 'none';
+  showSection('geral');
+  showToast('Propriedade alterada');
+}
+
+async function criarPropriedade() {
+  document.getElementById('property-switcher-menu').classList.add('hidden');
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
+  showToast('Criando propriedade...');
+  const { data: { session } } = await sb.auth.getSession();
+  try {
+    const res = await fetch(SB_URL + '/functions/v1/gerenciar-propriedade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ action: 'criar' }),
+    });
+    const result = await res.json();
+    if (!result.ok) { showToast(result.message || 'Erro ao criar propriedade.'); return; }
+    await loadProperties();
+    await switchProperty(result.propertyId);
+    showToast('Propriedade criada! Defina o nome e o link dela em Geral.');
+  } catch (e) {
+    showToast('Erro de conexão.');
+  }
+}
+
+async function excluirPropriedade(id, name) {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
+  if (!confirm(`Excluir a propriedade "${name}"?\n\nTodo o conteúdo dela (guia, fotos, links de hóspede) será removido permanentemente.`)) return;
+  const { data: { session } } = await sb.auth.getSession();
+  try {
+    const res = await fetch(SB_URL + '/functions/v1/gerenciar-propriedade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ action: 'excluir', propertyId: id }),
+    });
+    const result = await res.json();
+    if (!result.ok) { showToast(result.message || 'Erro ao excluir propriedade.'); return; }
+    await loadProperties();
+    if (activePropertyId === id) await switchProperty(hostId);
+    else renderPropertySwitcher();
+    showToast('Propriedade excluída.');
+  } catch (e) {
+    showToast('Erro de conexão.');
+  }
+}
+
+function populateForms() {
+  // Geral
+  v('g-propname', propertyData.property_name || '');
+  v('g-owner',    propertyData.owner_name    || '');
+  v('g-slug',     propertyData.slug          || '');
+  // Propriedade
+  v('p-address',  content.address     || '');
+  v('p-checkin',  content.checkin_time || '13:00');
+  v('p-checkout', content.checkout_time|| '11:00');
+  v('p-access',   content.access_code || '');
+  v('p-maps',     content.maps_url    || '');
+  v('p-embed',    content.maps_embed  || '');
+  // Hero
+  v('h-img',     content.hero_image_url   || '');
+  v('h-welcome', content.welcome_message  || '');
+  previewHeroImage();
+  // WiFi
+  v('w-name', content.wifi_name     || '');
+  v('w-pass', content.wifi_password || '');
+  v('w-qr',   content.wifi_qr_url  || '');
+  // Aparência
+  selectedThemeId = content.theme_id || 'oliva';
+  renderThemePicker();
+  // Acesso
+  selectedAccessType = (content.access_type === 'cofre' ? 'outro' : content.access_type) || 'fechadura';
+  renderAccessPicker();
+  renderAccessFields();
+  // Regras
+  v('r-rules', content.rules || '');
+  // Lists
+  LIST_KEYS.forEach(k => renderList(k));
+  // Fotos / Ambientes
+  loadRoomItems();
+  loadRoomMedia();
+  // Header
+  document.getElementById('header-prop').textContent = propertyData.property_name || 'Minha Propriedade';
+  updateVerGuiaLink();
+}
+
+function v(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val;
+}
+function g(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+// ── Navigation ───────────────────────────────────────────────────────
+const DEMO_ALLOWED_SECTIONS = new Set([
+  'geral','reservas','limpeza','manutencao','aparencia','fechadura',
+  'propriedade','hero','wifi','restaurantes','mercados','farmacias',
+  'atividades','academias','lavanderias','emergencia','regras'
+]);
+const PRO_ONLY_SECTIONS     = new Set(['manutencao','aparencia','fechadura']);
+
+function applyProLock() {
+  const isPro = window.isDemoMode || hostData.is_admin || hostData.plan_id === 'pro';
+  const lockCodeWrap = document.getElementById('res-lockcode-wrap');
+  if (lockCodeWrap) lockCodeWrap.classList.toggle('hidden', !isPro);
+  if (isPro) return;
+  window.proLocked = true;
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    const m = (btn.getAttribute('onclick') || '').match(/showSection\('(\w+)'\)/);
+    if (m && PRO_ONLY_SECTIONS.has(m[1])) {
+      btn.style.opacity = '0.45';
+      const lock = document.createElement('span');
+      lock.className = 'material-icons-outlined';
+      lock.style.cssText = 'font-size:14px;margin-left:auto;flex-shrink:0';
+      lock.textContent = 'lock';
+      btn.appendChild(lock);
+    }
+  });
+}
+
+function showSection(name) {
+  if (window.isDemoMode && !DEMO_ALLOWED_SECTIONS.has(name)) {
+    window.location.href = 'planos.html';
+    return;
+  }
+  if (window.proLocked && PRO_ONLY_SECTIONS.has(name)) {
+    document.getElementById('pro-lock-modal').classList.remove('hidden');
+    return;
+  }
+  document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('section-' + name);
+  if (panel) panel.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b => {
+    if (b.getAttribute('onclick') === "showSection('" + name + "')") b.classList.add('active');
+  });
+  if (name === 'limpeza')    renderLimpeza();
+  if (name === 'manutencao') renderManutencao();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Limpeza ───────────────────────────────────────────────────────────
+const LIMPEZA_GRUPOS = [
+  { id: 'cama', label: 'Cama', icon: 'bed', itens: [
+    { id: 'lencol',      label: 'Lençol de casal' },
+    { id: 'fronha',      label: 'Fronha (x2)' },
+    { id: 'cobertor',    label: 'Cobertor / Edredom' },
+    { id: 'travesseiro', label: 'Travesseiro (x2)' },
+  ]},
+  { id: 'banheiro', label: 'Banheiro', icon: 'shower', itens: [
+    { id: 'toalha-banho',  label: 'Toalha de banho (x2)' },
+    { id: 'toalha-rosto',  label: 'Toalha de rosto (x2)' },
+    { id: 'tapete-ban',    label: 'Tapete de banheiro' },
+    { id: 'papel',         label: 'Papel higiênico' },
+    { id: 'sabonete',      label: 'Sabonete / Shampoo' },
+  ]},
+  { id: 'cozinha', label: 'Cozinha', icon: 'kitchen', itens: [
+    { id: 'pratos',     label: 'Pratos' },
+    { id: 'copos',      label: 'Copos / Xícaras' },
+    { id: 'talheres',   label: 'Talheres' },
+    { id: 'panelas',    label: 'Panelas / Frigideira' },
+    { id: 'detergente', label: 'Detergente + Esponja' },
+  ]},
+  { id: 'geral', label: 'Geral', icon: 'home_work', itens: [
+    { id: 'almofadas',  label: 'Almofadas' },
+    { id: 'tapete-sal', label: 'Tapete da sala' },
+    { id: 'lixo',       label: 'Lixo esvaziado' },
+    { id: 'chao',       label: 'Chão varrido / lavado' },
+    { id: 'janelas',    label: 'Janelas limpas' },
+  ]},
+];
+
+const LIMPEZA_EST = {
+  ok:       { label: 'OK',                icon: 'check_circle',      bg: 'bg-green-100', cor: 'text-green-600' },
+  atencao:  { label: 'Precisa Limpar',    icon: 'cleaning_services', bg: 'bg-amber-100', cor: 'text-amber-600' },
+  faltando: { label: 'Trocar/Substituir', icon: 'autorenew',         bg: 'bg-red-100',   cor: 'text-red-600'   },
+};
+const CICLO_LIMP = ['ok', 'atencao', 'faltando'];
+let limpezaState        = {};
+let limpezaCustomGroups = { extra_itens: {}, custom_groups: [] };
+let limpezaAddItemTarget = null;
+let limpezaAddGroupMode  = false;
+let limpezaSelGroupIcon  = 'pool';
+
+async function saveInstrucoesDiarista() {
+  await upsertContent({ cleaning_instructions: document.getElementById('cl-instructions').value.trim(), updated_at: new Date().toISOString() });
+}
+
+function loadLimpeza() {
+  v('cl-instructions', content.cleaning_instructions || '');
+  limpezaState = (content && content.cleaning_state) ? { ...content.cleaning_state } : {};
+  const saved  = content && content.cleaning_groups;
+  limpezaCustomGroups = saved ? JSON.parse(JSON.stringify(saved)) : { extra_itens: {}, custom_groups: [] };
+  if (!limpezaCustomGroups.extra_itens)   limpezaCustomGroups.extra_itens   = {};
+  if (!limpezaCustomGroups.custom_groups) limpezaCustomGroups.custom_groups = [];
+}
+
+async function salvarLimpeza() {
+  if (content) {
+    content.cleaning_state  = { ...limpezaState };
+    content.cleaning_groups = JSON.parse(JSON.stringify(limpezaCustomGroups));
+  }
+  await upsertContent({ cleaning_state: limpezaState, cleaning_groups: limpezaCustomGroups });
+}
+
+function getAllLimpezaGroups() {
+  const defaults = LIMPEZA_GRUPOS.map(g => ({
+    ...g,
+    isDefault: true,
+    allItens: [
+      ...g.itens.map(i => ({ ...i, isDefault: true })),
+      ...(limpezaCustomGroups.extra_itens[g.id] || []).map(i => ({ ...i, isDefault: false }))
+    ]
+  }));
+  const customs = (limpezaCustomGroups.custom_groups || []).map(cg => ({
+    ...cg,
+    isDefault: false,
+    allItens: (cg.itens || []).map(i => ({ ...i, isDefault: false }))
+  }));
+  return [...defaults, ...customs];
+}
+
+function toggleLimpeza(id) {
+  const cur = limpezaState[id] || 'ok';
+  limpezaState[id] = CICLO_LIMP[(CICLO_LIMP.indexOf(cur) + 1) % 3];
+  salvarLimpeza();
+  renderLimpeza();
+}
+
+function resetLimpeza() {
+  limpezaState = {};
+  salvarLimpeza();
+  renderLimpeza();
+}
+
+function renderLimpeza() {
+  const container = document.getElementById('limpeza-groups');
+  const summary   = document.getElementById('limpeza-summary');
+  if (!container) return;
+
+  // Preserve any text typed in the add-item input across re-renders
+  const savedInput = limpezaAddItemTarget
+    ? (document.getElementById('limp-new-item-input')?.value || '') : '';
+
+  let nOk = 0, nAt = 0, nFalt = 0;
+  const allGroups = getAllLimpezaGroups();
+  const LIMP_ICONS = ['pool','yard','garage','deck','balcony','local_laundry_service','local_parking','outdoor_grill','spa','hot_tub'];
+  const LIMP_ICON_LABELS = { pool:'Piscina', yard:'Quintal', garage:'Garagem', deck:'Deck', balcony:'Varanda', local_laundry_service:'Lavanderia', local_parking:'Estacionamento', outdoor_grill:'Churrasqueira', spa:'Spa', hot_tub:'Banheira' };
+  let html = '';
+
+  for (const g of allGroups) {
+    const isCG = g.isDefault ? 0 : 1;
+    html += '<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">';
+    // Group header
+    html += '<div class="flex items-center gap-2 px-4 py-3 bg-gray-50 border-b border-gray-100">';
+    html += '<span class="material-icons-outlined text-gray-400" style="font-size:18px">' + g.icon + '<\/span>';
+    html += '<span class="text-xs font-extrabold text-gray-500 uppercase tracking-wider flex-1">' + escHtml(g.label) + '<\/span>';
+    html += '<button onclick="limp_toggleAddItem(\'' + g.id + '\')" class="flex items-center gap-0.5 text-xs font-bold text-primary hover:opacity-70 transition-opacity">'
+      + '<span class="material-icons-outlined" style="font-size:14px">add<\/span>Item<\/button>';
+    if (!g.isDefault) {
+      html += '<button onclick="limp_removeGroup(\'' + g.id + '\')" class="ml-2 text-gray-300 hover:text-red-500 transition-colors" title="Remover grupo">'
+        + '<span class="material-icons-outlined" style="font-size:16px">delete_outline<\/span><\/button>';
+    }
+    html += '<\/div>';
+    // Items
+    html += '<div class="divide-y divide-gray-50">';
+    for (const item of g.allItens) {
+      const est = limpezaState[item.id] || 'ok';
+      const e   = LIMPEZA_EST[est];
+      if (est === 'ok') nOk++; else if (est === 'atencao') nAt++; else nFalt++;
+      html += '<div class="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors select-none">';
+      html += '<div class="flex-1 flex items-center gap-3 cursor-pointer active:bg-gray-100 rounded-lg -mx-1 px-1 py-0.5" onclick="toggleLimpeza(\'' + item.id + '\')">';
+      html += '<div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ' + e.bg + ' ' + e.cor + '">';
+      html += '<span class="material-icons-outlined" style="font-size:16px">' + e.icon + '<\/span><\/div>';
+      html += '<span class="flex-1 text-sm font-semibold text-gray-700">' + escHtml(item.label) + '<\/span>';
+      html += '<span class="text-xs font-bold ' + e.cor + '">' + e.label + '<\/span><\/div>';
+      if (!item.isDefault) {
+        html += '<button onclick="limp_removeItem(\'' + g.id + '\',\'' + item.id + '\',' + isCG + ')" class="item-btn del ml-1" title="Remover">'
+          + '<span class="material-icons-outlined" style="font-size:15px">close<\/span><\/button>';
+      }
+      html += '<\/div>';
+    }
+    // Inline add-item form
+    if (limpezaAddItemTarget === g.id) {
+      html += '<div class="px-4 py-3 bg-primary/5 border-t border-primary/10">';
+      html += '<div class="flex gap-2 items-center">';
+      html += '<input id="limp-new-item-input" type="text" placeholder="Nome do item..." class="field-input flex-1 py-2 text-sm"/>';
+      html += '<button onclick="limp_saveItem(\'' + g.id + '\',' + isCG + ')" class="save-btn py-2 px-3 text-xs">'
+        + '<span class="material-icons-outlined" style="font-size:15px">check<\/span>Add<\/button>';
+      html += '<button onclick="limp_toggleAddItem(null)" class="text-gray-300 hover:text-gray-500 transition-colors">'
+        + '<span class="material-icons-outlined" style="font-size:20px">close<\/span><\/button>';
+      html += '<\/div><\/div>';
+    }
+    html += '<\/div><\/div>';
+  }
+
+  // Add custom group section
+  if (!limpezaAddGroupMode) {
+    html += '<button onclick="limp_toggleAddGroup()" class="flex items-center gap-2 text-sm font-bold text-primary border-2 border-dashed border-primary/30 rounded-xl px-4 py-3 w-full hover:bg-primary/5 transition-colors mt-2">'
+      + '<span class="material-icons-outlined" style="font-size:18px">add_circle_outline<\/span>Adicionar grupo personalizado<\/button>';
+  } else {
+    html += '<div class="bg-primary/5 border-2 border-dashed border-primary/30 rounded-2xl p-4 mt-2">';
+    html += '<p class="text-xs font-extrabold uppercase tracking-widest text-primary/70 mb-3">Novo Grupo<\/p>';
+    html += '<div class="space-y-3">';
+    html += '<div><label class="field-label">Nome do grupo<\/label>'
+      + '<input id="limp-new-group-name" class="field-input" placeholder="Ex: Área da Piscina"\/><\/div>';
+    html += '<div><label class="field-label">Ícone<\/label><div class="flex flex-wrap gap-2 mt-1">';
+    for (const ic of LIMP_ICONS) {
+      const sel = (limpezaSelGroupIcon === ic);
+      html += '<button onclick="limp_selectGroupIcon(\'' + ic + '\')" id="limp-icon-' + ic + '" '
+        + 'class="flex flex-col items-center gap-0.5 p-2 rounded-xl border-2 transition-all text-center w-14 '
+        + (sel ? 'border-primary text-primary bg-primary/5' : 'border-gray-200 text-gray-500 hover:border-primary hover:text-primary') + '">'
+        + '<span class="material-icons-outlined" style="font-size:20px">' + ic + '<\/span>'
+        + '<span style="font-size:8px;line-height:1.1;word-break:break-word">' + (LIMP_ICON_LABELS[ic] || ic.replace(/_/g,' ')) + '<\/span>'
+        + '<\/button>';
+    }
+    html += '<\/div><\/div>';
+    html += '<div class="flex gap-2">';
+    html += '<button onclick="limp_saveGroup()" class="save-btn text-xs py-2">'
+      + '<span class="material-icons-outlined" style="font-size:15px">add<\/span>Criar grupo<\/button>';
+    html += '<button onclick="limp_toggleAddGroup()" style="background:#f3f4f6;color:#6b7280;font-weight:700;font-size:13px;padding:8px 16px;border-radius:12px;border:none;cursor:pointer;">Cancelar<\/button>';
+    html += '<\/div><\/div><\/div>';
+  }
+
+  container.innerHTML = html;
+
+  // Restore add-item input value + focus
+  if (limpezaAddItemTarget) {
+    const inp = document.getElementById('limp-new-item-input');
+    if (inp) { inp.value = savedInput; inp.focus(); }
+  }
+
+  // Barra de resumo
+  let sumHtml = '';
+  if (nAt === 0 && nFalt === 0) {
+    sumHtml = '<div class="flex items-center gap-2 p-3 bg-green-50 border border-green-100 rounded-xl mb-4 text-sm font-bold text-green-700">'
+      + '<span class="material-icons-outlined text-green-500" style="font-size:18px">check_circle<\/span>'
+      + 'Tudo em ordem! Todos os itens estão OK.<\/div>';
+  } else {
+    sumHtml = '<div class="flex flex-wrap gap-2 mb-4">';
+    if (nAt   > 0) sumHtml += '<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-100 text-amber-700 rounded-xl text-xs font-bold"><span class="material-icons-outlined" style="font-size:14px">cleaning_services<\/span>' + nAt + ' Precisa Limpar<\/span>';
+    if (nFalt > 0) sumHtml += '<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-700 rounded-xl text-xs font-bold"><span class="material-icons-outlined" style="font-size:14px">autorenew<\/span>' + nFalt + ' Trocar\/Substituir<\/span>';
+    sumHtml += '<span class="inline-flex items-center gap-1 px-3 py-1.5 bg-green-100 text-green-700 rounded-xl text-xs font-bold"><span class="material-icons-outlined" style="font-size:14px">check_circle<\/span>' + nOk + ' OK<\/span><\/div>';
+  }
+  summary.innerHTML = sumHtml;
+}
+
+const GRUPO_EMOJI = { cama: '🛏', banheiro: '🚿', cozinha: '🍳', geral: '🏠' };
+
+function enviarWhatsapp() {
+  const prop = (propertyData && propertyData.property_name) ? propertyData.property_name : 'Minha Propriedade';
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const allGroups = getAllLimpezaGroups();
+
+  const precisaLimpar = [], trocarSubst = [];
+  for (const g of allGroups) {
+    for (const item of g.allItens) {
+      const est = limpezaState[item.id] || 'ok';
+      if (est === 'atencao')  precisaLimpar.push({ g, item });
+      if (est === 'faltando') trocarSubst.push({ g, item });
+    }
+  }
+
+  const linha = '----------------------------';
+  let msg = '🧹 *LISTA DE LIMPEZA*\n'
+          + '🏠 ' + prop + '  •  📅 ' + hoje + '\n'
+          + linha + '\n\n';
+
+  if (precisaLimpar.length === 0 && trocarSubst.length === 0) {
+    msg += '✅ Tudo em ordem! Todos os itens estão OK.\n';
+  } else {
+    if (trocarSubst.length > 0) {
+      msg += '🔴 TROCAR / SUBSTITUIR (' + trocarSubst.length + ')\n';
+      let curG = '';
+      for (const { g, item } of trocarSubst) {
+        if (g.label !== curG) { curG = g.label; msg += '\n' + (GRUPO_EMOJI[g.id] || '▶') + ' ' + g.label + '\n'; }
+        msg += '   • ' + item.label + '\n';
+      }
+      msg += '\n';
+    }
+    if (precisaLimpar.length > 0) {
+      msg += '🟡 PRECISA LIMPAR (' + precisaLimpar.length + ')\n';
+      let curG = '';
+      for (const { g, item } of precisaLimpar) {
+        if (g.label !== curG) { curG = g.label; msg += '\n' + (GRUPO_EMOJI[g.id] || '▶') + ' ' + g.label + '\n'; }
+        msg += '   • ' + item.label + '\n';
+      }
+      msg += '\n';
+    }
+  }
+
+  msg += linha + '\n';
+  msg += '📋 *PASSO A PASSO — Diarista*\n\n';
+  const instrucoes = (content && content.cleaning_instructions || '').trim();
+  if (instrucoes) {
+    instrucoes.split('\n').forEach(function(linha, i) {
+      const l = linha.trim();
+      if (l) msg += (i + 1) + '. ' + l + '\n';
+    });
+  } else {
+    msg += '1. Retire todas as roupas de cama, fronhas e toalhas sujas.\n';
+    msg += '2. Lave ou troque os itens marcados como *TROCAR / SUBSTITUIR* acima.\n';
+    msg += '3. Limpe o banheiro: vaso sanitário, pia, box e chão.\n';
+    msg += '4. Limpe a cozinha: fogão, pia, bancadas e geladeira (exterior).\n';
+    msg += '5. Cuide dos itens marcados como *PRECISA LIMPAR* acima.\n';
+    msg += '6. Passe vassoura e pano úmido no chão de todos os cômodos.\n';
+    msg += '7. Esvazie o lixo de todos os cômodos.\n';
+    msg += '8. Reponha: papel higiênico, sabonete e shampoo.\n';
+    msg += '9. Verifique almofadas, tapetes e janelas.\n';
+    msg += '10. Deixe a propriedade arejada e organizada para o próximo hóspede.\n';
+  }
+  msg += linha + '\n_Enviado pelo AirGuia_';
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+// ── Manutenção ────────────────────────────────────────────────────────
+let maintenanceReminders = [];
+let manutActiveShortcut  = null;
+let manutSelEnxoval      = -1;
+
+const MANUT_SHORTCUTS = [
+  { id:'ac',          icon:'ac_unit',              label:'Ar-condicionado',    desc:'Limpeza dos filtros',        months:6,  hasLastDone:true  },
+  { id:'dedetizacao', icon:'pest_control',          label:'Dedetização',        desc:'Controle de pragas',         months:12, hasLastDone:true  },
+  { id:'pintura',     icon:'format_paint',          label:'Renovar Pintura',    desc:'Paredes internas/externas',  months:24, hasLastDone:true  },
+  { id:'enxoval',     icon:'bed',                   label:'Trocar Enxoval',     desc:'Roupas de cama e banho',     months:0,  hasLastDone:false,
+    subOptions:['Lençol de casal','Lençol de solteiro','Edredom / Cobertor','Toalha de banho','Toalha de rosto','Fronha'] },
+  { id:'filtro',      icon:'water_drop',            label:'Filtro de Água',     desc:'Purificador / torneira',     months:6,  hasLastDone:true  },
+  { id:'chuveiro',    icon:'shower',                label:'Chuveiro Elétrico',  desc:'Revisão e resistência',      months:12, hasLastDone:true  },
+  { id:'gas',         icon:'local_fire_department', label:'Gás de Cozinha',     desc:'Botijão e instalação',       months:12, hasLastDone:true  },
+];
+
+function addMonths(date, n) {
+  const d = new Date(date); d.setMonth(d.getMonth() + n); return d;
+}
+
+function loadManutencao() {
+  maintenanceReminders = (content && content.maintenance_reminders)
+    ? JSON.parse(JSON.stringify(content.maintenance_reminders)) : [];
+}
+
+async function saveManutencao() {
+  if (content) content.maintenance_reminders = [...maintenanceReminders];
+  await upsertContent({ maintenance_reminders: maintenanceReminders });
+}
+
+function renderAlertaBanner() {
+  const today  = new Date(); today.setHours(0,0,0,0);
+  const vencidos = maintenanceReminders.filter(r =>
+    !r.completed && r.due_date && new Date(r.due_date + 'T00:00:00') <= today
+  );
+  const banner = document.getElementById('manut-alert');
+  if (!banner) return;
+  if (vencidos.length === 0) { banner.classList.add('hidden'); return; }
+  banner.classList.remove('hidden');
+  document.getElementById('manut-alert-text').textContent =
+    ' ' + vencidos.map(r => r.title).join(', ');
+}
+
+function renderManutencao() {
+  renderManutList();
+  renderManutShortcuts();
+  document.getElementById('manut-shortcut-form').classList.add('hidden');
+  manutActiveShortcut = null;
+}
+
+function renderManutList() {
+  const container = document.getElementById('manut-list');
+  if (!container) return;
+  if (maintenanceReminders.length === 0) {
+    container.innerHTML = '<p class="text-sm text-gray-400 mb-2">Nenhum lembrete ainda. Use os atalhos abaixo para criar.</p>';
+    return;
+  }
+  const today = new Date(); today.setHours(0,0,0,0);
+  container.innerHTML = maintenanceReminders.map((r, i) => {
+    const due  = r.due_date ? new Date(r.due_date + 'T00:00:00') : null;
+    const days = due ? Math.round((due - today) / 86400000) : null;
+    let urgCls, urgLabel;
+    if (r.completed) {
+      urgCls = 'bg-gray-100 text-gray-400'; urgLabel = '✓ Concluído';
+    } else if (days === null) {
+      urgCls = 'bg-blue-50 text-blue-600'; urgLabel = 'Sem prazo definido';
+    } else if (days < 0) {
+      urgCls = 'bg-red-100 text-red-700'; urgLabel = '⚠ Atrasado ' + Math.abs(days) + 'd';
+    } else if (days <= 30) {
+      urgCls = 'bg-amber-100 text-amber-700'; urgLabel = 'Vence em ' + days + 'd';
+    } else {
+      urgCls = 'bg-green-100 text-green-700'; urgLabel = due.toLocaleDateString('pt-BR');
+    }
+    return `<div class="flex items-start gap-3 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm ${r.completed ? 'opacity-60' : ''}">
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-bold text-gray-800 ${r.completed ? 'line-through' : ''}">${escHtml(r.title)}</p>
+        <span class="inline-block mt-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full ${urgCls}">${urgLabel}</span>
+      </div>
+      <div class="flex items-center gap-1 flex-shrink-0">
+        ${!r.completed ? `<button onclick="manut_done(${i})" title="Marcar como feito" class="item-btn hover:text-green-600">
+          <span class="material-icons-outlined" style="font-size:18px">check_circle</span></button>` : ''}
+        <button onclick="manut_delete(${i})" title="Remover" class="item-btn del">
+          <span class="material-icons-outlined" style="font-size:18px">delete_outline</span></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderManutShortcuts() {
+  const c = document.getElementById('manut-shortcuts');
+  if (!c) return;
+  c.innerHTML = MANUT_SHORTCUTS.map(s => `
+    <button onclick="manut_openShortcut('${s.id}')"
+      class="flex flex-col items-center gap-1.5 p-3 bg-white rounded-xl border-2 text-center transition-all shadow-sm ${manutActiveShortcut === s.id ? 'border-primary bg-primary/5' : 'border-gray-100 hover:border-gray-300'}">
+      <span class="material-icons-outlined text-gray-500" style="font-size:22px">${s.icon}</span>
+      <span class="text-xs font-bold text-gray-700 leading-tight">${s.label}</span>
+      <span class="text-[10px] text-gray-400 leading-tight">${s.desc}</span>
+    </button>`).join('');
+}
+
+function manut_openShortcut(id) {
+  const form = document.getElementById('manut-shortcut-form');
+  if (manutActiveShortcut === id) {
+    manutActiveShortcut = null; form.classList.add('hidden'); form.innerHTML = '';
+    renderManutShortcuts(); return;
+  }
+  manutActiveShortcut = id;
+  manutSelEnxoval = -1;
+  renderManutShortcuts();
+  const s = MANUT_SHORTCUTS.find(x => x.id === id);
+  if (!s) return;
+
+  let inner = '<div class="add-form mt-3"><p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-3">' + s.label + '<\/p>';
+
+  if (s.subOptions) {
+    inner += '<label class="field-label">Qual peça?<\/label><div class="flex flex-wrap gap-2 mb-3">';
+    s.subOptions.forEach((opt, i) => {
+      inner += '<button type="button" onclick="manut_selectEnxoval(' + i + ')" id="enxoval-opt-' + i + '" '
+        + 'class="px-3 py-1.5 rounded-full border-2 text-xs font-bold transition-all border-gray-200 text-gray-600 hover:border-primary hover:text-primary">' + opt + '<\/button>';
+    });
+    inner += '<\/div><label class="field-label">Data estimada para troca<\/label>';
+    inner += '<input id="manut-sc-date" type="date" class="field-input mb-3"\/>';
+  } else if (s.hasLastDone) {
+    inner += '<label class="field-label">Quando foi feito pela última vez?<\/label>'
+      + '<input id="manut-sc-lastdone" type="date" class="field-input mb-1" oninput="manut_calcDue(' + s.months + ')"\\/>'
+      + '<p class="text-xs text-gray-400 mb-3">O próximo lembrete será em ' + s.months + ' meses a partir desta data.<\/p>'
+      + '<label class="field-label">Data do próximo lembrete<\/label>'
+      + '<input id="manut-sc-date" type="date" class="field-input mb-3"\/>';
+  } else {
+    const suggested = s.months > 0 ? addMonths(new Date(), s.months).toISOString().split('T')[0] : '';
+    inner += '<label class="field-label">Data do lembrete<\/label>'
+      + '<input id="manut-sc-date" type="date" value="' + suggested + '" class="field-input mb-3"\/>';
+  }
+
+  inner += '<div class="flex gap-2">'
+    + '<button onclick="manut_saveShortcut(\'' + s.id + '\')" class="save-btn text-xs py-2">'
+    + '<span class="material-icons-outlined" style="font-size:15px">add<\/span>Criar lembrete<\/button>'
+    + '<button onclick="manut_openShortcut(\'' + s.id + '\')" style="background:#f3f4f6;color:#6b7280;font-weight:700;font-size:13px;padding:8px 16px;border-radius:12px;border:none;cursor:pointer;">Cancelar<\/button>'
+    + '<\/div><\/div>';
+
+  form.innerHTML = inner;
+  form.classList.remove('hidden');
+  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function manut_selectEnxoval(i) {
+  manutSelEnxoval = i;
+  document.querySelectorAll('[id^="enxoval-opt-"]').forEach((btn, idx) => {
+    if (idx === i) {
+      btn.classList.add('border-primary','text-primary','bg-primary/5');
+      btn.classList.remove('border-gray-200','text-gray-600');
+    } else {
+      btn.classList.remove('border-primary','text-primary','bg-primary/5');
+      btn.classList.add('border-gray-200','text-gray-600');
+    }
+  });
+}
+
+function manut_calcDue(months) {
+  const lastVal = document.getElementById('manut-sc-lastdone')?.value;
+  if (!lastVal) return;
+  const due = addMonths(new Date(lastVal + 'T00:00:00'), months).toISOString().split('T')[0];
+  const dueEl = document.getElementById('manut-sc-date');
+  if (dueEl) dueEl.value = due;
+}
+
+function manut_saveShortcut(type) {
+  const s = MANUT_SHORTCUTS.find(x => x.id === type);
+  if (!s) return;
+  let title = s.label;
+  const due_date       = document.getElementById('manut-sc-date')?.value || null;
+  const last_done_date = document.getElementById('manut-sc-lastdone')?.value || null;
+  if (type === 'enxoval') {
+    if (manutSelEnxoval < 0) { showToast('⚠ Selecione a peça do enxoval.'); return; }
+    title = 'Trocar Enxoval — ' + s.subOptions[manutSelEnxoval];
+    manutSelEnxoval = -1;
+  }
+  maintenanceReminders.push({ id:'mr_'+Date.now(), title, type, due_date, last_done_date, completed:false, created_at:new Date().toISOString() });
+  manutActiveShortcut = null;
+  document.getElementById('manut-shortcut-form').classList.add('hidden');
+  saveManutencao();
+  renderManutencao();
+  renderAlertaBanner();
+  showToast('✓ Lembrete criado!');
+}
+
+function manut_openFree() {
+  const form = document.getElementById('manut-free-form');
+  form.innerHTML = `
+    <p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-3">Novo Lembrete<\/p>
+    <div class="space-y-3">
+      <div>
+        <label class="field-label">Título *<\/label>
+        <input id="manut-free-title" class="field-input" placeholder="Ex: Levar ventilador para manutenção"\/>
+      <\/div>
+      <div>
+        <label class="field-label">Data do lembrete<\/label>
+        <input id="manut-free-date" type="date" class="field-input"\/>
+      <\/div>
+    <\/div>
+    <div class="flex gap-2 mt-4">
+      <button onclick="manut_saveFree()" class="save-btn">
+        <span class="material-icons-outlined" style="font-size:16px">check<\/span>Salvar
+      <\/button>
+      <button onclick="document.getElementById('manut-free-form').classList.add('hidden')"
+        style="background:#f3f4f6;color:#6b7280;font-weight:700;font-size:13px;padding:10px 18px;border-radius:12px;border:none;cursor:pointer;">
+        Cancelar
+      <\/button>
+    <\/div>`;
+  form.classList.remove('hidden');
+  setTimeout(() => form.scrollIntoView({ behavior:'smooth', block:'nearest' }), 50);
+}
+
+function manut_saveFree() {
+  const title = document.getElementById('manut-free-title')?.value.trim();
+  if (!title) { showToast('⚠ Título é obrigatório.'); return; }
+  maintenanceReminders.push({
+    id:'mr_'+Date.now(), title, type:'avulso',
+    due_date:      document.getElementById('manut-free-date')?.value || null,
+    last_done_date: null, completed:false, created_at:new Date().toISOString()
+  });
+  document.getElementById('manut-free-form').classList.add('hidden');
+  saveManutencao();
+  renderManutList();
+  renderAlertaBanner();
+  showToast('✓ Lembrete criado!');
+}
+
+function manut_done(i) {
+  maintenanceReminders[i].completed = true;
+  saveManutencao();
+  renderManutList();
+  renderAlertaBanner();
+}
+
+function manut_delete(i) {
+  if (!confirm('Remover este lembrete?')) return;
+  maintenanceReminders.splice(i, 1);
+  saveManutencao();
+  renderManutList();
+  renderAlertaBanner();
+}
+
+// ── Limpeza: gerenciamento de itens/grupos customizados ───────────────
+function limp_toggleAddItem(groupId) {
+  limpezaAddItemTarget = (limpezaAddItemTarget === groupId) ? null : groupId;
+  limpezaAddGroupMode  = false;
+  renderLimpeza();
+}
+
+function limp_toggleAddGroup() {
+  limpezaAddGroupMode  = !limpezaAddGroupMode;
+  limpezaAddItemTarget = null;
+  limpezaSelGroupIcon  = 'pool';
+  renderLimpeza();
+}
+
+function limp_selectGroupIcon(ic) {
+  limpezaSelGroupIcon = ic;
+  document.querySelectorAll('[id^="limp-icon-"]').forEach(btn => {
+    btn.className = btn.className
+      .replace('border-primary text-primary bg-primary/5', 'border-gray-200 text-gray-500 hover:border-primary hover:text-primary');
+  });
+  const sel = document.getElementById('limp-icon-' + ic);
+  if (sel) sel.className = sel.className
+    .replace('border-gray-200 text-gray-500 hover:border-primary hover:text-primary', 'border-primary text-primary bg-primary/5');
+}
+
+function limp_saveItem(groupId, isCustomGroup) {
+  const inp   = document.getElementById('limp-new-item-input');
+  const label = inp ? inp.value.trim() : '';
+  if (!label) { showToast('⚠ Digite o nome do item.'); return; }
+  const newItem = { id: 'ci_' + Date.now(), label };
+  if (isCustomGroup) {
+    const cg = limpezaCustomGroups.custom_groups.find(g => g.id === groupId);
+    if (cg) cg.itens = [...(cg.itens || []), newItem];
+  } else {
+    if (!limpezaCustomGroups.extra_itens[groupId]) limpezaCustomGroups.extra_itens[groupId] = [];
+    limpezaCustomGroups.extra_itens[groupId].push(newItem);
+  }
+  limpezaAddItemTarget = null;
+  salvarLimpeza();
+  renderLimpeza();
+}
+
+function limp_removeItem(groupId, itemId, isCustomGroup) {
+  if (isCustomGroup) {
+    const cg = limpezaCustomGroups.custom_groups.find(g => g.id === groupId);
+    if (cg) cg.itens = (cg.itens || []).filter(i => i.id !== itemId);
+  } else {
+    limpezaCustomGroups.extra_itens[groupId] =
+      (limpezaCustomGroups.extra_itens[groupId] || []).filter(i => i.id !== itemId);
+  }
+  delete limpezaState[itemId];
+  salvarLimpeza();
+  renderLimpeza();
+}
+
+function limp_saveGroup() {
+  const name = (document.getElementById('limp-new-group-name')?.value || '').trim();
+  if (!name) { showToast('⚠ Digite o nome do grupo.'); return; }
+  const newGroup = { id: 'cg_' + Date.now(), label: name, icon: limpezaSelGroupIcon || 'home_work', itens: [] };
+  limpezaCustomGroups.custom_groups.push(newGroup);
+  limpezaAddGroupMode = false;
+  salvarLimpeza();
+  renderLimpeza();
+}
+
+function limp_removeGroup(groupId) {
+  if (!confirm('Remover este grupo e todos os seus itens?')) return;
+  const cg = limpezaCustomGroups.custom_groups.find(g => g.id === groupId);
+  if (cg) (cg.itens || []).forEach(i => delete limpezaState[i.id]);
+  limpezaCustomGroups.custom_groups = limpezaCustomGroups.custom_groups.filter(g => g.id !== groupId);
+  salvarLimpeza();
+  renderLimpeza();
+}
+
+// ── Aparência / Temas ─────────────────────────────────────────────────
+const THEMES = [
+  { id: 'oliva',     name: 'Oliva',     sub: 'Padrão',       color: '#4A6741', light: '#6B8E61' },
+  { id: 'oceano',    name: 'Oceano',    sub: 'Sofisticado',  color: '#3D6680', light: '#5C8AA3' },
+  { id: 'terracota', name: 'Terracota', sub: 'Aconchegante', color: '#A8643C', light: '#C58659' },
+  { id: 'lavanda',   name: 'Lavanda',   sub: 'Elegante',     color: '#6F5B96', light: '#8D7AB5' },
+  { id: 'vinho',     name: 'Vinho',     sub: 'Requintado',   color: '#8C4259', light: '#A8637A' },
+  { id: 'ardosia',   name: 'Ardósia',   sub: 'Minimalista',  color: '#334155', light: '#64748B' },
+];
+let selectedThemeId = 'oliva';
+
+function renderThemePicker() {
+  const container = document.getElementById('theme-picker');
+  if (!container) return;
+  container.innerHTML = THEMES.map(t => {
+    const active = selectedThemeId === t.id;
+    return `
+      <button onclick="selectTheme('${t.id}')"
+        class="text-left rounded-2xl overflow-hidden border-2 transition-all duration-200 ${active ? 'border-gray-800 shadow-lg scale-[1.03]' : 'border-gray-100 hover:border-gray-300 hover:shadow-sm'}">
+        <div class="h-12" style="background:linear-gradient(135deg,${t.color},${t.light})"></div>
+        <div class="p-3 bg-white relative">
+          <p class="text-sm font-extrabold text-gray-800">${t.name}</p>
+          <p class="text-xs text-gray-400">${t.sub}</p>
+          ${active ? `<span class="absolute top-2.5 right-2.5 material-icons-outlined" style="font-size:15px;color:${t.color}">check_circle</span>` : ''}
+        </div>
+      </button>`;
+  }).join('');
+}
+
+function selectTheme(id) {
+  selectedThemeId = id;
+  renderThemePicker();
+}
+
+async function saveAparencia() {
+  const t = THEMES.find(x => x.id === selectedThemeId) || THEMES[0];
+  await upsertContent({
+    theme_id:          t.id,
+    theme_color:       t.color,
+    theme_color_light: t.light,
+    updated_at:        new Date().toISOString()
+  });
+  // Atualiza link "Ver Guia" com cache-busting para abrir guia com novo tema
+  const verGuiaLink = document.getElementById('ver-guia-link');
+  if (verGuiaLink) verGuiaLink.href = guiaBaseUrl(true);
+}
+
+function updateVerGuiaLink() {
+  const link = document.getElementById('ver-guia-link');
+  if (!link) return;
+  if (!propertyData.slug) {
+    link.href = '#';
+    link.title = 'Defina um slug na seção Geral para visualizar o guia';
+    link.style.opacity = '0.4';
+    link.style.pointerEvents = 'none';
+  } else {
+    link.href = guiaBaseUrl(false);
+    link.title = '';
+    link.style.opacity = '';
+    link.style.pointerEvents = '';
+  }
+}
+
+// ── Save: Geral ───────────────────────────────────────────────────────
+async function saveGeral() {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
+  const slug = g('g-slug');
+  if (!slug) { showToast('⚠ Defina um slug para o guia.'); return; }
+
+  const { error } = await sb.from('hosts').update({
+    property_name: g('g-propname'),
+    owner_name:    g('g-owner'),
+    slug:          slug
+  }).eq('id', activePropertyId);
+
+  if (error) { showToast('Erro: ' + error.message); return; }
+  propertyData.property_name = g('g-propname');
+  propertyData.owner_name    = g('g-owner');
+  propertyData.slug          = slug;
+  if (activePropertyId === hostId) {
+    hostData.property_name = propertyData.property_name;
+    hostData.owner_name    = propertyData.owner_name;
+    hostData.slug          = propertyData.slug;
+  }
+  const cached = properties.find(p => p.id === activePropertyId);
+  if (cached) { cached.property_name = propertyData.property_name; cached.slug = propertyData.slug; }
+  document.getElementById('header-prop').textContent = propertyData.property_name || 'Minha Propriedade';
+  updateVerGuiaLink();
+  showToast('✓ Salvo com sucesso!');
+}
+
+// ── Cancelar assinatura ─────────────────────────────────────────────────
+async function cancelarMinhaAssinatura() {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
+  if (!confirm('Cancelar sua assinatura?\n\nAs cobranças futuras param imediatamente, e o acesso ao painel e ao guia do hóspede será bloqueado.')) return;
+
+  const { data: { session } } = await sb.auth.getSession();
+  try {
+    const res = await fetch(SB_URL + '/functions/v1/cancelar-assinatura', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+      body: JSON.stringify({ hostId }),
+    });
+    const result = await res.json();
+    if (!result.ok) { showToast(result.message || 'Erro ao cancelar.'); return; }
+    showToast('Assinatura cancelada.');
+    setTimeout(() => location.reload(), 1500);
+  } catch (e) {
+    showToast('Erro de conexão.');
+  }
+}
+
+// ── Maps: conversão automática link → embed ───────────────────────────
+function mapsUrlToEmbed(url) {
+  if (!url) return '';
+  url = url.trim();
+  if (url.includes('output=embed') || url.includes('/maps/embed')) return url;
+
+  // Extrair coordenadas @lat,lng
+  var coord = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (coord) return 'https://www.google.com/maps?q=' + coord[1] + ',' + coord[2] + '&output=embed';
+
+  // Parâmetros q= ou query=
+  try {
+    var u = new URL(url);
+    var q = u.searchParams.get('q') || u.searchParams.get('query');
+    if (q) return 'https://www.google.com/maps?q=' + encodeURIComponent(q) + '&output=embed';
+  } catch(e) {}
+
+  // Nome do lugar na rota /maps/place/NAME/
+  var place = url.match(/\/maps\/place\/([^/@?]+)/);
+  if (place) return 'https://www.google.com/maps?q=' + encodeURIComponent(decodeURIComponent(place[1].replace(/\+/g,' '))) + '&output=embed';
+
+  return '';
+}
+
+function autoFillEmbed(mapsId, embedId, hintId) {
+  const mapsVal  = document.getElementById(mapsId)?.value || '';
+  const embedEl  = document.getElementById(embedId);
+  const hintEl   = document.getElementById(hintId);
+  if (!embedEl) return;
+  const generated = mapsUrlToEmbed(mapsVal);
+  if (generated) {
+    embedEl.value = generated;
+    if (hintEl) { hintEl.textContent = '✓ URL de embed gerada automaticamente. Edite manualmente se necessário.'; hintEl.classList.add('text-green-600'); hintEl.classList.remove('text-gray-400'); }
+  } else if (mapsVal) {
+    if (hintEl) { hintEl.textContent = 'Não foi possível gerar o embed automaticamente. Cole a URL de embed manualmente.'; hintEl.classList.add('text-amber-600'); hintEl.classList.remove('text-gray-400','text-green-600'); }
+  } else {
+    if (hintEl) { hintEl.textContent = 'Preenchido automaticamente ao colar o link acima. Edite manualmente se necessário.'; hintEl.className = 'text-xs text-gray-400 mt-1'; }
+  }
+}
+
+// ── Save: Propriedade ─────────────────────────────────────────────────
+async function savePropriedade() {
+  const updates = {
+    address:      g('p-address'),
+    checkin_time: g('p-checkin'),
+    checkout_time:g('p-checkout'),
+    access_code:  g('p-access'),
+    maps_url:     g('p-maps'),
+    maps_embed:   g('p-embed'),
+    updated_at:   new Date().toISOString()
+  };
+  await upsertContent(updates);
+}
+
+// ── Save: Hero ────────────────────────────────────────────────────────
+async function saveHero() {
+  const updates = {
+    hero_image_url:  g('h-img'),
+    welcome_message: g('h-welcome'),
+    updated_at:      new Date().toISOString()
+  };
+  await upsertContent(updates);
+  previewHeroImage();
+}
+
+function previewHeroImage() {
+  const url = g('h-img');
+  const wrap = document.getElementById('h-preview-wrap');
+  const img  = document.getElementById('h-preview');
+  if (url) { img.src = url; wrap.classList.remove('hidden'); }
+  else { wrap.classList.add('hidden'); }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('h-img');
+  if (inp) inp.addEventListener('blur', previewHeroImage);
+});
+
+// ── Fotos / Itens por Ambiente ────────────────────────────────────────
+var roomItemsData = { bedroom: [], kitchen: [], bathroom: [] };
+
+function loadRoomItems() {
+  const ri = content.room_items || {};
+  roomItemsData = {
+    bedroom:  Array.isArray(ri.bedroom)  ? [...ri.bedroom]  : [],
+    kitchen:  Array.isArray(ri.kitchen)  ? [...ri.kitchen]  : [],
+    bathroom: Array.isArray(ri.bathroom) ? [...ri.bathroom] : [],
+  };
+  renderRoomChips('bedroom');
+  renderRoomChips('kitchen');
+  renderRoomChips('bathroom');
+}
+
+function renderRoomChips(room) {
+  const el = document.getElementById('room-' + room + '-chips');
+  if (!el) return;
+  const items = roomItemsData[room] || [];
+  el.innerHTML = items.length
+    ? items.map((item, i) =>
+        `<span class="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs font-bold px-3 py-1.5 rounded-full">
+          ${item}
+          <button onclick="removeRoomItem('${room}',${i})" class="ml-0.5 text-primary/40 hover:text-primary transition-colors text-base leading-none">&times;</button>
+        </span>`
+      ).join('')
+    : '<p class="text-xs text-gray-400 italic">Nenhum item adicionado.</p>';
+}
+
+function addRoomItem(room) {
+  const input = document.getElementById('room-' + room + '-input');
+  const val = (input?.value || '').trim();
+  if (!val) return;
+  if (!roomItemsData[room]) roomItemsData[room] = [];
+  roomItemsData[room].push(val);
+  input.value = '';
+  renderRoomChips(room);
+}
+
+function removeRoomItem(room, idx) {
+  roomItemsData[room].splice(idx, 1);
+  renderRoomChips(room);
+}
+
+async function saveAmbientes() {
+  await upsertContent({ room_items: roomItemsData, updated_at: new Date().toISOString() });
+}
+
+// ── Fotos / Vídeo por Ambiente (room_media + limite de 35MB) ──────────
+var ROOM_MEDIA_BUCKET = 'room-media';
+var ROOM_PHOTO_MAX  = 1.5 * 1024 * 1024;
+var ROOM_VIDEO_MAX  = 20  * 1024 * 1024;
+var ROOM_TOTAL_MAX  = 35  * 1024 * 1024;
+var ROOM_MAX_PHOTOS = 10;
+var roomMediaData = { bedroom: [], kitchen: [], bathroom: [], entrada: [] };
+
+async function loadRoomMedia() {
+  const { data, error } = await sb.from('room_media').select('*').eq('host_id', activePropertyId).order('position', { ascending: true });
+  if (error) { console.error(error); return; }
+  roomMediaData = { bedroom: [], kitchen: [], bathroom: [], entrada: [] };
+  (data || []).forEach(item => { if (roomMediaData[item.room]) roomMediaData[item.room].push(item); });
+  ['bedroom', 'kitchen', 'bathroom', 'entrada'].forEach(renderRoomMedia);
+  updateRoomMediaUsage();
+}
+
+function renderRoomMedia(room) {
+  const el = document.getElementById('room-' + room + '-media');
+  if (!el) return;
+  const items = roomMediaData[room] || [];
+  el.innerHTML = items.map(item => `
+    <div class="relative group aspect-square rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
+      ${item.type === 'video'
+        ? `<video src="${item.url}" class="w-full h-full object-cover" muted></video><span class="material-icons-outlined absolute bottom-1 left-1 text-white" style="font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,.6)">play_circle</span>`
+        : `<img src="${item.url}" class="w-full h-full object-cover"/>`}
+      <button onclick="deleteRoomMedia('${item.id}')" class="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+        <span class="material-icons-outlined" style="font-size:12px">close</span>
+      </button>
+    </div>
+  `).join('');
+}
+
+function updateRoomMediaUsage() {
+  const all = [...roomMediaData.bedroom, ...roomMediaData.kitchen, ...roomMediaData.bathroom, ...roomMediaData.entrada];
+  const totalBytes = all.reduce((sum, i) => sum + (i.size_bytes || 0), 0);
+  const isAdmin = hostData.is_admin === true;
+  const label = document.getElementById('room-media-usage-label');
+  const bar = document.getElementById('room-media-usage-bar');
+  if (isAdmin) {
+    if (label) label.textContent = (totalBytes / 1024 / 1024).toFixed(1) + ' MB · armazenamento ilimitado';
+    if (bar) { bar.style.width = '100%'; bar.className = 'h-full rounded-full transition-all bg-primary'; }
+    return;
+  }
+  const pct = Math.min(100, Math.round((totalBytes / ROOM_TOTAL_MAX) * 100));
+  if (label) label.textContent = (totalBytes / 1024 / 1024).toFixed(1) + ' MB / 35 MB';
+  if (bar) {
+    bar.style.width = pct + '%';
+    bar.className = 'h-full rounded-full transition-all ' + (pct >= 95 ? 'bg-red-500' : pct >= 75 ? 'bg-amber-500' : 'bg-primary');
+  }
+}
+
+function compressRoomImage(file, maxBytes) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = e => { img.src = e.target.result; };
+    reader.onerror = () => reject(new Error('Falha ao ler arquivo.'));
+    img.onload = () => {
+      let width = img.width, height = img.height;
+      const MAX_DIM = 1600;
+      if (width > MAX_DIM || height > MAX_DIM) {
+        const scale = MAX_DIM / Math.max(width, height);
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      let quality = 0.85;
+      const tryCompress = () => {
+        canvas.toBlob(blob => {
+          if (!blob) { reject(new Error('Falha ao processar imagem.')); return; }
+          if (blob.size <= maxBytes || quality <= 0.4) resolve(blob);
+          else { quality -= 0.1; tryCompress(); }
+        }, 'image/jpeg', quality);
+      };
+      tryCompress();
+    };
+    img.onerror = () => reject(new Error('Arquivo de imagem inválido.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadRoomMedia(input, room, type) {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); input.value = ''; return; }
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('room-' + room + '-media-status');
+  const showStatus = (msg, ok) => {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.className = 'text-xs font-bold mt-1.5 ' + (ok ? 'text-green-600' : 'text-red-500');
+    statusEl.classList.remove('hidden');
+  };
+  const isAdmin = hostData.is_admin === true;
+
+  if (!isAdmin && type === 'image' && (roomMediaData[room] || []).filter(i => i.type === 'image').length >= ROOM_MAX_PHOTOS) {
+    showStatus('⚠ Limite de 10 fotos atingido neste ambiente.', false);
+    input.value = '';
+    return;
+  }
+  if (!isAdmin && type === 'video' && (roomMediaData[room] || []).some(i => i.type === 'video')) {
+    showStatus('⚠ Já existe 1 vídeo neste ambiente. Remova-o antes de enviar outro.', false);
+    input.value = '';
+    return;
+  }
+
+  const allBytes = [...roomMediaData.bedroom, ...roomMediaData.kitchen, ...roomMediaData.bathroom, ...roomMediaData.entrada]
+    .reduce((sum, i) => sum + (i.size_bytes || 0), 0);
+
+  let uploadFile = file;
+  if (type === 'image' && !isAdmin) {
+    showStatus('Otimizando imagem...', true);
+    try {
+      uploadFile = await compressRoomImage(file, ROOM_PHOTO_MAX);
+    } catch (e) {
+      showStatus('Erro ao processar imagem: ' + e.message, false);
+      input.value = '';
+      return;
+    }
+    if (uploadFile.size > ROOM_PHOTO_MAX) {
+      showStatus('⚠ Foto muito grande mesmo após compressão (máx 1,5MB).', false);
+      input.value = '';
+      return;
+    }
+  } else if (type === 'video' && !isAdmin) {
+    if (file.size > ROOM_VIDEO_MAX) {
+      showStatus('⚠ Vídeo muito grande (máx 20MB).', false);
+      input.value = '';
+      return;
+    }
+  }
+
+  if (!isAdmin && allBytes + uploadFile.size > ROOM_TOTAL_MAX) {
+    showStatus('⚠ Limite total de 35MB de armazenamento atingido.', false);
+    input.value = '';
+    return;
+  }
+
+  showStatus('Enviando...', true);
+  const ext = type === 'image' ? 'jpg' : (file.name.split('.').pop() || 'mp4');
+  const path = `${activePropertyId}/${room}/${Date.now()}.${ext}`;
+  const { error: upErr } = await sb.storage.from(ROOM_MEDIA_BUCKET).upload(path, uploadFile, { upsert: true });
+  if (upErr) {
+    showStatus('Erro no upload: ' + upErr.message, false);
+    input.value = '';
+    return;
+  }
+  const { data: pub } = sb.storage.from(ROOM_MEDIA_BUCKET).getPublicUrl(path);
+
+  const { data: row, error: insErr } = await sb.from('room_media').insert({
+    host_id: activePropertyId,
+    room: room,
+    type: type,
+    storage_path: path,
+    url: pub.publicUrl,
+    size_bytes: uploadFile.size,
+    position: (roomMediaData[room] || []).length,
+  }).select().single();
+
+  if (insErr) {
+    await sb.storage.from(ROOM_MEDIA_BUCKET).remove([path]);
+    showStatus('⚠ ' + insErr.message, false);
+    input.value = '';
+    return;
+  }
+
+  roomMediaData[room].push(row);
+  renderRoomMedia(room);
+  updateRoomMediaUsage();
+  showStatus('✓ Enviado com sucesso!', true);
+  input.value = '';
+}
+
+async function deleteRoomMedia(id) {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
+  let found = null, room = null;
+  for (const r of ['bedroom', 'kitchen', 'bathroom', 'entrada']) {
+    const idx = (roomMediaData[r] || []).findIndex(i => i.id === id);
+    if (idx !== -1) { found = roomMediaData[r][idx]; room = r; break; }
+  }
+  if (!found) return;
+  if (!confirm('Remover este item da galeria?')) return;
+  await sb.storage.from(ROOM_MEDIA_BUCKET).remove([found.storage_path]);
+  await sb.from('room_media').delete().eq('id', id);
+  roomMediaData[room] = roomMediaData[room].filter(i => i.id !== id);
+  renderRoomMedia(room);
+  updateRoomMediaUsage();
+}
+
+// ── Save: Wi-Fi ───────────────────────────────────────────────────────
+async function saveWifi() {
+  const updates = {
+    wifi_name:     g('w-name'),
+    wifi_password: g('w-pass'),
+    wifi_qr_url:   g('w-qr'),
+    updated_at:    new Date().toISOString()
+  };
+  await upsertContent(updates);
+}
+
+// ── Save: Regras ──────────────────────────────────────────────────────
+async function saveRegras() {
+  await upsertContent({ rules: g('r-rules'), updated_at: new Date().toISOString() });
+}
+
+// ── Upsert helper ─────────────────────────────────────────────────────
+async function upsertContent(updates) {
+  if (window.isDemoMode) {
+    document.getElementById('demo-modal').classList.remove('hidden');
+    return;
+  }
+  // Usa .update() em vez de .upsert() para evitar sobrescrever campos não relacionados
+  const doUpdate = () => sb.from('guide_content').update(updates).eq('host_id', activePropertyId);
+  const { error } = await doUpdate();
+  if (error) {
+    if (error.message?.includes('JWT') || error.message?.includes('expired') || error.status === 401) {
+      const { error: refreshErr } = await sb.auth.refreshSession();
+      if (refreshErr) { location.href = 'login.html'; return; }
+      const { error: retryErr } = await doUpdate();
+      if (retryErr) { showToast('Erro: ' + retryErr.message); return; }
+    } else {
+      showToast('Erro: ' + error.message);
+      return;
+    }
+  }
+  Object.assign(content, updates);
+  showToast('✓ Salvo com sucesso!');
+}
+
+// ── List rendering ────────────────────────────────────────────────────
+function renderList(key) {
+  const container = document.getElementById('list-' + key);
+  if (!container) return;
+  const items = content[key] || [];
+  if (items.length === 0) {
+    container.innerHTML = '<p class="text-sm text-gray-400 mb-3">Nenhum item ainda.</p>';
+    return;
+  }
+  container.innerHTML = items.map((item, i) => `
+    <div class="item-card">
+      <div class="item-card-body">
+        <div class="item-card-name">${escHtml(item.name || '')}</div>
+        <div class="item-card-sub">${[item.time, item.category, item.description].filter(Boolean).join(' · ')}</div>
+      </div>
+      <button class="item-btn" onclick="openEditForm('${key}',${i})" title="Editar">
+        <span class="material-icons-outlined" style="font-size:18px">edit</span>
+      </button>
+      <button class="item-btn del" onclick="removeItem('${key}',${i})" title="Remover">
+        <span class="material-icons-outlined" style="font-size:18px">delete_outline</span>
+      </button>
+    </div>
+  `).join('');
+}
+
+// ── List form ──────────────────────────────────────────────────────────
+function formHTML(key, item) {
+  item = item || {};
+  return `
+    <p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-4">${editIndex >= 0 ? 'Editar' : 'Novo'} Item</p>
+    <div class="space-y-3">
+      <div>
+        <label class="field-label">Nome *</label>
+        <input id="fi-name" class="field-input" value="${escAttr(item.name||'')}" placeholder="Nome do local"/>
+      </div>
+      <div>
+        <label class="field-label">Descrição</label>
+        <input id="fi-desc" class="field-input" value="${escAttr(item.description||'')}" placeholder="Uma linha sobre o local"/>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="field-label">Tempo / Distância</label>
+          <input id="fi-time" class="field-input" value="${escAttr(item.time||'')}" placeholder="Ex: 5 min"/>
+        </div>
+        <div>
+          <label class="field-label">Categoria</label>
+          <input id="fi-cat" class="field-input" value="${escAttr(item.category||'')}" placeholder="Ex: Japonês"/>
+        </div>
+      </div>
+      <div>
+        <label class="field-label">Link Google Maps</label>
+        <input id="fi-maps" class="field-input" value="${escAttr(item.maps_url||'')}" placeholder="https://maps.google.com/..."/>
+      </div>
+      <div>
+        <label class="field-label">Endereço / Bairro</label>
+        <input id="fi-addr" class="field-input" value="${escAttr(item.address||'')}" placeholder="Ex: Ponta Negra, Natal — 200m daqui"/>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <button onclick="saveItem('${key}')" class="save-btn">
+        <span class="material-icons-outlined" style="font-size:16px">check</span>Salvar
+      </button>
+      <button onclick="closeForm('${key}')" style="background:#f3f4f6;color:#6b7280;font-weight:700;font-size:13px;padding:10px 18px;border-radius:12px;border:none;cursor:pointer;">
+        Cancelar
+      </button>
+    </div>
+  `;
+}
+
+function openAddForm(key) {
+  editList = key; editIndex = -1;
+  const form = document.getElementById('form-' + key);
+  form.innerHTML = formHTML(key, {});
+  form.classList.remove('hidden');
+  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function openEditForm(key, idx) {
+  editList = key; editIndex = idx;
+  const items = content[key] || [];
+  const form  = document.getElementById('form-' + key);
+  form.innerHTML = formHTML(key, items[idx] || {});
+  form.classList.remove('hidden');
+  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeForm(key) {
+  document.getElementById('form-' + key).classList.add('hidden');
+  editList = null; editIndex = -1;
+}
+
+async function saveItem(key) {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
+  const name = document.getElementById('fi-name').value.trim();
+  if (!name) { showToast('⚠ Nome é obrigatório.'); return; }
+  const item = {
+    name,
+    description: document.getElementById('fi-desc').value.trim(),
+    time:        document.getElementById('fi-time').value.trim(),
+    category:    document.getElementById('fi-cat').value.trim(),
+    maps_url:    document.getElementById('fi-maps').value.trim(),
+    address:     document.getElementById('fi-addr').value.trim(),
+  };
+  const items = [...(content[key] || [])];
+  if (editIndex >= 0) items[editIndex] = item;
+  else items.push(item);
+
+  const updates = { [key]: items, updated_at: new Date().toISOString() };
+  const { error } = await sb.from('guide_content').upsert({ host_id: activePropertyId, ...content, ...updates });
+  if (error) { showToast('Erro: ' + error.message); return; }
+  Object.assign(content, updates);
+  renderList(key);
+  closeForm(key);
+  showToast('✓ Salvo!');
+}
+
+async function removeItem(key, idx) {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
+  if (!confirm('Remover este item?')) return;
+  const items = [...(content[key] || [])];
+  items.splice(idx, 1);
+  const updates = { [key]: items, updated_at: new Date().toISOString() };
+  const { error } = await sb.from('guide_content').upsert({ host_id: activePropertyId, ...content, ...updates });
+  if (error) { showToast('Erro: ' + error.message); return; }
+  Object.assign(content, updates);
+  renderList(key);
+  showToast('✓ Removido!');
+}
+
+// ── Upload foto hero ──────────────────────────────────────────────────
+async function uploadHeroImage(input) {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); input.value = ''; return; }
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('h-upload-status');
+  if (file.size > 5 * 1024 * 1024) {
+    status.textContent = '⚠ Arquivo muito grande (máx 5MB).';
+    status.className = 'text-xs font-bold text-red-500 mb-2';
+    status.classList.remove('hidden');
+    return;
+  }
+  status.textContent = 'Enviando...';
+  status.className = 'text-xs font-bold text-primary mb-2';
+  status.classList.remove('hidden');
+
+  const ext  = file.name.split('.').pop();
+  const path = `${activePropertyId}/hero-${Date.now()}.${ext}`;
+  const { error } = await sb.storage.from('guide-images').upload(path, file, { upsert: true });
+  if (error) {
+    status.textContent = 'Erro: ' + error.message;
+    status.className = 'text-xs font-bold text-red-500 mb-2';
+    return;
+  }
+  const { data } = sb.storage.from('guide-images').getPublicUrl(path);
+  document.getElementById('h-img').value = data.publicUrl;
+  previewHeroImage();
+  status.textContent = '✓ Foto enviada com sucesso!';
+  status.className = 'text-xs font-bold text-green-600 mb-2';
+}
+
+// ── Acesso ────────────────────────────────────────────────────────────
+const ACCESS_TIPOS = [
+  { id: 'fechadura', label: 'Fechadura eletrônica', icon: 'lock'       },
+  { id: 'chave',     label: 'Chave física',          icon: 'key'        },
+  { id: 'portaria',  label: 'Portaria / Recepção',   icon: 'security'   },
+  { id: 'outro',     label: 'Outro',                 icon: 'more_horiz' },
+];
+let selectedAccessType = 'fechadura';
+
+function renderAccessPicker() {
+  const c = document.getElementById('access-type-picker');
+  if (!c) return;
+  let h = '';
+  for (const t of ACCESS_TIPOS) {
+    const a = selectedAccessType === t.id;
+    h += '<button onclick="selectAccessType(\'' + t.id + '\')" class="flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 text-center transition-all '
+      + (a ? 'border-primary bg-primary/5 text-primary' : 'border-gray-100 text-gray-500 hover:border-gray-300') + '">'
+      + '<span class="material-icons-outlined" style="font-size:22px">' + t.icon + '<\/span>'
+      + '<span class="text-xs font-bold leading-tight">' + t.label + '<\/span>'
+      + '<\/button>';
+  }
+  c.innerHTML = h;
+}
+
+function selectAccessType(id) {
+  selectedAccessType = id;
+  renderAccessPicker();
+  renderAccessFields();
+}
+
+function _fField(label, id, type, ph, extraCls) {
+  const cls = extraCls || 'field-input';
+  return '<div><label class="field-label">' + label + '<\/label>'
+    + '<input id="' + id + '" type="' + type + '" placeholder="' + (ph || '') + '" class="' + cls + '"/><\/div>';
+}
+function _fTextarea(label, id, ph, hint) {
+  return '<div><label class="field-label">' + label + '<\/label>'
+    + (hint ? '<p class="text-xs text-gray-400 -mt-1 mb-2">' + hint + '<\/p>' : '')
+    + '<textarea id="' + id + '" rows="4" placeholder="' + (ph || '') + '" class="field-input resize-none"><\/textarea><\/div>';
+}
+
+function renderAccessFields() {
+  const c = document.getElementById('access-fields');
+  if (!c) return;
+  let h = '';
+  const t = selectedAccessType;
+  const hint = 'Cada linha vira um passo numerado no guia do hóspede.';
+
+  if (t === 'fechadura') {
+    h += _fField('Código da Fechadura', 'f-code', 'text', 'Ex: 5478', 'field-input font-mono text-xl tracking-widest');
+    h += _fTextarea('Instruções de entrada', 'f-instructions', 'Ex: Suba pela escada lateral\nPressione a fechadura para ativar o teclado\nDigite o código e puxe a porta por 2 segundos', hint);
+  } else if (t === 'chave') {
+    h += _fField('Onde retirar a chave', 'f-location', 'text', 'Ex: Na portaria, com o síndico...', '');
+    h += _fField('Contato', 'f-contact', 'tel', 'Ex: (84) 99999-9999', '');
+    h += _fTextarea('Instruções de entrada', 'f-instructions', 'Ex: Retire a chave na portaria\nSiga pelo corredor até o apartamento\nUse a chave para abrir', hint);
+  } else if (t === 'portaria') {
+    h += _fTextarea('Instruções para a portaria', 'f-instructions', 'Ex: Informe seu nome e número do apartamento na recepção...', hint);
+    h += _fField('Contato da portaria', 'f-contact', 'tel', 'Ex: (84) 99999-9999', '');
+  } else {
+    h += _fTextarea('Instruções de acesso', 'f-instructions', 'Descreva como o hóspede acessa a propriedade...', hint);
+  }
+  c.innerHTML = h;
+
+  v('f-code',         content.lock_code             || '');
+  v('f-location',     content.access_location       || '');
+  v('f-contact',      content.access_contact        || '');
+  v('f-instructions', content.access_instructions   || '');
+}
+
+async function saveAcesso() {
+  const updates = {
+    access_type:         selectedAccessType,
+    access_location:     g('f-location'),
+    access_contact:      g('f-contact'),
+    access_instructions: g('f-instructions'),
+    updated_at:          new Date().toISOString(),
+  };
+  if (selectedAccessType === 'fechadura') {
+    updates.lock_code = g('f-code');
+  }
+  await upsertContent(updates);
+  Object.assign(content, updates);
+}
+
+// ── Share ──────────────────────────────────────────────────────────────
+function guiaBaseUrl(withVersion) {
+  const slug = propertyData.slug || '';
+  const base = location.href.replace(/painel\.html.*$/, '');
+  let url = base + 'guia.html' + (slug ? '?h=' + encodeURIComponent(slug) : '');
+  if (withVersion) url += (slug ? '&' : '?') + 'v=' + Date.now();
+  return url;
+}
+
+// ── Logout ─────────────────────────────────────────────────────────────
+async function doLogout() {
+  await sb.auth.signOut();
+  location.href = 'login.html';
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── Utils ──────────────────────────────────────────────────────────────
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
+
+// ── Cartão imprimível Wi-Fi ────────────────────────────────────────────
+function gerarCartao() {
+  const wifiName  = g('w-name') || content.wifi_name     || '';
+  const wifiPass  = g('w-pass') || content.wifi_password || '';
+  const propName  = propertyData.property_name || 'Minha Propriedade';
+  const guideUrl  = guiaBaseUrl(false);
+  const cor       = (content.theme_color || '#4A6741').replace('#', '');
+  const corHex    = '#' + cor;
+  const qrSrc     = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=${cor}&bgcolor=ffffff&data=${encodeURIComponent(guideUrl)}&margin=0`;
+
+  const wifiQrData = 'WIFI:T:WPA;S:' + wifiName + ';P:' + wifiPass + ';;';
+  const wifiQrSrc  = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=' + cor + '&bgcolor=ffffff&data=' + encodeURIComponent(wifiQrData) + '&margin=0';
+  const guideQrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=' + cor + '&bgcolor=ffffff&data=' + encodeURIComponent(guideUrl) + '&margin=0';
+
+  const html = '<!DOCTYPE html>'
+    + '<html lang="pt-BR"><head><meta charset="UTF-8"/>'
+    + '<title>Cartão — ' + propName + '<\/title>'
+    + '<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito+Sans:wght@400;700;800&display=swap" rel="stylesheet"/>'
+    + '<style>'
+    + '*{margin:0;padding:0;box-sizing:border-box;}'
+    + 'body{font-family:"Nunito Sans",sans-serif;background:#efefef;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;gap:16px;}'
+    + '.btn-print{background:' + corHex + ';color:#fff;border:none;padding:11px 26px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;}'
+    + '.card{width:10cm;min-height:15cm;background:#fff;border-radius:18px;padding:1cm .85cm;display:flex;flex-direction:column;align-items:center;box-shadow:0 8px 40px rgba(0,0,0,.13);}'
+    + '.prop{font-family:"DM Serif Display",serif;font-size:20px;color:#111;text-align:center;line-height:1.2;margin-bottom:4px;}'
+    + '.welcome{font-size:9.5px;font-weight:700;letter-spacing:.1em;color:#bbb;text-align:center;margin-bottom:.4cm;text-transform:uppercase;}'
+    + '.qr-row{display:flex;gap:.35cm;width:100%;justify-content:center;margin-bottom:.35cm;}'
+    + '.qr-card{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;background:#f9fafb;border:1.5px solid #f0f0f0;border-radius:12px;padding:10px 8px;}'
+    + '.qr-card img{border-radius:6px;display:block;}'
+    + '.qr-tag{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:' + corHex + ';text-align:center;}'
+    + '.qr-sub{font-size:7.5px;color:#bbb;font-weight:600;text-align:center;line-height:1.3;}'
+    + '.divider{width:100%;height:1px;background:linear-gradient(to right,transparent,#e5e7eb,transparent);margin:.25cm 0;}'
+    + '.wifi-box{width:100%;background:#f9fafb;border:1.5px solid #f0f0f0;border-radius:11px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;}'
+    + '.wifi-row{display:flex;flex-direction:column;gap:1px;}'
+    + '.wifi-lbl{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#bbb;}'
+    + '.wifi-val{font-size:13px;font-weight:700;color:#222;}'
+    + '.wifi-pass{font-family:"Courier New",monospace;font-size:14px;font-weight:700;color:' + corHex + ';word-break:break-all;}'
+    + '.footer{margin-top:auto;padding-top:.35cm;font-size:8px;color:#ccc;text-align:center;letter-spacing:.05em;}'
+    + '@media print{body{background:#fff;padding:0;}.btn-print{display:none;}.card{box-shadow:none;border-radius:0;min-height:0;}@page{size:10cm 15cm;margin:0;}}'
+    + '<\/style><\/head><body>'
+    + '<button class="btn-print" onclick="window.print()">'
+    + '<svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"><\/path><\/svg>'
+    + ' Imprimir cartão<\/button>'
+    + '<div class="card">'
+    + '<p class="prop">' + propName + '<\/p>'
+    + '<p class="welcome">Bem-vindo · Welcome · Bienvenido<\/p>'
+    + '<div class="qr-row">'
+    + '<div class="qr-card">'
+    + '<img src="' + guideQrSrc + '" width="118" height="118" alt="Guia"/>'
+    + '<p class="qr-tag">Guia do Hóspede<\/p>'
+    + '<p class="qr-sub">Escaneie para abrir<br/>o guia completo<\/p>'
+    + '<\/div>'
+    + '<div class="qr-card">'
+    + '<img src="' + wifiQrSrc + '" width="118" height="118" alt="Wi-Fi"/>'
+    + '<p class="qr-tag">Conectar Wi-Fi<\/p>'
+    + '<p class="qr-sub">Escaneie para conectar<br/>automaticamente<\/p>'
+    + '<\/div>'
+    + '<\/div>'
+    + '<div class="divider"><\/div>'
+    + '<div class="wifi-box">'
+    + '<div class="wifi-row"><p class="wifi-lbl">Rede · Network<\/p><p class="wifi-val">' + (wifiName || '—') + '<\/p><\/div>'
+    + '<div class="wifi-row"><p class="wifi-lbl">Senha · Password<\/p><p class="wifi-pass">' + (wifiPass || '—') + '<\/p><\/div>'
+    + '<\/div>'
+    + '<p class="footer">Gerado por AirGuia<\/p>'
+    + '<\/div><\/body><\/html>';
+
+  const win = window.open('', '_blank', 'width=520,height=750');
+  if (!win) { showToast('⚠ Permita pop-ups para gerar o cartão.'); return; }
+  win.document.write(html);
+  win.document.close();
+}
+
+// ── Onboarding ─────────────────────────────────────────────────────────
+let obStep = 1;
+const OB_STEPS = 4;
+const OB_KEY   = () => 'zamio_ob_v1_' + hostId;
+
+function checkOnboarding() {
+  if (!localStorage.getItem(OB_KEY())) obOpen();
+}
+
+function obOpen() {
+  // Pre-fill with any existing data
+  document.getElementById('ob-propname').value = hostData.property_name  || '';
+  document.getElementById('ob-owner').value    = hostData.owner_name     || '';
+  document.getElementById('ob-address').value  = content.address         || '';
+  document.getElementById('ob-checkin').value  = content.checkin_time    || '13:00';
+  document.getElementById('ob-checkout').value = content.checkout_time   || '11:00';
+  document.getElementById('ob-wname').value    = content.wifi_name       || '';
+  document.getElementById('ob-wpass').value    = content.wifi_password   || '';
+  document.getElementById('ob-heroimg').value  = content.hero_image_url  || '';
+  document.getElementById('ob-welcome').value  = content.welcome_message || '';
+  obPreviewImg();
+  obStep = 1;
+  obRender();
+  document.getElementById('onboarding').style.display = 'flex';
+}
+
+function obRender() {
+  // Show/hide step content
+  for (let i = 1; i <= OB_STEPS; i++) {
+    document.getElementById('ob-s' + i).classList.toggle('hidden', i !== obStep);
+  }
+  // Step dots
+  for (let i = 1; i <= OB_STEPS; i++) {
+    const dot  = document.getElementById('ob-dot-' + i).querySelector('div');
+    const lbl  = document.getElementById('ob-dot-' + i).querySelector('span');
+    const done = i < obStep;
+    const curr = i === obStep;
+    dot.textContent = done ? '✓' : i;
+    dot.className   = 'w-9 h-9 rounded-full flex items-center justify-center text-sm font-extrabold border-2 transition-all duration-300 '
+      + (done ? 'bg-primary border-primary text-white'
+        : curr ? 'bg-white border-primary text-primary scale-110 shadow-md shadow-primary/20'
+               : 'bg-white border-gray-200 text-gray-300');
+    lbl.className   = 'text-[10px] font-bold mt-1.5 transition-colors duration-300 '
+      + (done || curr ? 'text-primary' : 'text-gray-300');
+    // Connecting lines
+    if (i < OB_STEPS) {
+      const line = document.getElementById('ob-line-' + i);
+      if (line) line.className = 'flex-1 h-0.5 mb-4 transition-all duration-500 ' + (i < obStep ? 'bg-primary' : 'bg-gray-200');
+    }
+  }
+  // Back button
+  document.getElementById('ob-back').classList.toggle('hidden', obStep === 1);
+  // Next button label
+  const next = document.getElementById('ob-next');
+  if (obStep === OB_STEPS) {
+    next.innerHTML = '<span class="material-icons-outlined" style="font-size:17px">check_circle</span> Concluir e abrir o painel!';
+  } else {
+    next.innerHTML = 'Próximo →';
+  }
+}
+
+async function obNext() {
+  if (obStep === OB_STEPS) {
+    const btn = document.getElementById('ob-next');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-icons-outlined spin" style="font-size:17px">refresh</span> Salvando...';
+    await obSaveAll();
+    obFinish();
+    return;
+  }
+  obStep++;
+  obRender();
+}
+
+function obPrev() {
+  if (obStep > 1) { obStep--; obRender(); }
+}
+
+async function obSaveAll() {
+  const propname = document.getElementById('ob-propname').value.trim();
+  const owner    = document.getElementById('ob-owner').value.trim();
+  if (propname || owner) {
+    await sb.from('hosts').update({
+      property_name: propname || hostData.property_name || '',
+      owner_name:    owner    || hostData.owner_name    || '',
+    }).eq('id', hostId);
+    if (propname) hostData.property_name = propname;
+    if (owner)    hostData.owner_name    = owner;
+  }
+  const updates = {
+    address:         document.getElementById('ob-address').value.trim(),
+    checkin_time:    document.getElementById('ob-checkin').value,
+    checkout_time:   document.getElementById('ob-checkout').value,
+    wifi_name:       document.getElementById('ob-wname').value.trim(),
+    wifi_password:   document.getElementById('ob-wpass').value.trim(),
+    hero_image_url:  document.getElementById('ob-heroimg').value.trim(),
+    welcome_message: document.getElementById('ob-welcome').value.trim(),
+    updated_at:      new Date().toISOString(),
+  };
+  await sb.from('guide_content').upsert({ host_id: hostId, ...content, ...updates });
+  Object.assign(content, updates);
+}
+
+function obFinish() {
+  localStorage.setItem(OB_KEY(), '1');
+  document.getElementById('onboarding').style.display = 'none';
+  populateForms();
+  document.getElementById('header-prop').textContent = hostData.property_name || 'Minha Propriedade';
+  showToast('🎉 Guia configurado! Explore o painel para personalizar mais.');
+}
+
+function skipOnboarding() {
+  localStorage.setItem(OB_KEY(), '1');
+  document.getElementById('onboarding').style.display = 'none';
+}
+
+function obPreviewImg() {
+  const url  = document.getElementById('ob-heroimg').value.trim();
+  const wrap = document.getElementById('ob-img-wrap');
+  const img  = document.getElementById('ob-img');
+  if (url) { img.src = url; wrap.classList.remove('hidden'); }
+  else { wrap.classList.add('hidden'); }
+}
+
+async function obUploadHeroImage(input) {
+  const file   = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('ob-upload-status');
+  if (file.size > 5 * 1024 * 1024) {
+    status.textContent = '⚠ Arquivo muito grande (máx 5MB).';
+    status.className = 'text-xs font-bold text-red-500 mt-2';
+    status.classList.remove('hidden');
+    return;
+  }
+  status.textContent = 'Enviando...';
+  status.className = 'text-xs font-bold text-primary mt-2';
+  status.classList.remove('hidden');
+  const ext  = file.name.split('.').pop();
+  const path = `${hostId}/hero-${Date.now()}.${ext}`;
+  const { error } = await sb.storage.from('guide-images').upload(path, file, { upsert: true });
+  if (error) {
+    status.textContent = 'Erro: ' + error.message;
+    status.className = 'text-xs font-bold text-red-500 mt-2';
+    return;
+  }
+  const { data } = sb.storage.from('guide-images').getPublicUrl(path);
+  document.getElementById('ob-heroimg').value = data.publicUrl;
+  obPreviewImg();
+  status.textContent = '✓ Foto enviada com sucesso!';
+  status.className = 'text-xs font-bold text-green-600 mt-2';
+}
+
+init();
