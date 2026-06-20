@@ -266,7 +266,8 @@ tailwind.config = {
           <input id="g-owner" class="field-input" placeholder="Ex: Rafael" type="text"/>
         </div>
         <div>
-          <label class="field-label">Slug (link do guia)</label>
+          <label class="field-label">Personalize seu link</label>
+          <p class="text-xs text-gray-500 mb-2">Essa é a parte final do endereço que você vai enviar para os hóspedes. Escolha algo curto e fácil de lembrar, como o nome da sua casa.</p>
           <div class="flex gap-2">
             <span class="flex items-center text-sm text-gray-400 bg-gray-100 rounded-l-xl px-3 border border-r-0 border-gray-200 flex-shrink-0 rounded-xl" style="border-radius:12px 0 0 12px">guia.html?h=</span>
             <input id="g-slug" class="field-input" style="border-radius:0 12px 12px 0;border-left:none" placeholder="zamio" type="text" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')"/>
