@@ -932,8 +932,15 @@ function mockUserClick(name) {
     if (mockUserTookOver) return;
     var step = SEQUENCE[stepIndex % SEQUENCE.length];
     var navBtn = document.querySelector('.mock-nav[data-mock-section="' + step.section + '"]');
-    if (!navBtn) return;
-    moveCursorTo(navBtn);
+    // No celular a barra de abas fica escondida (hidden sm:block) -- nesse caso
+    // não tem como mover o cursor até ela (ficaria em 0,0), então só escondemos
+    // o cursor e trocamos a aba direto.
+    var navVisible = navBtn && navBtn.offsetWidth > 0;
+    if (navVisible) {
+      moveCursorTo(navBtn);
+    } else if (cursor) {
+      cursor.style.opacity = '0';
+    }
     timer = setTimeout(function () {
       if (mockUserTookOver) return;
       mockShowSection(step.section);
@@ -941,7 +948,7 @@ function mockUserClick(name) {
         if (mockUserTookOver) return;
         timer = setTimeout(function () { runStep(stepIndex + 1); }, 500);
       });
-    }, 650);
+    }, navVisible ? 650 : 300);
   }
 
   function start() {
