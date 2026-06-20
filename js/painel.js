@@ -337,6 +337,8 @@ function populateForms() {
   v('g-slug',     propertyData.slug          || '');
   // Propriedade
   v('p-address',  content.address     || '');
+  v('p-city',     content.city        || '');
+  v('p-state',    content.state       || '');
   v('p-checkin',  content.checkin_time || '13:00');
   v('p-checkout', content.checkout_time|| '11:00');
   v('p-access',   content.access_code || '');
@@ -706,15 +708,47 @@ let manutActiveShortcut  = null;
 let manutSelEnxoval      = -1;
 
 const MANUT_SHORTCUTS = [
-  { id:'ac',          icon:'ac_unit',              label:'Ar-condicionado',    desc:'Limpeza dos filtros',        months:6,  hasLastDone:true  },
-  { id:'dedetizacao', icon:'pest_control',          label:'Dedetização',        desc:'Controle de pragas',         months:12, hasLastDone:true  },
-  { id:'pintura',     icon:'format_paint',          label:'Renovar Pintura',    desc:'Paredes internas/externas',  months:24, hasLastDone:true  },
+  { id:'ac',          icon:'ac_unit',              label:'Ar-condicionado',    desc:'Limpeza dos filtros',        months:6,  hasLastDone:true,  providerCategory:'ar_condicionado' },
+  { id:'dedetizacao', icon:'pest_control',          label:'Dedetização',        desc:'Controle de pragas',         months:12, hasLastDone:true,  providerCategory:'dedetizador' },
+  { id:'pintura',     icon:'format_paint',          label:'Renovar Pintura',    desc:'Paredes internas/externas',  months:24, hasLastDone:true,  providerCategory:'pintor' },
   { id:'enxoval',     icon:'bed',                   label:'Trocar Enxoval',     desc:'Roupas de cama e banho',     months:0,  hasLastDone:false,
     subOptions:['Lençol de casal','Lençol de solteiro','Edredom / Cobertor','Toalha de banho','Toalha de rosto','Fronha'] },
-  { id:'filtro',      icon:'water_drop',            label:'Filtro de Água',     desc:'Purificador / torneira',     months:6,  hasLastDone:true  },
-  { id:'chuveiro',    icon:'shower',                label:'Chuveiro Elétrico',  desc:'Revisão e resistência',      months:12, hasLastDone:true  },
-  { id:'gas',         icon:'local_fire_department', label:'Gás de Cozinha',     desc:'Botijão e instalação',       months:12, hasLastDone:true  },
+  { id:'filtro',      icon:'water_drop',            label:'Filtro de Água',     desc:'Purificador / torneira',     months:6,  hasLastDone:true,  providerCategory:'encanador' },
+  { id:'chuveiro',    icon:'shower',                label:'Chuveiro Elétrico',  desc:'Revisão e resistência',      months:12, hasLastDone:true,  providerCategory:'eletricista' },
+  { id:'gas',         icon:'local_fire_department', label:'Gás de Cozinha',     desc:'Botijão e instalação',       months:12, hasLastDone:true,  providerCategory:'gas' },
 ];
+
+async function findLocalProviders(category) {
+  if (!category || !content || !content.state) return [];
+  const { data, error } = await sb.from('service_providers')
+    .select('name, phone, city')
+    .eq('status', 'aprovado')
+    .eq('state', content.state)
+    .contains('categories', [category])
+    .limit(3);
+  if (error || !data) return [];
+  return data;
+}
+
+function renderProvidersCard(providers) {
+  if (!providers.length) return '';
+  const items = providers.map(p => {
+    const digits = (p.phone || '').replace(/\D/g, '');
+    return `<div class="flex items-center justify-between gap-2 py-1.5">
+      <div class="min-w-0">
+        <p class="text-xs font-bold text-gray-700">${escHtml(p.name)}</p>
+        <p class="text-[11px] text-gray-400">${escHtml(p.city)}</p>
+      </div>
+      <a href="https://wa.me/55${digits}" target="_blank" rel="noopener"
+        class="flex-shrink-0 flex items-center gap-1 text-[11px] font-bold text-green-700 bg-green-50 px-2.5 py-1.5 rounded-full hover:bg-green-100 transition-colors">
+        <span class="material-icons-outlined" style="font-size:14px">chat</span>WhatsApp</a>
+    </div>`;
+  }).join('');
+  return `<div class="mb-3 p-3 bg-primary/5 border border-primary/15 rounded-xl">
+    <p class="text-[11px] font-extrabold uppercase tracking-widest text-primary/70 mb-1">Prestadores na sua região</p>
+    ${items}
+  </div>`;
+}
 
 function addMonths(date, n) {
   const d = new Date(date); d.setMonth(d.getMonth() + n); return d;
@@ -800,7 +834,7 @@ function renderManutShortcuts() {
     </button>`).join('');
 }
 
-function manut_openShortcut(id) {
+async function manut_openShortcut(id) {
   const form = document.getElementById('manut-shortcut-form');
   if (manutActiveShortcut === id) {
     manutActiveShortcut = null; form.classList.add('hidden'); form.innerHTML = '';
@@ -812,7 +846,11 @@ function manut_openShortcut(id) {
   const s = MANUT_SHORTCUTS.find(x => x.id === id);
   if (!s) return;
 
-  let inner = '<div class="add-form mt-3"><p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-3">' + s.label + '<\/p>';
+  const providers = s.providerCategory ? await findLocalProviders(s.providerCategory) : [];
+  if (manutActiveShortcut !== id) return; // usuário trocou de atalho enquanto buscava
+
+  let inner = '<div class="add-form mt-3">' + renderProvidersCard(providers)
+    + '<p class="text-xs font-extrabold uppercase tracking-widest text-gray-400 mb-3">' + s.label + '<\/p>';
 
   if (s.subOptions) {
     inner += '<label class="field-label">Qual peça?<\/label><div class="flex flex-wrap gap-2 mb-3">';
@@ -1173,6 +1211,8 @@ function autoFillEmbed(mapsId, embedId, hintId) {
 async function savePropriedade() {
   const updates = {
     address:      g('p-address'),
+    city:         g('p-city'),
+    state:        g('p-state'),
     checkin_time: g('p-checkin'),
     checkout_time:g('p-checkout'),
     access_code:  g('p-access'),

@@ -5,6 +5,7 @@ const sb = window.supabase.createClient(SB_URL, SB_KEY);
 let allHosts   = [];
 let allContent = {};
 let allLeads   = [];
+let allProviders = [];
 let editingHostId = null;
 
 async function init() {
@@ -21,6 +22,53 @@ async function init() {
 
   loadDashboard();
   loadLeads();
+  loadProviders();
+}
+
+const PROVIDER_LABELS = {
+  eletricista: 'Eletricista', encanador: 'Encanador', pintor: 'Pintor',
+  dedetizador: 'Dedetização', ar_condicionado: 'Ar-condicionado', gas: 'Gás', diarista: 'Diarista',
+};
+
+async function loadProviders() {
+  const { data, error } = await sb.from('service_providers').select('*')
+    .eq('status', 'pendente').order('created_at', { ascending: false });
+  if (error) return;
+  allProviders = data || [];
+  document.getElementById('providers-count').textContent = allProviders.length;
+  renderProviders();
+}
+
+function toggleProviders() {
+  document.getElementById('providers-section').classList.toggle('hidden');
+}
+
+function renderProviders() {
+  const list  = document.getElementById('providers-list');
+  const empty = document.getElementById('providers-empty');
+  if (!allProviders.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  list.innerHTML = allProviders.map(p => `
+    <div class="flex items-center gap-3 bg-white rounded-xl border border-amber-100 px-4 py-3">
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-bold text-gray-800 truncate">${escHtml(p.name)} <span class="text-gray-400 font-normal">· ${escHtml(p.phone)}</span></p>
+        <p class="text-xs text-gray-400">${escHtml(p.city)}/${escHtml(p.state)} · ${(p.categories || []).map(c => PROVIDER_LABELS[c] || c).join(', ')}</p>
+      </div>
+      <button onclick="moderarProvider('${p.id}', 'aprovado')" title="Aprovar" class="text-gray-300 hover:text-green-600 flex-shrink-0">
+        <span class="material-icons-outlined" style="font-size:20px">check_circle</span>
+      </button>
+      <button onclick="moderarProvider('${p.id}', 'rejeitado')" title="Rejeitar" class="text-gray-300 hover:text-red-500 flex-shrink-0">
+        <span class="material-icons-outlined" style="font-size:20px">cancel</span>
+      </button>
+    </div>
+  `).join('');
+}
+
+async function moderarProvider(id, status) {
+  await sb.from('service_providers').update({ status }).eq('id', id);
+  allProviders = allProviders.filter(p => p.id !== id);
+  document.getElementById('providers-count').textContent = allProviders.length;
+  renderProviders();
 }
 
 async function loadLeads() {

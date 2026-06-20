@@ -109,6 +109,10 @@ tailwind.config = {
         <span class="material-icons-outlined" style="font-size:16px">person_search</span>
         <span class="hidden sm:inline">Leads</span> (<span id="leads-count">0</span>)
       </button>
+      <button onclick="toggleProviders()" class="action-btn bg-white border border-amber-300 text-amber-700 hover:bg-amber-50">
+        <span class="material-icons-outlined" style="font-size:16px">handshake</span>
+        <span class="hidden sm:inline">Prestadores</span> (<span id="providers-count">0</span>)
+      </button>
       <button onclick="loadDashboard()" class="action-btn bg-gray-100 text-gray-600 hover:bg-gray-200">
         <span class="material-icons-outlined" style="font-size:16px">refresh</span>
         Atualizar
@@ -122,6 +126,15 @@ tailwind.config = {
       </div>
       <div id="leads-list" class="space-y-2"></div>
       <p id="leads-empty" class="hidden text-center text-sm text-amber-600 py-4">Nenhum lead por aqui ainda.</p>
+    </div>
+
+    <!-- Prestadores de servico pendentes de aprovacao -->
+    <div id="providers-section" class="hidden mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-3">
+        <p class="text-xs font-extrabold uppercase tracking-widest text-amber-700">Prestadores pendentes de aprovação</p>
+      </div>
+      <div id="providers-list" class="space-y-2"></div>
+      <p id="providers-empty" class="hidden text-center text-sm text-amber-600 py-4">Nenhum prestador pendente.</p>
     </div>
 
     <!-- Hosts list -->
