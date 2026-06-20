@@ -1290,7 +1290,11 @@ function g(id) {
 }
 
 // ── Navigation ───────────────────────────────────────────────────────
-const DEMO_ALLOWED_SECTIONS = new Set(['geral','reservas','limpeza','manutencao','aparencia','fechadura']);
+const DEMO_ALLOWED_SECTIONS = new Set([
+  'geral','reservas','limpeza','manutencao','aparencia','fechadura',
+  'propriedade','hero','wifi','restaurantes','mercados','farmacias',
+  'atividades','academias','lavanderias','emergencia','regras'
+]);
 const PRO_ONLY_SECTIONS     = new Set(['manutencao','aparencia','fechadura']);
 
 function applyProLock() {
