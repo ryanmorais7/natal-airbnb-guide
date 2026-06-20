@@ -1,0 +1,30 @@
+body { font-family: 'Nunito Sans', sans-serif; scroll-behavior: smooth; }
+.toggle-track { width:48px; height:26px; background:#d1d5db; border-radius:999px; position:relative; cursor:pointer; transition:background .2s; }
+.toggle-track.on { background:#4A6741; }
+.toggle-thumb { width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:3px; left:3px; transition:left .2s; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+.toggle-track.on .toggle-thumb { left:25px; }
+.plan-card { border:2px solid #f3f4f6; }
+.plan-card.destaque { border-color:#4A6741; }
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .chat-bubble.reveal { opacity: 1; transform: none; animation: none; }
+}
+.chat-bubble.reveal { opacity: 0; transform: scale(0.5) translateY(10px); transition: none; }
+.chat-bubble.reveal.is-visible { animation: bubblePop .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+@keyframes bubblePop {
+  0%   { opacity: 0; transform: scale(0.5) translateY(10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+#mock-field-pass.mock-hover > div { border-color: #4A6741; box-shadow: 0 0 0 3px rgba(74,103,65,.15); }
+.mock-hover { box-shadow: 0 0 0 3px rgba(74,103,65,.35); transform: scale(1.06); }
+.mock-nav.mock-nav-active { background: rgba(74,103,65,.1); color: #4A6741; }
+.mock-panel.hidden { display: none; }
+details > summary { list-style: none; cursor: pointer; }
+details > summary::-webkit-details-marker { display: none; }
+details summary .chevron { transition: transform .2s; }
+details[open] summary .chevron { transform: rotate(180deg); }
+.phone-frame { box-shadow: 0 30px 60px -20px rgba(74,103,65,.35), 0 0 0 1px rgba(0,0,0,.04); }
+@keyframes float { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-10px); } }
+.float { animation: float 5s ease-in-out infinite; }
