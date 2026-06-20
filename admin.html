@@ -166,6 +166,14 @@ tailwind.config = {
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
+          <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Plano</label>
+          <select id="m-plan-id" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+            <option value="">— sem plano —</option>
+            <option value="individual">Individual</option>
+            <option value="pro">Pro</option>
+          </select>
+        </div>
+        <div>
           <label class="block text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-1.5">Status da Assinatura</label>
           <select id="m-sub-status" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
             <option value="">— sem assinatura —</option>
@@ -174,16 +182,16 @@ tailwind.config = {
             <option value="cancelled">Cancelada</option>
           </select>
         </div>
-        <div class="flex items-end pb-0.5">
-          <label class="flex items-center gap-2.5 cursor-pointer select-none">
-            <div class="relative">
-              <input id="m-is-demo" type="checkbox" class="sr-only peer"/>
-              <div class="w-10 h-6 bg-gray-200 rounded-full peer-checked:bg-amber-400 transition-colors"></div>
-              <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
-            </div>
-            <span class="text-xs font-extrabold text-gray-500 uppercase tracking-wider">Modo Demo</span>
-          </label>
-        </div>
+      </div>
+      <div class="flex items-center">
+        <label class="flex items-center gap-2.5 cursor-pointer select-none">
+          <div class="relative">
+            <input id="m-is-demo" type="checkbox" class="sr-only peer"/>
+            <div class="w-10 h-6 bg-gray-200 rounded-full peer-checked:bg-amber-400 transition-colors"></div>
+            <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></div>
+          </div>
+          <span class="text-xs font-extrabold text-gray-500 uppercase tracking-wider">Modo Demo</span>
+        </label>
       </div>
 
       <!-- Propriedade -->
@@ -785,6 +793,7 @@ function openEdit(hostId) {
   document.getElementById('m-propname').value   = c.property_name || h.property_name || '';
   document.getElementById('m-owner').value          = h.owner_name          || '';
   document.getElementById('m-slug').value           = h.slug               || '';
+  document.getElementById('m-plan-id').value        = h.plan_id            || '';
   document.getElementById('m-sub-status').value     = h.subscription_status || '';
   document.getElementById('m-is-demo').checked      = !!h.is_demo;
   document.getElementById('m-address').value   = c.address       || '';
@@ -872,10 +881,14 @@ async function saveModal() {
 
   // Update hosts table (name, slug, property_name)
   const subStatus = document.getElementById('m-sub-status').value;
+  const planId     = document.getElementById('m-plan-id').value;
+  const planName   = planId === 'pro' ? 'Pro' : planId === 'individual' ? 'Individual' : null;
   await sb.from('hosts').update({
     property_name:       updates.property_name,
     owner_name:          document.getElementById('m-owner').value.trim(),
     slug:                document.getElementById('m-slug').value.trim(),
+    plan_id:             planId || null,
+    plan_name:           planName,
     subscription_status: subStatus || null,
     plan_active:         subStatus === 'authorized',
     is_demo:             document.getElementById('m-is-demo').checked,
@@ -886,6 +899,11 @@ async function saveModal() {
     host.property_name = updates.property_name;
     host.owner_name    = document.getElementById('m-owner').value.trim();
     host.slug          = document.getElementById('m-slug').value.trim();
+    host.plan_id       = planId || null;
+    host.plan_name     = planName;
+    host.subscription_status = subStatus || null;
+    host.plan_active   = subStatus === 'authorized';
+    host.is_demo       = document.getElementById('m-is-demo').checked;
   }
 
   allContent[editingHostId] = updates;
