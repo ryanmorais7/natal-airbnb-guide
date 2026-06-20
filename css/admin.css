@@ -1,0 +1,8 @@
+* { font-family: 'Nunito Sans', sans-serif; }
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+.spin { animation:spin .7s linear infinite; display:inline-block; }
+.host-card { background:#fff; border-radius:16px; border:1.5px solid #e5e7eb; transition:all .2s; }
+.host-card:hover { border-color:rgba(74,103,65,.3); box-shadow:0 4px 20px rgba(74,103,65,.08); }
+.stat-card { background:#fff; border-radius:16px; border:1.5px solid #e5e7eb; padding:20px 24px; }
+.badge { display:inline-flex;align-items:center;font-size:10px;font-weight:800;padding:3px 8px;border-radius:100px;gap:4px; }
+.action-btn { display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:6px 12px;border-radius:9px;transition:all .15s;border:none;cursor:pointer; }
