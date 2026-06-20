@@ -47,6 +47,13 @@ body { font-family: 'Nunito Sans', sans-serif; scroll-behavior: smooth; }
 .reveal.is-visible { opacity: 1; transform: translateY(0); }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
+  .chat-bubble.reveal { opacity: 1; transform: none; animation: none; }
+}
+.chat-bubble.reveal { opacity: 0; transform: scale(0.5) translateY(10px); transition: none; }
+.chat-bubble.reveal.is-visible { animation: bubblePop .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+@keyframes bubblePop {
+  0%   { opacity: 0; transform: scale(0.5) translateY(10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 #mock-field-pass.mock-hover > div { border-color: #4A6741; box-shadow: 0 0 0 3px rgba(74,103,65,.15); }
 .mock-hover { box-shadow: 0 0 0 3px rgba(74,103,65,.35); transform: scale(1.06); }
@@ -192,7 +199,12 @@ details[open] summary .chevron { transform: rotate(180deg); }
   <div class="max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
     <div class="text-center max-w-2xl mx-auto mb-12">
       <h2 class="font-serif text-3xl sm:text-4xl text-gray-900 mb-3">Você já respondeu isso hoje?</h2>
-      <p class="text-gray-500">"Qual a senha do wifi?" "Como funciona a fechadura?" "Que horas é o check-in?" Toda estadia nova, as mesmas perguntas — e o seu tempo some no caminho.</p>
+      <p class="text-gray-500 mb-6">Toda estadia nova, as mesmas perguntas no WhatsApp — e o seu tempo some no caminho.</p>
+      <div class="flex flex-col items-start gap-2 max-w-xs mx-auto" id="chat-bubbles-group" data-reveal-group>
+        <div class="chat-bubble reveal bg-[#dcf8c6] text-gray-700 text-sm rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm self-start">Qual a senha do wifi? 📶</div>
+        <div class="chat-bubble reveal bg-[#dcf8c6] text-gray-700 text-sm rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm self-start">Como funciona a fechadura? 🔑</div>
+        <div class="chat-bubble reveal bg-[#dcf8c6] text-gray-700 text-sm rounded-2xl rounded-tl-sm px-4 py-2.5 shadow-sm self-start">Que horas é o check-in? 🕐</div>
+      </div>
     </div>
     <div class="grid sm:grid-cols-3 gap-5">
       <div class="bg-stone-50 rounded-2xl p-6 border border-gray-100">
@@ -785,10 +797,11 @@ lpRenderPlanos();
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   document.querySelectorAll('[data-reveal-group]').forEach(function (group) {
-    var step = group.id === 'lp-planos-grid' ? 120 : 90;
+    var step = group.id === 'lp-planos-grid' ? 120 : (group.id === 'chat-bubbles-group' ? 320 : 90);
     Array.prototype.forEach.call(group.children, function (child, i) {
       if (child.classList.contains('reveal')) {
         child.style.transitionDelay = (i * step) + 'ms';
+        child.style.animationDelay  = (i * step) + 'ms';
       }
     });
   });
