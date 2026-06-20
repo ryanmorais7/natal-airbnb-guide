@@ -43,6 +43,11 @@ body { font-family: 'Nunito Sans', sans-serif; scroll-behavior: smooth; }
 .toggle-track.on .toggle-thumb { left:25px; }
 .plan-card { border:2px solid #f3f4f6; }
 .plan-card.destaque { border-color:#4A6741; }
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
 details > summary { list-style: none; cursor: pointer; }
 details > summary::-webkit-details-marker { display: none; }
 details summary .chevron { transition: transform .2s; }
@@ -188,23 +193,23 @@ details[open] summary .chevron { transform: rotate(180deg); }
       <h2 class="font-serif text-3xl sm:text-4xl text-gray-900 mb-3">Como funciona</h2>
       <p class="text-gray-500">Sem aplicativo pra instalar, sem treinamento. Leva menos tempo do que responder uma mensagem.</p>
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-      <div class="text-center">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5" data-reveal-group>
+      <div class="text-center reveal">
         <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center mx-auto mb-4 font-serif text-xl">1</div>
         <h3 class="font-bold text-gray-900 mb-1.5">Monte seu guia</h3>
         <p class="text-sm text-gray-500 leading-relaxed">Cadastre wifi, acesso, regras e dicas da região no painel — leva poucos minutos.</p>
       </div>
-      <div class="text-center">
+      <div class="text-center reveal">
         <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center mx-auto mb-4 font-serif text-xl">2</div>
         <h3 class="font-bold text-gray-900 mb-1.5">Gere o link do hóspede</h3>
         <p class="text-sm text-gray-500 leading-relaxed">Crie um link (ou QR code) único pra cada reserva, com data de check-out.</p>
       </div>
-      <div class="text-center">
+      <div class="text-center reveal">
         <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center mx-auto mb-4 font-serif text-xl">3</div>
         <h3 class="font-bold text-gray-900 mb-1.5">Hóspede acessa sozinho</h3>
         <p class="text-sm text-gray-500 leading-relaxed">Sem app, direto no navegador. Tudo que ele precisa saber está ali.</p>
       </div>
-      <div class="text-center">
+      <div class="text-center reveal">
         <div class="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center mx-auto mb-4 font-serif text-xl">4</div>
         <h3 class="font-bold text-gray-900 mb-1.5">O link expira sozinho</h3>
         <p class="text-sm text-gray-500 leading-relaxed">No check-out, o acesso some — e você ganhou de volta o seu tempo.</p>
@@ -220,59 +225,59 @@ details[open] summary .chevron { transform: rotate(180deg); }
       <h2 class="font-serif text-3xl sm:text-4xl text-gray-900 mb-3">Tudo que seu hóspede pergunta, num só lugar</h2>
       <p class="text-gray-500">Recursos reais do produto — nada de promessa vazia.</p>
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" data-reveal-group>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
         <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">menu_book</span>
         <h3 class="font-bold text-gray-900 mb-1.5">Guia completo da região</h3>
         <p class="text-sm text-gray-500 leading-relaxed">Restaurantes, mercados, farmácias, atividades, academias, lavanderias e contatos de emergência — tudo num guia só.</p>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
         <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">cleaning_services</span>
         <h3 class="font-bold text-gray-900 mb-1.5">Checklist de limpeza + WhatsApp</h3>
         <p class="text-sm text-gray-500 leading-relaxed">Monte a checklist de limpeza e envie pronta pra sua diarista direto no WhatsApp, em um clique.</p>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative">
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative reveal">
         <span class="absolute top-4 right-4 bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-full">Pro</span>
         <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">build</span>
         <h3 class="font-bold text-gray-900 mb-1.5">Manutenção com lembrete automático</h3>
         <p class="text-sm text-gray-500 leading-relaxed">Troca de enxoval, limpeza de ar-condicionado, dedetização, pintura, filtro de água, chuveiro e gás — o painel avisa quando vencer.</p>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
         <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">key</span>
         <h3 class="font-bold text-gray-900 mb-1.5">Acesso flexível</h3>
         <p class="text-sm text-gray-500 leading-relaxed">Fechadura eletrônica, chave física, portaria ou outro método — com passo a passo claro pro hóspede.</p>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative">
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative reveal">
         <span class="absolute top-4 right-4 bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-full">Pro</span>
         <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">palette</span>
         <h3 class="font-bold text-gray-900 mb-1.5">Temas de cores exclusivos</h3>
         <p class="text-sm text-gray-500 leading-relaxed">6 paletas pra deixar o guia com a identidade de cada propriedade: Oceano, Terracota, Lavanda, Vinho, Ardósia e Oliva.</p>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
         <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">print</span>
         <h3 class="font-bold text-gray-900 mb-1.5">Cartão imprimível com QR duplo</h3>
         <p class="text-sm text-gray-500 leading-relaxed">Um cartão pra deixar na propriedade, com QR do wifi e QR do guia — pra quem prefere físico ao digital.</p>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
         <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">translate</span>
         <h3 class="font-bold text-gray-900 mb-1.5">Multilíngue</h3>
         <p class="text-sm text-gray-500 leading-relaxed">O guia se adapta automaticamente em português, inglês ou espanhol — sem hóspede precisar configurar nada.</p>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
         <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">vpn_key</span>
         <h3 class="font-bold text-gray-900 mb-1.5">Um link por reserva</h3>
         <p class="text-sm text-gray-500 leading-relaxed">Gere um link com nome do hóspede e data de check-out. Quer revogar antes? Um clique e o acesso cai.</p>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative">
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative reveal">
         <span class="absolute top-4 right-4 bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-full">Pro</span>
         <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">password</span>
         <h3 class="font-bold text-gray-900 mb-1.5">Senha de fechadura por hóspede</h3>
@@ -366,7 +371,7 @@ details[open] summary .chevron { transform: rotate(180deg); }
       <span id="lp-badge-economia" class="hidden bg-green-100 text-green-700 text-xs font-extrabold px-2.5 py-1 rounded-full">economize 20%</span>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" id="lp-planos-grid"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" id="lp-planos-grid" data-reveal-group></div>
 
     <p class="text-center text-xs text-gray-400 mt-8">
       <span class="material-icons-outlined align-middle" style="font-size:13px">lock</span>
@@ -381,9 +386,9 @@ details[open] summary .chevron { transform: rotate(180deg); }
     <div class="text-center mb-10">
       <h2 class="font-serif text-3xl sm:text-4xl text-gray-900 mb-3">Perguntas frequentes</h2>
     </div>
-    <div class="space-y-3">
+    <div class="space-y-3" data-reveal-group>
 
-      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5 reveal">
         <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
           O hóspede precisa baixar algum aplicativo?
           <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
@@ -391,7 +396,7 @@ details[open] summary .chevron { transform: rotate(180deg); }
         <p class="text-sm text-gray-500 leading-relaxed mt-3">Não. O guia abre direto no navegador do celular, pelo link ou QR code — sem instalar nada.</p>
       </details>
 
-      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5 reveal">
         <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
           Funciona se a internet da casa cair?
           <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
@@ -399,7 +404,7 @@ details[open] summary .chevron { transform: rotate(180deg); }
         <p class="text-sm text-gray-500 leading-relaxed mt-3">O hóspede acessa o guia pela internet do próprio celular (dados móveis), então ele consegue ver as informações de acesso mesmo antes de entrar e conectar ao wifi da casa.</p>
       </details>
 
-      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5 reveal">
         <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
           Como funciona a expiração do link?
           <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
@@ -407,7 +412,7 @@ details[open] summary .chevron { transform: rotate(180deg); }
         <p class="text-sm text-gray-500 leading-relaxed mt-3">Ao gerar o link pra um hóspede, você informa a data e hora do check-out. Depois desse momento, o link para de funcionar automaticamente — sem você precisar trocar senha ou desativar nada manualmente.</p>
       </details>
 
-      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5 reveal">
         <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
           Funciona para hóspedes que não falam português?
           <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
@@ -415,7 +420,7 @@ details[open] summary .chevron { transform: rotate(180deg); }
         <p class="text-sm text-gray-500 leading-relaxed mt-3">Sim. O guia está disponível em português, inglês e espanhol, e se adapta automaticamente ao idioma do celular do hóspede.</p>
       </details>
 
-      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5 reveal">
         <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
           Posso usar em mais de uma propriedade?
           <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
@@ -423,7 +428,7 @@ details[open] summary .chevron { transform: rotate(180deg); }
         <p class="text-sm text-gray-500 leading-relaxed mt-3">O plano Individual cobre 1 propriedade. O plano Pro permite até 5 propriedades dentro do mesmo painel, cada uma com seu próprio guia.</p>
       </details>
 
-      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5 reveal">
         <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
           Preciso saber programar ou ter conhecimento técnico?
           <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
@@ -431,7 +436,7 @@ details[open] summary .chevron { transform: rotate(180deg); }
         <p class="text-sm text-gray-500 leading-relaxed mt-3">Não. O painel foi pensado pra anfitrião, não pra programador — você preenche campos e escolhe opções, como num formulário.</p>
       </details>
 
-      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5 reveal">
         <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
           O que acontece depois dos 7 dias grátis?
           <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
@@ -439,7 +444,7 @@ details[open] summary .chevron { transform: rotate(180deg); }
         <p class="text-sm text-gray-500 leading-relaxed mt-3">Você escolhe começar com o teste grátis (sem cobrança nos primeiros 7 dias) ou assinar direto. Pode cancelar quando quiser, sem multa.</p>
       </details>
 
-      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5">
+      <details class="bg-stone-50 rounded-2xl border border-gray-100 p-5 reveal">
         <summary class="flex items-center justify-between font-bold text-gray-900 text-sm">
           Posso cancelar quando quiser?
           <span class="material-icons-outlined chevron text-gray-400" style="font-size:20px">expand_more</span>
@@ -550,7 +555,7 @@ function lpRenderPlanos() {
       ? 'w-full py-3 rounded-xl bg-primary text-white font-bold text-sm hover:bg-primary-light transition-all shadow-lg shadow-primary/20 flex items-center justify-center'
       : 'w-full py-3 rounded-xl border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all flex items-center justify-center';
 
-    return '<a href="cadastro.html" class="plan-card bg-white rounded-2xl p-6 flex flex-col relative shadow-sm block ' + (p.destaque ? 'destaque shadow-primary/10' : '') + '">'
+    return '<a href="cadastro.html" class="plan-card bg-white rounded-2xl p-6 flex flex-col relative shadow-sm block reveal ' + (p.destaque ? 'destaque shadow-primary/10' : '') + '">'
       + badgeHtml
       + '<div class="mb-4">'
       + '<p class="text-xs font-extrabold uppercase tracking-widest ' + (p.destaque ? 'text-primary' : 'text-gray-400') + ' mb-0.5">' + p.nome + '</p>'
@@ -571,6 +576,38 @@ function lpRenderPlanos() {
 }
 
 lpRenderPlanos();
+
+// ── Scroll reveal ────────────────────────────────────────────────────
+(function initScrollReveal() {
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll('[data-reveal-group]').forEach(function (group) {
+    var step = group.id === 'lp-planos-grid' ? 120 : 90;
+    Array.prototype.forEach.call(group.children, function (child, i) {
+      if (child.classList.contains('reveal')) {
+        child.style.transitionDelay = (i * step) + 'ms';
+      }
+    });
+  });
+
+  var revealEls = document.querySelectorAll('.reveal');
+
+  if (prefersReduced || !('IntersectionObserver' in window)) {
+    revealEls.forEach(function (el) { el.classList.add('is-visible'); });
+    return;
+  }
+
+  var observer = new IntersectionObserver(function (entries, obs) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  revealEls.forEach(function (el) { observer.observe(el); });
+})();
 </script>
 </body>
 </html>
