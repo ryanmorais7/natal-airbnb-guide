@@ -146,34 +146,32 @@ async function entrarDemo() {
   btn.disabled = true;
   btn.innerHTML = '<span class="material-icons-outlined text-base spin">refresh</span> Carregando demo...';
 
-  let { error } = await sb.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
+  try {
+    let { error } = await sb.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
 
-  if (error) {
-    // Conta demo ainda não existe nesse projeto -- cria na primeira vez que alguém clicar
-    const { data: signupData, error: signupError } = await sb.auth.signUp({
-      email: DEMO_EMAIL, password: DEMO_PASSWORD
-    });
-    if (signupError || !signupData.user) {
-      btn.disabled = false;
-      btn.innerHTML = '<span class="material-icons-outlined text-base">visibility</span> Ver demo do guia';
-      showError('Não foi possível abrir a demo agora. Tente novamente em instantes.');
-      return;
-    }
-    await seedDemoAccount(signupData.user.id);
+    if (error) {
+      // Conta demo ainda não existe nesse projeto -- cria na primeira vez que alguém clicar
+      const { data: signupData, error: signupError } = await sb.auth.signUp({
+        email: DEMO_EMAIL, password: DEMO_PASSWORD
+      });
+      if (signupError || !signupData.user) {
+        throw signupError || new Error('Falha ao criar conta demo.');
+      }
+      await seedDemoAccount(signupData.user.id);
 
-    let { data: { session } } = await sb.auth.getSession();
-    if (!session) {
-      const retry = await sb.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
-      if (retry.error) {
-        btn.disabled = false;
-        btn.innerHTML = '<span class="material-icons-outlined text-base">visibility</span> Ver demo do guia';
-        showError('Não foi possível abrir a demo agora. Tente novamente em instantes.');
-        return;
+      let { data: { session } } = await sb.auth.getSession();
+      if (!session) {
+        const retry = await sb.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
+        if (retry.error) throw retry.error;
       }
     }
-  }
 
-  location.href = 'painel.html';
+    location.href = 'painel.html';
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-icons-outlined text-base">visibility</span> Ver demo do guia';
+    showError('Não foi possível abrir a demo agora: ' + (err && err.message ? err.message : 'erro desconhecido') + '. Tente novamente.');
+  }
 }
 
 async function seedDemoAccount(userId) {
