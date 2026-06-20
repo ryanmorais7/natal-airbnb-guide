@@ -159,6 +159,30 @@ details[open] summary .chevron { transform: rotate(180deg); }
   </p>
 </section>
 
+<!-- ════════════════ ESTATÍSTICAS ════════════════ -->
+<section class="bg-white border-y border-gray-100">
+  <div class="max-w-5xl mx-auto px-5 sm:px-8 py-10 sm:py-12">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center" data-reveal-group>
+      <div class="reveal">
+        <p class="font-serif text-4xl sm:text-5xl text-primary"><span data-counter data-target="7">0</span></p>
+        <p class="text-xs sm:text-sm font-bold text-gray-500 mt-1.5">Dias de teste grátis</p>
+      </div>
+      <div class="reveal">
+        <p class="font-serif text-4xl sm:text-5xl text-primary"><span data-counter data-target="3">0</span></p>
+        <p class="text-xs sm:text-sm font-bold text-gray-500 mt-1.5">Idiomas no guia</p>
+      </div>
+      <div class="reveal">
+        <p class="font-serif text-4xl sm:text-5xl text-primary"><span data-counter data-target="7">0</span></p>
+        <p class="text-xs sm:text-sm font-bold text-gray-500 mt-1.5">Categorias de informação</p>
+      </div>
+      <div class="reveal">
+        <p class="font-serif text-4xl sm:text-5xl text-primary"><span data-counter data-target="5">0</span></p>
+        <p class="text-xs sm:text-sm font-bold text-gray-500 mt-1.5">Propriedades no plano Pro</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ════════════════ O PROBLEMA ════════════════ -->
 <section class="bg-white border-y border-gray-100">
   <div class="max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
@@ -607,6 +631,45 @@ lpRenderPlanos();
   }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
   revealEls.forEach(function (el) { observer.observe(el); });
+})();
+
+// ── Contadores numéricos animados ──────────────────────────────────────
+(function initCounters() {
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var counters = document.querySelectorAll('[data-counter]');
+  if (!counters.length) return;
+
+  function animateCounter(el) {
+    var target = Number(el.getAttribute('data-target')) || 0;
+    if (prefersReduced) { el.textContent = target; return; }
+    var duration = 1200;
+    var start = null;
+    function step(timestamp) {
+      if (start === null) start = timestamp;
+      var progress = Math.min((timestamp - start) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(eased * target);
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = target;
+    }
+    requestAnimationFrame(step);
+  }
+
+  if (!('IntersectionObserver' in window)) {
+    counters.forEach(animateCounter);
+    return;
+  }
+
+  var counterObserver = new IntersectionObserver(function (entries, obs) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+
+  counters.forEach(function (el) { counterObserver.observe(el); });
 })();
 </script>
 </body>
