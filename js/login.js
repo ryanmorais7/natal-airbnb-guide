@@ -48,7 +48,8 @@ async function entrarDemo() {
   btn.innerHTML = '<span class="material-icons-outlined text-base spin">refresh</span> Carregando demo...';
 
   try {
-    let { error } = await sb.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
+    let { data: signInData, error } = await sb.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
+    let userId = signInData?.user?.id;
 
     if (error) {
       // Conta demo ainda não existe nesse projeto -- cria na primeira vez que alguém clicar
@@ -58,14 +59,20 @@ async function entrarDemo() {
       if (signupError || !signupData.user) {
         throw signupError || new Error('Falha ao criar conta demo.');
       }
-      await seedDemoAccount(signupData.user.id);
+      userId = signupData.user.id;
 
       let { data: { session } } = await sb.auth.getSession();
       if (!session) {
         const retry = await sb.auth.signInWithPassword({ email: DEMO_EMAIL, password: DEMO_PASSWORD });
         if (retry.error) throw retry.error;
+        userId = retry.data?.user?.id || userId;
       }
     }
+
+    // Sempre re-semeia (não só na primeira criação) -- garante que a conta demo
+    // fica com is_demo/plan_id/slug corretos mesmo se a linha em hosts tiver
+    // ficado incompleta numa tentativa anterior, e reseta o conteúdo de exemplo
+    if (userId) await seedDemoAccount(userId);
 
     location.href = 'painel.html';
   } catch (err) {
@@ -73,6 +80,20 @@ async function entrarDemo() {
     btn.innerHTML = '<span class="material-icons-outlined text-base">visibility</span> Ver demo do guia';
     showError('Não foi possível abrir a demo agora: ' + (err && err.message ? err.message : 'erro desconhecido') + '. Tente novamente.');
   }
+}
+
+function demoMaintenanceReminders() {
+  // Datas relativas a hoje (nao fixas) pra sempre mostrar alertas vencidos de verdade na demo
+  const offsetDate = (days) => {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    return d.toISOString().slice(0, 10);
+  };
+  return [
+    { id: 'mr_demo_1', title: 'Dedetização semestral',              type: 'dedetizacao', due_date: offsetDate(-15), completed: false, created_at: new Date().toISOString() },
+    { id: 'mr_demo_2', title: 'Troca de filtro do ar-condicionado',  type: 'filtro',       due_date: offsetDate(-3),  completed: false, created_at: new Date().toISOString() },
+    { id: 'mr_demo_3', title: 'Pintura da área externa',             type: 'pintura',      due_date: offsetDate(45),  completed: false, created_at: new Date().toISOString() },
+  ];
 }
 
 async function seedDemoAccount(userId) {
@@ -146,13 +167,12 @@ async function seedDemoAccount(userId) {
       almofadas: 'ok', 'tapete-sal': 'ok', lixo: 'ok', chao: 'ok', janelas: 'ok'
     },
     cleaning_instructions: 'Trocar lençóis e toalhas.\nRepor papel higiênico e amenities.\nVarrer e passar pano em todos os ambientes.\nVerificar geladeira e repor água.',
-    maintenance_reminders: [
-      { id: 'mr_demo_1', title: 'Dedetização semestral',                 type: 'dedetizacao', due_date: '2026-05-01', completed: false, created_at: new Date().toISOString() },
-      { id: 'mr_demo_2', title: 'Troca de filtro do ar-condicionado',    type: 'filtro',       due_date: '2026-08-15', completed: false, created_at: new Date().toISOString() }
-    ],
+    maintenance_reminders: demoMaintenanceReminders(),
     updated_at: new Date().toISOString()
   }, { onConflict: 'host_id' });
 
+  // Limpa antes de inserir de novo pra nao duplicar fotos a cada vez que alguem abre a demo
+  await sb.from('room_media').delete().eq('host_id', userId);
   await sb.from('room_media').insert([
     { host_id: userId, room: 'bedroom',  type: 'image', url: 'assets/Quarto/quarto1.jpeg',     position: 0 },
     { host_id: userId, room: 'bedroom',  type: 'image', url: 'assets/Quarto/quarto2.jpeg',     position: 1 },
