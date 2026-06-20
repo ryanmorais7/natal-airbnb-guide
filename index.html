@@ -378,16 +378,39 @@ details[open] summary .chevron { transform: rotate(180deg); }
     </div>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" data-reveal-group>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
-        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">menu_book</span>
-        <h3 class="font-bold text-gray-900 mb-1.5">Guia completo da região</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">Restaurantes, mercados, farmácias, atividades, academias, lavanderias e contatos de emergência — tudo num guia só.</p>
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal flex flex-col">
+        <div class="flex items-start gap-4 flex-1">
+          <div class="flex-1">
+            <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">menu_book</span>
+            <h3 class="font-bold text-gray-900 mb-1.5">Guia completo da região</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Restaurantes, mercados, farmácias, atividades, academias, lavanderias e contatos de emergência — tudo num guia só.</p>
+          </div>
+          <div class="float flex-shrink-0 bg-white border border-gray-200 rounded-lg shadow-md p-2 w-[72px]" style="animation-delay:-0.5s">
+            <div class="grid grid-cols-2 gap-1">
+              <span class="material-icons-outlined text-primary bg-primary/10 rounded-md p-1" style="font-size:14px">restaurant</span>
+              <span class="material-icons-outlined text-primary bg-primary/10 rounded-md p-1" style="font-size:14px">shopping_cart</span>
+              <span class="material-icons-outlined text-primary bg-primary/10 rounded-md p-1" style="font-size:14px">local_pharmacy</span>
+              <span class="material-icons-outlined text-primary bg-primary/10 rounded-md p-1" style="font-size:14px">beach_access</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
-        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">cleaning_services</span>
-        <h3 class="font-bold text-gray-900 mb-1.5">Checklist de limpeza + WhatsApp</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">Monte a checklist de limpeza e envie pronta pra sua diarista direto no WhatsApp, em um clique.</p>
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal flex flex-col">
+        <div class="flex items-start gap-4 flex-1">
+          <div class="flex-1">
+            <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">cleaning_services</span>
+            <h3 class="font-bold text-gray-900 mb-1.5">Checklist de limpeza + WhatsApp</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Monte a checklist de limpeza e envie pronta pra sua diarista direto no WhatsApp, em um clique.</p>
+          </div>
+          <div class="float flex-shrink-0 bg-white border border-gray-200 rounded-lg shadow-md p-2 w-[84px]" style="animation-delay:-3s">
+            <div class="space-y-1 mb-1.5">
+              <div class="flex items-center gap-1 text-[6px] font-bold text-gray-500"><span class="material-icons-outlined text-primary" style="font-size:10px">check_box</span>Lençóis</div>
+              <div class="flex items-center gap-1 text-[6px] font-bold text-gray-500"><span class="material-icons-outlined text-primary" style="font-size:10px">check_box</span>Amenities</div>
+            </div>
+            <div class="bg-green-500 text-white text-[6px] font-extrabold rounded px-1.5 py-1 flex items-center justify-center gap-1"><span class="material-icons-outlined" style="font-size:9px">send</span>Enviar</div>
+          </div>
+        </div>
       </div>
 
       <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative reveal">
@@ -428,16 +451,33 @@ details[open] summary .chevron { transform: rotate(180deg); }
         </div>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
-        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">translate</span>
-        <h3 class="font-bold text-gray-900 mb-1.5">Multilíngue</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">O guia se adapta automaticamente em português, inglês ou espanhol — sem hóspede precisar configurar nada.</p>
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal flex flex-col">
+        <div class="flex items-start gap-4 flex-1">
+          <div class="flex-1">
+            <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">translate</span>
+            <h3 class="font-bold text-gray-900 mb-1.5">Multilíngue</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">O guia se adapta automaticamente em português, inglês ou espanhol — sem hóspede precisar configurar nada.</p>
+          </div>
+          <div class="float flex-shrink-0 bg-white border border-gray-200 rounded-lg shadow-md p-2 w-[84px] text-center" style="animation-delay:-2s">
+            <p class="text-[6px] font-bold text-gray-400 uppercase tracking-wide mb-1">Guia do Hóspede</p>
+            <p class="font-serif text-[12px] text-primary" data-lang-cycle="Bem-vindo,Welcome,Bienvenido">Bem-vindo</p>
+          </div>
+        </div>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
-        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">vpn_key</span>
-        <h3 class="font-bold text-gray-900 mb-1.5">Um link por reserva</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">Gere um link com nome do hóspede e data de check-out. Quer revogar antes? Um clique e o acesso cai.</p>
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal flex flex-col">
+        <div class="flex items-start gap-4 flex-1">
+          <div class="flex-1">
+            <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">vpn_key</span>
+            <h3 class="font-bold text-gray-900 mb-1.5">Um link por reserva</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Gere um link com nome do hóspede e data de check-out. Quer revogar antes? Um clique e o acesso cai.</p>
+          </div>
+          <div class="float flex-shrink-0 bg-white border border-gray-200 rounded-lg shadow-md p-2 w-[84px] text-center" style="animation-delay:-1s">
+            <span class="material-icons-outlined text-primary" style="font-size:20px">vpn_key</span>
+            <p class="text-[7px] font-bold text-gray-500 mt-1 truncate">João Silva</p>
+            <p class="text-[6px] font-extrabold text-green-600 bg-green-50 rounded px-1 py-0.5 mt-1 inline-block">Ativo</p>
+          </div>
+        </div>
       </div>
 
       <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative reveal">
@@ -903,6 +943,19 @@ function mockUserClick(name) {
     });
   }, { threshold: 0.3 });
   sectionObserver.observe(section);
+})();
+
+// ── Card Multilíngue: texto alternando entre idiomas ────────────────────
+(function initLangCycle() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('[data-lang-cycle]').forEach(function (el) {
+    var words = el.getAttribute('data-lang-cycle').split(',');
+    var i = 0;
+    setInterval(function () {
+      i = (i + 1) % words.length;
+      el.textContent = words[i];
+    }, 1800);
+  });
 })();
 </script>
 </body>
