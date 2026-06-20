@@ -503,6 +503,11 @@ function renderHosts(hosts) {
                   <span class="material-icons-outlined" style="font-size:10px">workspace_premium</span>${escHtml(h.plan_name)}</span>`
               : '<span class="text-[10px] text-gray-300 font-semibold">Sem plano</span>'
             }
+            ${h.subscription_status === 'convidada'
+              ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">
+                  <span class="material-icons-outlined" style="font-size:10px">card_giftcard</span>Convidada</span>`
+              : ''
+            }
           </div>
           <div class="flex items-center gap-3 flex-wrap text-xs text-gray-400">
             ${slug ? `<span class="flex items-center gap-1"><span class="material-icons-outlined" style="font-size:12px">link</span>?h=${escHtml(slug)}</span>` : '<span class="text-gray-300">Sem slug</span>'}
