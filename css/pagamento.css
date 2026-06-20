@@ -1,0 +1,5 @@
+body { font-family: 'Nunito Sans', sans-serif; }
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+.spin { animation: spin .8s linear infinite; display:inline-block; }
+@keyframes progress-slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(340%); } }
+.progress-bar { animation: progress-slide 1.1s cubic-bezier(.4,0,.2,1) infinite; }
