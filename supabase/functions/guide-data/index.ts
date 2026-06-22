@@ -24,35 +24,50 @@ serve(async (req) => {
   try {
     const url   = new URL(req.url);
     const token = url.searchParams.get("t");
+    const slug  = url.searchParams.get("h");
 
-    if (!token) return json({ ok: false, error: "invalid" }, 400);
+    if (!token && !slug) return json({ ok: false, error: "invalid" }, 400);
 
     const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-    // Busca o token e valida
-    const { data: gt } = await sb
-      .from("guest_tokens")
-      .select("host_id, guest_name, expires_at, lock_code")
-      .eq("token", token)
-      .single();
+    let hostId: string;
+    let guestName: string | null = null;
+    let lockCodeOverride: string | null = null;
 
-    if (!gt) return json({ ok: false, error: "invalid" }, 404);
+    if (token) {
+      // Acesso via link de hóspede com token
+      const { data: gt } = await sb
+        .from("guest_tokens")
+        .select("host_id, guest_name, expires_at, lock_code")
+        .eq("token", token)
+        .single();
 
-    if (new Date(gt.expires_at) < new Date()) {
-      return json({ ok: false, error: "expired" }, 403);
+      if (!gt) return json({ ok: false, error: "invalid" }, 404);
+
+      if (new Date(gt.expires_at) < new Date()) {
+        return json({ ok: false, error: "expired" }, 403);
+      }
+      hostId           = gt.host_id;
+      guestName         = gt.guest_name ?? null;
+      lockCodeOverride  = gt.lock_code ?? null;
+    } else {
+      // Acesso via slug (preview do anfitrião / demo) — sem expiração própria
+      const { data: hostBySlug } = await sb.from("hosts").select("id").eq("slug", slug as string).single();
+      if (!hostBySlug) return json({ ok: false, error: "invalid" }, 404);
+      hostId = hostBySlug.id;
     }
 
     // Busca conteúdo do guia
     const { data: content } = await sb
       .from("guide_content")
       .select(CONTENT_FIELDS)
-      .eq("host_id", gt.host_id)
+      .eq("host_id", hostId)
       .single();
 
     const { data: host } = await sb
       .from("hosts")
       .select("id, property_name, subscription_status, trial_ends_at, is_demo, is_admin, owner_id")
-      .eq("id", gt.host_id)
+      .eq("id", hostId)
       .single();
 
     // Propriedade extra (owner_id preenchido): assinatura/teste vivem na conta dona, nao nesta linha
@@ -79,17 +94,17 @@ serve(async (req) => {
     const { data: media } = await sb
       .from("room_media")
       .select("room, type, url, position")
-      .eq("host_id", gt.host_id)
+      .eq("host_id", hostId)
       .order("position", { ascending: true });
 
     const mergedContent = { ...(content ?? {}), room_media: media ?? [] };
-    if (gt.lock_code) mergedContent.lock_code = gt.lock_code;
+    if (lockCodeOverride) mergedContent.lock_code = lockCodeOverride;
 
     return json({
       ok:        true,
       content:   mergedContent,
       host:      { id: host?.id, property_name: host?.property_name },
-      guestName: gt.guest_name ?? null,
+      guestName,
     });
 
   } catch (err) {

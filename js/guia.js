@@ -280,18 +280,19 @@
             if (el && val) el.textContent = val;
         }
 
+        function _esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
         function infoCard(label, icon, value) {
             return '<div class="flex items-start gap-3 bg-card-light dark:bg-card-dark rounded-2xl p-4">'
                 + '<span class="material-icons-outlined text-primary mt-0.5" style="font-size:18px">' + icon + '<\/span>'
                 + '<div><p class="text-xs uppercase tracking-widest text-primary/50 mb-0.5">' + label + '<\/p>'
-                + '<p class="font-semibold text-text-dark dark:text-text-light">' + value + '<\/p><\/div><\/div>';
+                + '<p class="font-semibold text-text-dark dark:text-text-light">' + _esc(value) + '<\/p><\/div><\/div>';
         }
         function renderAccessLines(text) {
             var lines = text.split('\n').filter(function(l){ return l.trim(); });
             if (lines.length === 0) return '';
-            if (lines.length === 1) return '<p class="text-sm leading-relaxed">' + lines[0] + '<\/p>';
+            if (lines.length === 1) return '<p class="text-sm leading-relaxed">' + _esc(lines[0]) + '<\/p>';
             return '<ol class="space-y-3 text-sm leading-relaxed">' + lines.map(function(l, i){
-                return '<li class="flex gap-3"><span class="font-bold text-primary">' + (i+1) + '.<\/span><span>' + l + '<\/span><\/li>';
+                return '<li class="flex gap-3"><span class="font-bold text-primary">' + (i+1) + '.<\/span><span>' + _esc(l) + '<\/span><\/li>';
             }).join('') + '<\/ol>';
         }
 
@@ -314,36 +315,21 @@
                 host = data.host;
                 c    = data.content;
             } else if (OWNER_SLUG) {
-                // Acesso via slug (preview do anfitrião / demo)
-                var hostRes = await sb.from('hosts').select('id, property_name, subscription_status, trial_ends_at, is_demo, is_admin, owner_id').eq('slug', OWNER_SLUG).single();
-                if (!hostRes.data) { showAccessError('invalid'); return; }
-                host = hostRes.data;
-
-                // Propriedade extra (owner_id preenchido): assinatura/teste vivem na conta dona, nao nesta linha
-                var billing = host;
-                if (host.owner_id) {
-                    var ownerRes = await sb.from('hosts').select('subscription_status, trial_ends_at, is_demo, is_admin').eq('id', host.owner_id).single();
-                    if (ownerRes.data) billing = ownerRes.data;
-                }
-
-                var nonBlockingStatuses = ['authorized', 'convidada'];
-                var trialExpired = billing.trial_ends_at && new Date(billing.trial_ends_at) < new Date() && billing.subscription_status !== 'authorized';
-                var realBlock = billing.subscription_status && nonBlockingStatuses.indexOf(billing.subscription_status) === -1;
-                if (!billing.is_demo && !billing.is_admin && (realBlock || trialExpired)) {
-                    showAccessError('inactive');
+                // Acesso via slug (preview do anfitrião / demo) — agora via guide-data
+                // (hosts/guide_content não têm mais policy de leitura pública direta)
+                var slugRes;
+                try {
+                    slugRes = await fetch(SB_URL + '/functions/v1/guide-data?h=' + encodeURIComponent(OWNER_SLUG), {
+                        headers: { 'Authorization': 'Bearer ' + SB_KEY }
+                    });
+                } catch (e) {
+                    showAccessError('invalid');
                     return;
                 }
-
-                var contentRes = await sb.from('guide_content')
-                    .select('property_name, wifi_name, wifi_password, address, maps_url, maps_embed, theme_color, theme_color_light, checkin_time, checkout_time, lock_code, lock_code_valid_until, access_type, access_location, access_contact, access_instructions, welcome_message, hero_image_url, rules, restaurantes, mercados, farmacias, atividades, academias, lavanderias, emergencia, room_items')
-                    .eq('host_id', host.id).single();
-                if (!contentRes.data) { showAccessError('invalid'); return; }
-                c = contentRes.data;
-
-                var mediaRes = await sb.from('room_media')
-                    .select('room, type, url, position')
-                    .eq('host_id', host.id).order('position', { ascending: true });
-                c.room_media = mediaRes.data || [];
+                var slugData = await slugRes.json();
+                if (!slugData.ok) { showAccessError(slugData.error || 'invalid'); return; }
+                host = slugData.host;
+                c    = slugData.content;
             } else {
                 // Sem token e sem slug — nada a exibir
                 showAccessError('invalid');

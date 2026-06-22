@@ -97,19 +97,9 @@ function demoMaintenanceReminders() {
 }
 
 async function seedDemoAccount(userId) {
-  // upsert (não update) pra garantir que a linha em hosts existe e fica correta
-  // mesmo se o trigger handle_new_user ainda não tiver criado ela a tempo
-  await sb.from('hosts').upsert({
-    id:            userId,
-    email:         DEMO_EMAIL,
-    is_demo:       true,
-    plan_id:       'pro',
-    plan_name:     'Pro (Demo)',
-    plan_active:   true,
-    property_name: 'Casa Vista Mar — Demo',
-    owner_name:    'Anfitrião Demo',
-    slug:          'demo'
-  });
+  // grava is_demo/plan_id/plan_active via RPC (SECURITY DEFINER) porque o client
+  // não tem mais permissão de UPDATE direto nessas colunas em hosts (ver SECURITY_PATCH_CRITICAL.sql)
+  await sb.rpc('seed_demo_account');
 
   await sb.from('guide_content').upsert({
     host_id:             userId,

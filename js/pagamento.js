@@ -89,34 +89,29 @@ async function continuar() {
   ['zreg_email','zreg_senha','zreg_celular','zreg_plano_id','zreg_plano_nome','zreg_plano_preco','zreg_plano_periodo','zreg_invite']
     .forEach(k => sessionStorage.removeItem(k));
 
+  // plan_id/plan_active/subscription_status/trial_ends_at não são mais graváveis via
+  // update direto do client (ver SECURITY_PATCH_CRITICAL.sql) — passam pela RPC escolher_plano
+
   // 7 dias grátis: acesso imediato no painel, sem cartão e sem passar pelo Mercado Pago
   if (withTrial) {
-    const trialUpd = {
-      plan_id:             planoId,
-      plan_name:           planoNome + ' (Teste grátis)',
-      plan_active:         true,
-      plan_started_at:     new Date().toISOString(),
-      subscription_status: null,
-      subscription_id:     null,
-      trial_ends_at:       new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    };
-    if (celular) trialUpd.phone = celular;
-    await sb.from('hosts').update(trialUpd).eq('id', userId);
+    await sb.rpc('escolher_plano', {
+      p_plan_id:    planoId,
+      p_plan_name:  planoNome + ' (Teste grátis)',
+      p_with_trial: true,
+      p_phone:      celular || null,
+    });
 
     location.href = 'painel.html';
     return;
   }
 
   // Começar agora: cobrança imediata, segue para o Mercado Pago
-  const planoUpd = {
-    plan_id:             planoId,
-    plan_name:           planoNome + ' ' + (planoPeriodo === 'anual' ? '(Anual)' : '(Mensal)'),
-    plan_active:         false,
-    plan_started_at:     new Date().toISOString(),
-    subscription_status: 'pending',
-  };
-  if (celular) planoUpd.phone = celular;
-  await sb.from('hosts').update(planoUpd).eq('id', userId);
+  await sb.rpc('escolher_plano', {
+    p_plan_id:    planoId,
+    p_plan_name:  planoNome + ' ' + (planoPeriodo === 'anual' ? '(Anual)' : '(Mensal)'),
+    p_with_trial: false,
+    p_phone:      celular || null,
+  });
 
   let result;
   try {
@@ -136,9 +131,7 @@ async function continuar() {
     return;
   }
 
-  await sb.from('hosts').update({
-    subscription_id: result.subscriptionId,
-  }).eq('id', userId);
+  await sb.rpc('registrar_subscription_id', { p_subscription_id: result.subscriptionId });
 
   document.getElementById('overlay-redirect').classList.remove('hidden');
   location.href = result.initPoint;

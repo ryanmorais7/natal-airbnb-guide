@@ -1797,7 +1797,13 @@ function showToast(msg) {
 
 // ── Utils ──────────────────────────────────────────────────────────────
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
+// mesma correção de js/admin.js: escapar primeiro pro contexto de string JS (\ e '),
+// só depois pro contexto de atributo HTML (& " < >).
+function escAttr(s) {
+  return String(s)
+    .replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\r/g, '')
+    .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 
 // ── Cartão imprimível Wi-Fi ────────────────────────────────────────────
 function gerarCartao() {

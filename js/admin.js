@@ -717,7 +717,14 @@ function showToast(msg) {
 }
 
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function escAttr(s) { return String(s).replace(/"/g,'&quot;'); }
+// usado dentro de onclick="fn('${escAttr(x)}')": precisa escapar primeiro pro contexto
+// de string JS (\ e ') e só depois pro contexto de atributo HTML (& " < >), nessa ordem —
+// escapar ' direto como &#39; NÃO protege, pois o HTML decodifica a entidade antes do JS rodar.
+function escAttr(s) {
+  return String(s)
+    .replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\r/g, '')
+    .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 
 // ── Convidar anfitrião ────────────────────────────────────────────────
 let _inviteTipo = 'livre';
