@@ -736,6 +736,7 @@ const MANUT_SHORTCUTS = [
   { id:'filtro',      icon:'water_drop',            label:'Filtro de Água',     desc:'Purificador / torneira',     months:6,  hasLastDone:true,  providerCategory:'encanador' },
   { id:'chuveiro',    icon:'shower',                label:'Chuveiro Elétrico',  desc:'Revisão e resistência',      months:12, hasLastDone:true,  providerCategory:'eletricista' },
   { id:'gas',         icon:'local_fire_department', label:'Gás de Cozinha',     desc:'Botijão e instalação',       months:12, hasLastDone:true,  providerCategory:'gas' },
+  { id:'diarista',    icon:'cleaning_services',     label:'Diarista',          desc:'Limpeza e organização',      months:0,  hasLastDone:false, providerCategory:'diarista' },
 ];
 
 async function findLocalProviders(category) {
