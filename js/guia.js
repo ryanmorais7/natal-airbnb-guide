@@ -480,6 +480,12 @@
                     ? (window._t ? window._t('access.code_label_safe', 'Código do cofre') : 'Código do cofre')
                     : (window._t ? window._t('access.code_label', 'Código') : 'Código'));
                 setText('dyn-code-value', c.lock_code || '—');
+                var codeValueEl = document.getElementById('dyn-code-value');
+                if (codeValueEl) {
+                    var codeLen = (c.lock_code || '').length;
+                    codeValueEl.style.fontSize     = codeLen <= 4 ? '' : codeLen <= 6 ? '1.5rem' : codeLen <= 8 ? '1.25rem' : '1rem';
+                    codeValueEl.style.letterSpacing = codeLen <= 4 ? '' : codeLen <= 6 ? '0.12em' : '0.06em';
+                }
                 if (codeCard) codeCard.style.display = '';
             } else {
                 if (codeCard) codeCard.style.display = 'none';
