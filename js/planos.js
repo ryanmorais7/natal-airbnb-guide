@@ -73,7 +73,6 @@ const PLANOS = [
       { ok: true, texto: 'Até 50 propriedades em um painel só' },
       { ok: true, texto: 'Aparência (Com 6 temas de cores exclusivos: Oceano, Terracota, Lavanda, Vinho, Ardósia e Oliva)' },
       { ok: true, texto: 'Tela de manutenção (Com lembrete e aviso sobre: Enxoval, ar-condicionado, dedetização, pintura e mais)' },
-      { ok: true, texto: 'Acesso (Instrução de acesso a propriedade como Fechadura eletrônica com senha expirável por hóspede)' },
     ],
   },
 ];

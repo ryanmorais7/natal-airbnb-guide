@@ -6,6 +6,7 @@ let allHosts   = [];
 let allContent = {};
 let allLeads   = [];
 let allProviders = [];
+let allApprovedProviders = [];
 let editingHostId = null;
 
 async function init() {
@@ -23,6 +24,7 @@ async function init() {
   loadDashboard();
   loadLeads();
   loadProviders();
+  loadApprovedProviders();
 }
 
 const PROVIDER_LABELS = {
@@ -66,9 +68,55 @@ function renderProviders() {
 
 async function moderarProvider(id, status) {
   await sb.from('service_providers').update({ status }).eq('id', id);
+  const provider = allProviders.find(p => p.id === id);
   allProviders = allProviders.filter(p => p.id !== id);
   document.getElementById('providers-count').textContent = allProviders.length;
   renderProviders();
+
+  if (status === 'aprovado' && provider) {
+    allApprovedProviders.unshift({ ...provider, status: 'aprovado' });
+    document.getElementById('providers-approved-count').textContent = allApprovedProviders.length;
+    renderApprovedProviders();
+  }
+}
+
+async function loadApprovedProviders() {
+  const { data, error } = await sb.from('service_providers').select('*')
+    .eq('status', 'aprovado').order('created_at', { ascending: false });
+  if (error) return;
+  allApprovedProviders = data || [];
+  document.getElementById('providers-approved-count').textContent = allApprovedProviders.length;
+  renderApprovedProviders();
+}
+
+function toggleApprovedProviders() {
+  document.getElementById('providers-approved-section').classList.toggle('hidden');
+}
+
+function renderApprovedProviders() {
+  const list  = document.getElementById('providers-approved-list');
+  const empty = document.getElementById('providers-approved-empty');
+  if (!allApprovedProviders.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  list.innerHTML = allApprovedProviders.map(p => `
+    <div class="flex items-center gap-3 bg-white rounded-xl border border-green-100 px-4 py-3">
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-bold text-gray-800 truncate">${escHtml(p.name)} <span class="text-gray-400 font-normal">· ${escHtml(p.phone)}</span></p>
+        <p class="text-xs text-gray-400">${escHtml(p.city)}/${escHtml(p.state)} · ${(p.categories || []).map(c => PROVIDER_LABELS[c] || c).join(', ')}</p>
+      </div>
+      <button onclick="revogarProvider('${p.id}')" title="Revogar aprovação" class="text-gray-300 hover:text-red-500 flex-shrink-0">
+        <span class="material-icons-outlined" style="font-size:20px">block</span>
+      </button>
+    </div>
+  `).join('');
+}
+
+async function revogarProvider(id) {
+  if (!confirm('Revogar a aprovação deste prestador? Ele deixa de aparecer pros anfitriões imediatamente.')) return;
+  await sb.from('service_providers').update({ status: 'rejeitado' }).eq('id', id);
+  allApprovedProviders = allApprovedProviders.filter(p => p.id !== id);
+  document.getElementById('providers-approved-count').textContent = allApprovedProviders.length;
+  renderApprovedProviders();
 }
 
 async function loadLeads() {
