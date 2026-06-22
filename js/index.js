@@ -381,3 +381,11 @@ async function cadastrarPrestador() {
   document.getElementById('lp-pr-form-view').classList.add('hidden');
   document.getElementById('lp-pr-success-view').classList.remove('hidden');
 }
+
+// ── Menu mobile do header ────────────────────────────────────────────────
+function toggleMobileMenu() {
+  const menu = document.getElementById('lp-mobile-menu');
+  const icon = document.getElementById('lp-menu-icon');
+  menu.classList.toggle('hidden');
+  icon.textContent = menu.classList.contains('hidden') ? 'menu' : 'close';
+}

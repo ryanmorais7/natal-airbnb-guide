@@ -60,7 +60,27 @@ tailwind.config = {
       <a href="cadastro.html" class="bg-primary text-white text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl hover:bg-primary-light transition-colors shadow-sm">
         Criar conta grátis
       </a>
+      <button type="button" onclick="toggleMobileMenu()" aria-label="Abrir menu" class="sm:hidden flex items-center justify-center w-9 h-9 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
+        <span id="lp-menu-icon" class="material-icons-outlined">menu</span>
+      </button>
     </div>
+  </div>
+
+  <!-- Painel de navegação mobile -->
+  <div id="lp-mobile-menu" class="hidden sm:hidden absolute top-16 left-0 right-0 bg-white border-b border-gray-100 shadow-lg z-30">
+    <nav class="flex flex-col px-5 py-3 text-sm font-bold text-gray-600">
+      <a href="#como-funciona" onclick="toggleMobileMenu()" class="py-2.5 hover:text-primary transition-colors">Como funciona</a>
+      <a href="#funcionalidades" onclick="toggleMobileMenu()" class="py-2.5 hover:text-primary transition-colors">Funcionalidades</a>
+      <a href="#seguranca" onclick="toggleMobileMenu()" class="py-2.5 hover:text-primary transition-colors">Segurança</a>
+      <a href="#planos" onclick="toggleMobileMenu()" class="py-2.5 hover:text-primary transition-colors">Planos</a>
+      <a href="#faq" onclick="toggleMobileMenu()" class="py-2.5 hover:text-primary transition-colors">FAQ</a>
+      <hr class="my-2 border-gray-100"/>
+      <button type="button" onclick="toggleMobileMenu(); abrirModalPrestador();" class="py-2.5 flex items-center gap-1.5 text-amber-700 text-left">
+        <span class="material-icons-outlined" style="font-size:16px">handshake</span>
+        Sou prestador de serviço
+      </button>
+      <a href="login.html" onclick="toggleMobileMenu()" class="py-2.5 hover:text-primary transition-colors">Entrar</a>
+    </nav>
   </div>
 </header>
 
