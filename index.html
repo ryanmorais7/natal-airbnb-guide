@@ -66,8 +66,15 @@ tailwind.config = {
     </div>
   </div>
 
+  <!-- Faixa "Sou prestador de serviço" — só no mobile, fica abaixo do header -->
+  <button type="button" onclick="abrirModalPrestador()" class="sm:hidden w-full flex items-center justify-center gap-2 bg-amber-50 border-b border-amber-100 text-amber-800 text-sm font-bold py-2.5 hover:bg-amber-100 active:bg-amber-100 transition-colors">
+    <span class="material-icons-outlined" style="font-size:18px">handshake</span>
+    Sou prestador de serviço
+    <span class="material-icons-outlined" style="font-size:16px">arrow_forward</span>
+  </button>
+
   <!-- Painel de navegação mobile -->
-  <div id="lp-mobile-menu" class="hidden sm:hidden absolute top-16 left-0 right-0 bg-white border-b border-gray-100 shadow-lg z-30">
+  <div id="lp-mobile-menu" class="hidden sm:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-lg z-30">
     <nav class="flex flex-col px-5 py-3 text-sm font-bold text-gray-600">
       <a href="#como-funciona" onclick="toggleMobileMenu()" class="py-2.5 hover:text-primary transition-colors">Como funciona</a>
       <a href="#funcionalidades" onclick="toggleMobileMenu()" class="py-2.5 hover:text-primary transition-colors">Funcionalidades</a>
@@ -75,10 +82,6 @@ tailwind.config = {
       <a href="#planos" onclick="toggleMobileMenu()" class="py-2.5 hover:text-primary transition-colors">Planos</a>
       <a href="#faq" onclick="toggleMobileMenu()" class="py-2.5 hover:text-primary transition-colors">FAQ</a>
       <hr class="my-2 border-gray-100"/>
-      <button type="button" onclick="toggleMobileMenu(); abrirModalPrestador();" class="py-2.5 flex items-center gap-1.5 text-amber-700 text-left">
-        <span class="material-icons-outlined" style="font-size:16px">handshake</span>
-        Sou prestador de serviço
-      </button>
       <a href="login.html" onclick="toggleMobileMenu()" class="py-2.5 hover:text-primary transition-colors">Entrar</a>
     </nav>
   </div>
@@ -419,27 +422,6 @@ tailwind.config = {
         </div>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative reveal">
-        <span class="absolute top-4 right-4 bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-full">Pro</span>
-        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">build</span>
-        <h3 class="font-bold text-gray-900 mb-1.5">Manutenção com lembrete automático</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">Troca de enxoval, limpeza de ar-condicionado, dedetização, pintura, filtro de água, chuveiro e gás. O painel avisa quando vencer.</p>
-      </div>
-
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative reveal">
-        <span class="absolute top-4 right-4 bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-full">Pro</span>
-        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">key</span>
-        <h3 class="font-bold text-gray-900 mb-1.5">Acesso flexível</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">Fechadura eletrônica, chave física, portaria ou outro método, com passo a passo claro pro hóspede.</p>
-      </div>
-
-      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative reveal">
-        <span class="absolute top-4 right-4 bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-full">Pro</span>
-        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">palette</span>
-        <h3 class="font-bold text-gray-900 mb-1.5">Temas de cores exclusivos</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">6 paletas pra deixar o guia com a identidade de cada propriedade: Oceano, Terracota, Lavanda, Vinho, Ardósia e Oliva.</p>
-      </div>
-
       <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal flex flex-col">
         <div class="flex flex-col sm:flex-row sm:items-start gap-4 flex-1">
           <div class="flex-1">
@@ -484,6 +466,26 @@ tailwind.config = {
             <p class="text-[6px] font-extrabold text-green-600 bg-green-50 rounded px-1 py-0.5 mt-1 inline-block">Ativo</p>
           </div>
         </div>
+      </div>
+
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow reveal">
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">key</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Acesso flexível</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Fechadura eletrônica, chave física, portaria ou outro método, com passo a passo claro pro hóspede.</p>
+      </div>
+
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative reveal">
+        <span class="absolute top-4 right-4 bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-full">Pro</span>
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">build</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Manutenção com lembrete automático</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Troca de enxoval, limpeza de ar-condicionado, dedetização, pintura, filtro de água, chuveiro e gás. O painel avisa quando vencer.</p>
+      </div>
+
+      <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative reveal">
+        <span class="absolute top-4 right-4 bg-primary/10 text-primary text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-full">Pro</span>
+        <span class="material-icons-outlined text-primary mb-3" style="font-size:26px">palette</span>
+        <h3 class="font-bold text-gray-900 mb-1.5">Temas de cores exclusivos</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">6 paletas pra deixar o guia com a identidade de cada propriedade: Oceano, Terracota, Lavanda, Vinho, Ardósia e Oliva.</p>
       </div>
 
       <div class="rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow relative reveal">
@@ -580,7 +582,7 @@ tailwind.config = {
       <span id="lp-badge-economia" class="hidden bg-green-100 text-green-700 text-xs font-extrabold px-2.5 py-1 rounded-full">economize 20%</span>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5" id="lp-planos-grid" data-reveal-group></div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5" id="lp-planos-grid" data-reveal-group></div>
 
     <p class="text-center text-xs text-gray-400 mt-8">
       <span class="material-icons-outlined align-middle" style="font-size:13px">lock</span>

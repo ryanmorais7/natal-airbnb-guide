@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const SUPABASE_URL         = Deno.env.get("SUPABASE_URL")              ?? "";
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
-const MAX_PROPERTIES = 5;
+const PLAN_LIMITS: Record<string, number> = { plus: 15, pro: 50 };
 const NON_BLOCKING_STATUSES = new Set(["authorized", "convidada"]);
 
 const cors = {
@@ -43,8 +43,9 @@ serve(async (req) => {
       if (blocked) {
         return json({ ok: false, message: "Sua assinatura precisa estar ativa para adicionar propriedades." }, 403);
       }
-      if (!account.is_admin && account.plan_id !== "pro") {
-        return json({ ok: false, message: "Adicionar propriedades é exclusivo do plano Pro." }, 403);
+      const maxProperties = PLAN_LIMITS[account.plan_id ?? ""];
+      if (!account.is_admin && !maxProperties) {
+        return json({ ok: false, message: "Adicionar propriedades é exclusivo dos planos Plus e Pro." }, 403);
       }
 
       const { count } = await sb
@@ -52,8 +53,8 @@ serve(async (req) => {
         .select("id", { count: "exact", head: true })
         .or(`id.eq.${callerId},owner_id.eq.${callerId}`);
 
-      if (!account.is_admin && (count ?? 0) >= MAX_PROPERTIES) {
-        return json({ ok: false, message: `Limite de ${MAX_PROPERTIES} propriedades por conta atingido.` }, 403);
+      if (!account.is_admin && (count ?? 0) >= maxProperties) {
+        return json({ ok: false, message: `Limite de ${maxProperties} propriedades por conta atingido.` }, 403);
       }
 
       const internalEmail = `prop-${crypto.randomUUID()}@airguia.internal`;

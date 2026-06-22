@@ -613,23 +613,29 @@ async function saveModal() {
   // Update hosts table (name, slug, property_name)
   const subStatus = document.getElementById('m-sub-status').value;
   const planId     = document.getElementById('m-plan-id').value;
-  const planName   = planId === 'pro' ? 'Pro' : planId === 'individual' ? 'Individual' : null;
+  const planName   = planId === 'pro' ? 'Pro' : planId === 'plus' ? 'Plus' : planId === 'individual' ? 'Individual' : null;
   const trialDaysRaw = document.getElementById('m-trial-days').value.trim();
   const trialEndsAt  = trialDaysRaw
     ? new Date(Date.now() + Number(trialDaysRaw) * 86400000).toISOString()
     : null;
   const planActive = subStatus === 'authorized' || subStatus === 'convidada';
+  const isDemoChecked = document.getElementById('m-is-demo').checked;
   await sb.from('hosts').update({
-    property_name:       updates.property_name,
-    owner_name:          document.getElementById('m-owner').value.trim(),
-    slug:                document.getElementById('m-slug').value.trim(),
-    plan_id:             planId || null,
-    plan_name:           planName,
-    subscription_status: subStatus || null,
-    plan_active:         planActive,
-    is_demo:             document.getElementById('m-is-demo').checked,
-    trial_ends_at:       trialEndsAt,
+    property_name: updates.property_name,
+    owner_name:    document.getElementById('m-owner').value.trim(),
+    slug:          document.getElementById('m-slug').value.trim(),
   }).eq('id', editingHostId);
+  // plan_id/plan_active/subscription_status/trial_ends_at/is_demo não são mais
+  // graváveis via update direto (ver SECURITY_PATCH_CRITICAL.sql) — passam por RPC admin-only
+  await sb.rpc('admin_set_host_plan', {
+    p_host_id:             editingHostId,
+    p_plan_id:             planId || null,
+    p_plan_name:           planName,
+    p_subscription_status: subStatus || null,
+    p_plan_active:         planActive,
+    p_trial_ends_at:       trialEndsAt,
+    p_is_demo:             isDemoChecked,
+  });
 
   const host = allHosts.find(h => h.id === editingHostId);
   if (host) {
@@ -790,11 +796,7 @@ async function enviarConvite() {
 
   if (_inviteTipo === 'livre') {
     // Acesso livre (parceria/influencer) entra direto com o plano Pro completo, sem cobrança
-    await sb.from('hosts').update({
-      plan_id:     'pro',
-      plan_name:   'Pro (Parceria)',
-      plan_active: true,
-    }).eq('email', email);
+    await sb.rpc('admin_grant_free_pro', { p_email: email });
   }
 
   const msg = _inviteTipo === 'pagamento'

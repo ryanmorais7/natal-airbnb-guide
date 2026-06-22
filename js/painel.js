@@ -192,9 +192,17 @@ async function init() {
   checkOnboarding();
 }
 
-// ── Propriedades (plano Pro: até 5 propriedades por conta) ─────────────
+// ── Propriedades (Plus: até 15 / Pro: até 50 propriedades por conta) ──
+function hasMultiProperty() {
+  return hostData.is_admin || hostData.plan_id === 'plus' || hostData.plan_id === 'pro';
+}
+function getMaxProperties() {
+  if (hostData.is_admin) return Infinity;
+  return PLAN_PROPERTY_LIMITS[hostData.plan_id] || 1;
+}
+
 async function loadProperties() {
-  const isPro = hostData.is_admin || hostData.plan_id === 'pro';
+  const isPro = hasMultiProperty();
   if (!isPro) {
     properties = [{ id: hostId, property_name: hostData.property_name, slug: hostData.slug }];
     renderPropertySwitcher();
@@ -236,8 +244,7 @@ async function loadActiveProperty() {
 function togglePropertySwitcher() {
   const menu = document.getElementById('property-switcher-menu');
   if (!menu) return;
-  const isPro = hostData.is_admin || hostData.plan_id === 'pro';
-  if (!isPro) return;
+  if (!hasMultiProperty()) return;
   menu.classList.toggle('hidden');
 }
 
@@ -251,13 +258,14 @@ document.addEventListener('click', (e) => {
 function renderPropertySwitcher() {
   const caret = document.getElementById('header-prop-caret');
   const menu  = document.getElementById('property-switcher-menu');
-  const isPro = hostData.is_admin || hostData.plan_id === 'pro';
+  const isPro = hasMultiProperty();
   if (caret) caret.classList.toggle('hidden', !isPro);
   if (!menu) return;
   if (!isPro) { menu.innerHTML = ''; return; }
 
-  const atLimit = properties.length >= 5;
-  menu.innerHTML = properties.map(p => `
+  const maxProps = getMaxProperties();
+  const atLimit = properties.length >= maxProps;
+  menu.innerHTML = `<div class="max-h-72 overflow-y-auto">` + properties.map(p => `
     <div class="flex items-center gap-1 px-2">
       <button onclick="switchProperty('${p.id}')"
         class="flex-1 text-left px-2.5 py-2 rounded-lg text-sm font-semibold transition-colors ${p.id === activePropertyId ? 'bg-primary/10 text-primary' : 'text-gray-600 hover:bg-gray-50'}">
@@ -265,12 +273,12 @@ function renderPropertySwitcher() {
       </button>
       ${p.id !== hostId ? `<button onclick="excluirPropriedade('${p.id}', '${escAttr(p.property_name || 'Sem nome')}')" title="Excluir propriedade" class="item-btn del p-1.5 rounded-lg hover:bg-red-50 flex-shrink-0"><span class="material-icons-outlined" style="font-size:16px">delete_outline</span></button>` : ''}
     </div>
-  `).join('') + `
+  `).join('') + `</div>
     <div class="border-t border-gray-100 mt-2 pt-2 px-2">
       <button onclick="criarPropriedade()" ${atLimit ? 'disabled' : ''}
         class="w-full text-left px-2.5 py-2 rounded-lg text-sm font-bold flex items-center gap-1.5 ${atLimit ? 'text-gray-300 cursor-not-allowed' : 'text-primary hover:bg-primary/5'}">
         <span class="material-icons-outlined" style="font-size:16px">add_circle_outline</span>
-        ${atLimit ? 'Limite de 5 propriedades atingido' : 'Adicionar propriedade'}
+        ${atLimit ? `Limite de ${maxProps} propriedades atingido` : 'Adicionar propriedade'}
       </button>
     </div>
   `;
@@ -386,17 +394,30 @@ const DEMO_ALLOWED_SECTIONS = new Set([
   'propriedade','hero','wifi','restaurantes','mercados','farmacias',
   'atividades','academias','lavanderias','emergencia','regras'
 ]);
-const PRO_ONLY_SECTIONS     = new Set(['manutencao','aparencia','fechadura']);
+const PRO_ONLY_SECTIONS  = new Set(['manutencao','aparencia']);   // só plano Pro
+const PLUS_PRO_SECTIONS  = new Set(['fechadura']);                // Plus ou Pro
+const PLAN_PROPERTY_LIMITS = { plus: 15, pro: 50 };
+
+function getPlanTier() {
+  if (window.isDemoMode || hostData.is_admin) return 'pro';
+  return (hostData.plan_id === 'pro' || hostData.plan_id === 'plus') ? hostData.plan_id : 'individual';
+}
+
+function isSectionLocked(name) {
+  const tier = getPlanTier();
+  if (tier === 'pro') return false;
+  if (tier === 'plus') return PRO_ONLY_SECTIONS.has(name);
+  return PRO_ONLY_SECTIONS.has(name) || PLUS_PRO_SECTIONS.has(name);
+}
 
 function applyProLock() {
-  const isPro = window.isDemoMode || hostData.is_admin || hostData.plan_id === 'pro';
   const lockCodeWrap = document.getElementById('res-lockcode-wrap');
-  if (lockCodeWrap) lockCodeWrap.classList.toggle('hidden', !isPro);
-  if (isPro) return;
+  if (lockCodeWrap) lockCodeWrap.classList.toggle('hidden', isSectionLocked('fechadura'));
+  if (getPlanTier() === 'pro') return;
   window.proLocked = true;
   document.querySelectorAll('.nav-item').forEach(btn => {
     const m = (btn.getAttribute('onclick') || '').match(/showSection\('(\w+)'\)/);
-    if (m && PRO_ONLY_SECTIONS.has(m[1])) {
+    if (m && isSectionLocked(m[1])) {
       btn.style.opacity = '0.45';
       const lock = document.createElement('span');
       lock.className = 'material-icons-outlined';
@@ -412,7 +433,12 @@ function showSection(name) {
     window.location.href = 'planos.html';
     return;
   }
-  if (window.proLocked && PRO_ONLY_SECTIONS.has(name)) {
+  if (window.proLocked && isSectionLocked(name)) {
+    const needsPro = PRO_ONLY_SECTIONS.has(name);
+    document.getElementById('pro-lock-title').textContent = needsPro ? 'Recurso exclusivo Pro' : 'Recurso dos planos Plus e Pro';
+    document.getElementById('pro-lock-text').textContent = needsPro
+      ? 'Manutenção e Aparência fazem parte do plano Pro. Faça upgrade para liberar esses recursos no seu painel.'
+      : 'Acesso faz parte dos planos Plus e Pro. Faça upgrade para liberar esse recurso no seu painel.';
     document.getElementById('pro-lock-modal').classList.remove('hidden');
     return;
   }

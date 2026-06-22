@@ -10,7 +10,8 @@ const cors = {
 
 // Preços canônicos para evitar adulteração via frontend
 const AMOUNTS: Record<string, Record<string, number>> = {
-  individual: { mensal: 34.90, anual: 334.80 },
+  individual: { mensal: 13.90, anual: 142.80 },
+  plus:       { mensal: 29.90, anual: 286.80 },
   pro:        { mensal: 69.90, anual: 658.80  },
 };
 
@@ -25,7 +26,7 @@ serve(async (req) => {
 
     const periodo  = planoPeriodo === "anual" ? "anual" : "mensal";
     const planKey  = (planoId ?? "individual") as string;
-    const amount   = AMOUNTS[planKey]?.[periodo] ?? (periodo === "anual" ? 334.80 : 34.90);
+    const amount   = AMOUNTS[planKey]?.[periodo] ?? (periodo === "anual" ? 142.80 : 13.90);
     const frequency     = periodo === "anual" ? 12 : 1;
     const frequencyType = "months";
 
