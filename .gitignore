@@ -1,3 +1,6 @@
+# Claude Code (config local da sessao, nao faz parte do projeto)
+.claude/
+
 # Logs
 logs
 *.log

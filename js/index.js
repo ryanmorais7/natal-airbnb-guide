@@ -277,3 +277,107 @@ function mockUserClick(name) {
     }, 1800);
   });
 })();
+
+// ── Modal: Sou prestador de serviço ──────────────────────────────────────
+const LP_SB_URL = 'https://xhtkwtiskqyiohurwkxg.supabase.co';
+const LP_SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhodGt3dGlza3F5aW9odXJ3a3hnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NjkyMDcsImV4cCI6MjA5NzA0NTIwN30.b815Q3Nv1UaqxaLinyY7nmOJrw5EOGkIJ3HlkdYn0uQ';
+const lpSb = window.supabase.createClient(LP_SB_URL, LP_SB_KEY);
+
+const LP_UFS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+
+const LP_CATEGORIAS = [
+  { id: 'eletricista',     label: 'Eletricista' },
+  { id: 'encanador',       label: 'Encanador' },
+  { id: 'pintor',          label: 'Pintor' },
+  { id: 'dedetizador',     label: 'Dedetização' },
+  { id: 'ar_condicionado', label: 'Ar-condicionado' },
+  { id: 'gas',             label: 'Gás' },
+  { id: 'diarista',        label: 'Diarista / Limpeza' },
+];
+
+const lpSelectedCategorias = new Set();
+let lpUfSelectInit = false;
+
+function lpMaskPhone(el) {
+  let v = el.value.replace(/\D/g, '').slice(0, 11);
+  if (v.length <= 10) v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+  else                v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+  el.value = v.replace(/-$/, '');
+}
+
+function lpShowError(msg) {
+  document.getElementById('lp-pr-error-text').textContent = msg;
+  document.getElementById('lp-pr-error').classList.remove('hidden');
+}
+
+function lpToggleCategoria(id) {
+  if (lpSelectedCategorias.has(id)) lpSelectedCategorias.delete(id);
+  else lpSelectedCategorias.add(id);
+  lpRenderCategorias();
+}
+
+function lpRenderCategorias() {
+  const c = document.getElementById('lp-pr-categorias');
+  c.innerHTML = LP_CATEGORIAS.map(cat => {
+    const active = lpSelectedCategorias.has(cat.id);
+    return '<button type="button" onclick="lpToggleCategoria(\'' + cat.id + '\')" class="px-3 py-1.5 rounded-full border-2 text-xs font-bold transition-all cursor-pointer '
+      + (active ? 'border-primary bg-primary/5 text-primary' : 'border-gray-200 text-gray-500 hover:border-gray-300') + '">'
+      + cat.label + '</button>';
+  }).join('');
+}
+
+function abrirModalPrestador() {
+  if (!lpUfSelectInit) {
+    const sel = document.getElementById('lp-pr-estado');
+    LP_UFS.forEach(uf => {
+      const opt = document.createElement('option');
+      opt.value = uf;
+      opt.textContent = uf;
+      sel.appendChild(opt);
+    });
+    lpUfSelectInit = true;
+  }
+  lpRenderCategorias();
+  document.getElementById('prestador-modal').classList.remove('hidden');
+}
+
+function fecharModalPrestador() {
+  document.getElementById('prestador-modal').classList.add('hidden');
+}
+
+async function cadastrarPrestador() {
+  const nome    = document.getElementById('lp-pr-nome').value.trim();
+  const celular = document.getElementById('lp-pr-celular').value.trim();
+  const cidade  = document.getElementById('lp-pr-cidade').value.trim();
+  const estado  = document.getElementById('lp-pr-estado').value;
+
+  document.getElementById('lp-pr-error').classList.add('hidden');
+
+  if (!nome)                                 { lpShowError('Informe seu nome.'); return; }
+  if (celular.replace(/\D/g,'').length < 10) { lpShowError('Informe um celular válido.'); return; }
+  if (!cidade)                               { lpShowError('Informe sua cidade.'); return; }
+  if (!estado)                               { lpShowError('Selecione seu estado.'); return; }
+  if (lpSelectedCategorias.size === 0)       { lpShowError('Selecione ao menos um serviço que você presta.'); return; }
+
+  const btn = document.getElementById('lp-pr-btn-cadastrar');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-icons-outlined text-base">refresh</span> Enviando...';
+
+  const { error } = await lpSb.from('service_providers').insert({
+    name:       nome,
+    phone:      celular,
+    city:       cidade,
+    state:      estado,
+    categories: Array.from(lpSelectedCategorias),
+  });
+
+  if (error) {
+    lpShowError('Não foi possível enviar seu cadastro: ' + error.message);
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-icons-outlined text-base">handshake</span> Cadastrar';
+    return;
+  }
+
+  document.getElementById('lp-pr-form-view').classList.add('hidden');
+  document.getElementById('lp-pr-success-view').classList.remove('hidden');
+}

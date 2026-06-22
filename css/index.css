@@ -1,4 +1,7 @@
 body { font-family: 'Nunito Sans', sans-serif; scroll-behavior: smooth; }
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+#lp-pr-btn-cadastrar .material-icons-outlined { display:inline-block; }
+#lp-pr-btn-cadastrar:disabled .material-icons-outlined { animation: spin .8s linear infinite; }
 .toggle-track { width:48px; height:26px; background:#d1d5db; border-radius:999px; position:relative; cursor:pointer; transition:background .2s; }
 .toggle-track.on { background:#4A6741; }
 .toggle-thumb { width:20px; height:20px; background:#fff; border-radius:50%; position:absolute; top:3px; left:3px; transition:left .2s; box-shadow:0 1px 4px rgba(0,0,0,.2); }
