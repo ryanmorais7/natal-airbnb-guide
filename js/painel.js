@@ -65,9 +65,6 @@ async function gerarToken() {
   if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); return; }
   const guestName = document.getElementById('res-guest-name').value.trim();
   const expiresAt = document.getElementById('res-expires-at').value;
-  const lockCodeEl = document.getElementById('res-lock-code');
-  const lockCode   = (lockCodeEl && !lockCodeEl.closest('#res-lockcode-wrap').classList.contains('hidden'))
-    ? lockCodeEl.value.trim() : '';
   if (!expiresAt) { showToast('Informe a data de checkout'); return; }
   const expiresIso = new Date(expiresAt).toISOString();
   const { error } = await sb.from('guest_tokens').insert({
@@ -75,12 +72,10 @@ async function gerarToken() {
     token:      crypto.randomUUID(),
     guest_name: guestName || null,
     expires_at: expiresIso,
-    lock_code:  lockCode || null,
   });
   if (error) { console.error('Erro ao gerar link:', error); showToast(error.message || 'Erro ao gerar link'); return; }
   document.getElementById('res-guest-name').value  = '';
   document.getElementById('res-expires-at').value  = '';
-  if (lockCodeEl) lockCodeEl.value = '';
   showToast('Link gerado!');
   await loadReservas();
 }
@@ -412,8 +407,6 @@ function isSectionLocked(name) {
 }
 
 function applyProLock() {
-  const lockCodeWrap = document.getElementById('res-lockcode-wrap');
-  if (lockCodeWrap) lockCodeWrap.classList.toggle('hidden', isSectionLocked('fechadura'));
   if (getPlanTier() === 'pro') return;
   window.proLocked = true;
   document.querySelectorAll('.nav-item').forEach(btn => {
