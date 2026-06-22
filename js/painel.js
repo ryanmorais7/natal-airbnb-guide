@@ -360,6 +360,7 @@ function populateForms() {
   v('w-name', content.wifi_name     || '');
   v('w-pass', content.wifi_password || '');
   v('w-qr',   content.wifi_qr_url  || '');
+  previewWifiQr();
   // Aparência
   selectedThemeId = content.theme_id || 'oliva';
   renderThemePicker();
@@ -1271,6 +1272,44 @@ document.addEventListener('DOMContentLoaded', () => {
   const inp = document.getElementById('h-img');
   if (inp) inp.addEventListener('blur', previewHeroImage);
 });
+
+function previewWifiQr() {
+  const url  = g('w-qr');
+  const wrap = document.getElementById('w-qr-preview-wrap');
+  const img  = document.getElementById('w-qr-preview');
+  if (url) { img.src = url; wrap.classList.remove('hidden'); }
+  else { wrap.classList.add('hidden'); }
+}
+
+async function uploadWifiQr(input) {
+  if (window.isDemoMode) { document.getElementById('demo-modal').classList.remove('hidden'); input.value = ''; return; }
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('w-qr-upload-status');
+  if (file.size > 2 * 1024 * 1024) {
+    status.textContent = '⚠ Arquivo muito grande (máx 2MB).';
+    status.className = 'text-xs font-bold text-red-500 mb-2';
+    status.classList.remove('hidden');
+    return;
+  }
+  status.textContent = 'Enviando...';
+  status.className = 'text-xs font-bold text-primary mb-2';
+  status.classList.remove('hidden');
+
+  const ext  = file.name.split('.').pop();
+  const path = `${activePropertyId}/wifi-qr-${Date.now()}.${ext}`;
+  const { error } = await sb.storage.from('guide-images').upload(path, file, { upsert: true });
+  if (error) {
+    status.textContent = 'Erro: ' + error.message;
+    status.className = 'text-xs font-bold text-red-500 mb-2';
+    return;
+  }
+  const { data } = sb.storage.from('guide-images').getPublicUrl(path);
+  document.getElementById('w-qr').value = data.publicUrl;
+  previewWifiQr();
+  status.textContent = '✓ QR code enviado com sucesso!';
+  status.className = 'text-xs font-bold text-green-600 mb-2';
+}
 
 // ── Fotos / Itens por Ambiente ────────────────────────────────────────
 var roomItemsData = { bedroom: [], kitchen: [], bathroom: [] };

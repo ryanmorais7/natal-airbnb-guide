@@ -595,9 +595,19 @@ tailwind.config = {
           </div>
         </div>
         <div>
-          <label class="field-label">QR Code do Wi-Fi (URL da imagem)</label>
-          <input id="w-qr" class="field-input" placeholder="https://..." type="text"/>
-          <p class="text-xs text-gray-400 mt-1.5">Gere gratuitamente em <strong>qr-code-generator.com</strong> → cole o link da imagem aqui. Aparece no guia para o hóspede escanear.</p>
+          <label class="field-label">QR Code do Wi-Fi</label>
+          <label for="w-qr-file" class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-primary/30 rounded-xl p-5 cursor-pointer hover:bg-primary/5 transition-colors text-center mb-2">
+            <span class="material-icons-outlined text-primary/40 text-4xl">cloud_upload</span>
+            <span class="text-sm font-bold text-primary/60">Clique para fazer upload</span>
+            <span class="text-xs text-gray-400">PNG, JPG — máx. 2MB</span>
+            <input id="w-qr-file" type="file" accept="image/*" class="hidden" onchange="uploadWifiQr(this)"/>
+          </label>
+          <p id="w-qr-upload-status" class="text-xs font-bold hidden mb-2"></p>
+          <div id="w-qr-preview-wrap" class="hidden mb-2">
+            <img id="w-qr-preview" src="" alt="" class="w-28 h-28 object-contain rounded-xl border border-gray-100 bg-gray-50"/>
+          </div>
+          <input id="w-qr" class="hidden" type="text"/>
+          <p class="text-xs text-gray-400 mt-1.5">Aparece no guia, na seção "Wi-Fi e suporte", pra o hóspede escanear.</p>
         </div>
         <div class="pt-2 flex flex-wrap gap-2">
           <button class="save-btn" onclick="saveWifi()">

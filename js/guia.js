@@ -460,6 +460,14 @@
             setText('dyn-wifi-name',   c.wifi_name     || '');
             setText('dyn-wifi-pass',   c.wifi_password || '');
 
+            var wifiQrImg = document.getElementById('dyn-wifi-qr');
+            var wifiQrPlaceholder = document.getElementById('wifi-qr-placeholder');
+            if (c.wifi_qr_url && wifiQrImg) {
+                wifiQrImg.src = c.wifi_qr_url;
+                wifiQrImg.classList.remove('hidden');
+                if (wifiQrPlaceholder) wifiQrPlaceholder.style.display = 'none';
+            }
+
             // Check-in / acesso
             setText('dyn-checkin-time', (c.checkin_time || '13:00') + ' / ' + (c.checkout_time || '11:00'));
             var accessType = c.access_type || 'fechadura';
