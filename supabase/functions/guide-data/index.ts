@@ -10,7 +10,7 @@ const cors = {
 };
 
 const CONTENT_FIELDS = [
-  "property_name","wifi_name","wifi_password","wifi_qr_url","address","maps_url","maps_embed",
+  "property_name","wifi_name","wifi_password","wifi_qr_url","address","city","state","maps_url","maps_embed",
   "theme_color","theme_color_light","checkin_time","checkout_time",
   "lock_code","lock_code_valid_until","access_type","access_location",
   "access_contact","access_instructions","welcome_message","hero_image_url",

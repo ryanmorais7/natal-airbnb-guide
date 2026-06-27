@@ -184,23 +184,6 @@
             }
         }
 
-        // Clima - destacar período atual
-        (function() {
-            var m = new Date().getMonth();
-            var id = m <= 1 ? 'clima-jan-fev'
-                   : m <= 5 ? 'clima-mar-jun'
-                   : m <= 7 ? 'clima-jul-ago'
-                   : 'clima-set-dez';
-            var card = document.getElementById(id);
-            if (card) {
-                card.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
-                var badge = document.createElement('span');
-                badge.className = 'text-[10px] font-bold text-white bg-primary px-2 py-0.5 rounded-full uppercase tracking-wider w-fit';
-                badge.textContent = 'Agora';
-                card.querySelector('.flex').appendChild(badge);
-            }
-        })();
-
         // Mover Clima e Explore Natal acima das Fotos do Zamio
         (function() {
             var fotos = document.querySelector('.fotos-zamio');
@@ -296,6 +279,134 @@
             }).join('') + '<\/ol>';
         }
 
+        // Perfis climáticos por região (aproximação por estado — não é dado
+        // oficial da cidade exata, mas reflete bem o padrão da região).
+        var CLIMA_REGIOES = {
+            nordeste: {
+                subtitulo: '~28°C média · clima tropical litorâneo',
+                estacoes: [
+                    { meses:'Jan · Fev', badge:'Sol intenso', badgeClass:'text-amber-700 bg-amber-100', icon:'wb_sunny', iconClass:'text-amber-400 sun-spin', temp:'28 – 32°C', chuva:'Baixa', chuvaClass:'text-green-600', chuvaNivel:0, texto:'Protetor solar FPS 50+ é essencial. Hidrate-se bem nas saídas.' },
+                    { meses:'Mar · Jun', badge:'Chuvoso', badgeClass:'text-blue-700 bg-blue-100', icon:'rainy', iconClass:'text-blue-400 rain-drop', temp:'25 – 28°C', chuva:'Alta', chuvaClass:'text-blue-600', chuvaNivel:3, texto:'Leve guarda-chuva. As manhãs costumam ser secas — ótimo para sair cedo.' },
+                    { meses:'Jul · Ago', badge:'Transição', badgeClass:'text-teal-700 bg-teal-100', icon:'partly_cloudy_day', iconClass:'text-teal-400 cloud-drift', temp:'25 – 29°C', chuva:'Moderada', chuvaClass:'text-teal-600', chuvaNivel:1, texto:'Clima ameno e ventoso. Bom período pra explorar pontos turísticos da região.' },
+                    { meses:'Set · Dez', badge:'Calor seco', badgeClass:'text-orange-700 bg-orange-100', icon:'light_mode', iconClass:'text-orange-400 sun-spin', temp:'29 – 33°C', chuva:'Muito baixa', chuvaClass:'text-orange-600', chuvaNivel:0, texto:'Temporada alta. Sol forte o dia todo — prefira praias de manhã cedo.' },
+                ],
+            },
+            norte: {
+                subtitulo: '~27°C média · clima equatorial, quente e úmido',
+                estacoes: [
+                    { meses:'Jan · Fev', badge:'Chuvoso', badgeClass:'text-blue-700 bg-blue-100', icon:'rainy', iconClass:'text-blue-400 rain-drop', temp:'24 – 31°C', chuva:'Alta', chuvaClass:'text-blue-600', chuvaNivel:3, texto:'Período de cheia dos rios. Leve capa de chuva e repelente nas saídas.' },
+                    { meses:'Mar · Jun', badge:'Muito chuvoso', badgeClass:'text-blue-800 bg-blue-100', icon:'rainy', iconClass:'text-blue-500 rain-drop', temp:'24 – 30°C', chuva:'Muito alta', chuvaClass:'text-blue-700', chuvaNivel:3, texto:'Pico das chuvas na região — temporais fortes e rápidos à tarde são comuns.' },
+                    { meses:'Jul · Ago', badge:'Seco', badgeClass:'text-amber-700 bg-amber-100', icon:'wb_sunny', iconClass:'text-amber-400 sun-spin', temp:'24 – 32°C', chuva:'Baixa', chuvaClass:'text-green-600', chuvaNivel:0, texto:'"Verão amazônico": rios mais baixos e dias mais firmes pra passeios.' },
+                    { meses:'Set · Dez', badge:'Calor seco', badgeClass:'text-orange-700 bg-orange-100', icon:'light_mode', iconClass:'text-orange-400 sun-spin', temp:'25 – 33°C', chuva:'Baixa', chuvaClass:'text-orange-600', chuvaNivel:0, texto:'Calor intenso e ar seco. Hidrate-se bem e use protetor solar.' },
+                ],
+            },
+            centro_oeste: {
+                subtitulo: '~26°C média · verão chuvoso, inverno seco',
+                estacoes: [
+                    { meses:'Jan · Fev', badge:'Chuvoso', badgeClass:'text-blue-700 bg-blue-100', icon:'rainy', iconClass:'text-blue-400 rain-drop', temp:'23 – 31°C', chuva:'Alta', chuvaClass:'text-blue-600', chuvaNivel:3, texto:'Período mais chuvoso do ano — tardes de tempestade são frequentes.' },
+                    { meses:'Mar · Jun', badge:'Transição', badgeClass:'text-teal-700 bg-teal-100', icon:'partly_cloudy_day', iconClass:'text-teal-400 cloud-drift', temp:'21 – 30°C', chuva:'Moderada', chuvaClass:'text-teal-600', chuvaNivel:1, texto:'As chuvas vão diminuindo aos poucos; dias mais secos começam a aparecer.' },
+                    { meses:'Jul · Ago', badge:'Seco', badgeClass:'text-slate-700 bg-slate-100', icon:'air', iconClass:'text-slate-400', temp:'17 – 29°C', chuva:'Muito baixa', chuvaClass:'text-orange-600', chuvaNivel:0, texto:'Estação seca, com ar bem seco. Leve hidratante e protetor labial.' },
+                    { meses:'Set · Dez', badge:'Calor seco', badgeClass:'text-orange-700 bg-orange-100', icon:'light_mode', iconClass:'text-orange-400 sun-spin', temp:'22 – 33°C', chuva:'Baixa', chuvaClass:'text-orange-600', chuvaNivel:1, texto:'Calor forte antes das primeiras chuvas chegarem no fim do período.' },
+                ],
+            },
+            sudeste: {
+                subtitulo: '~22°C média · quatro estações bem definidas',
+                estacoes: [
+                    { meses:'Jan · Fev', badge:'Chuvoso', badgeClass:'text-blue-700 bg-blue-100', icon:'rainy', iconClass:'text-blue-400 rain-drop', temp:'23 – 30°C', chuva:'Alta', chuvaClass:'text-blue-600', chuvaNivel:3, texto:'Verão chuvoso — pancadas fortes no fim da tarde são comuns.' },
+                    { meses:'Mar · Jun', badge:'Transição', badgeClass:'text-teal-700 bg-teal-100', icon:'partly_cloudy_day', iconClass:'text-teal-400 cloud-drift', temp:'18 – 26°C', chuva:'Moderada', chuvaClass:'text-teal-600', chuvaNivel:1, texto:'Outono ameno, com dias agradáveis pra passeios ao ar livre.' },
+                    { meses:'Jul · Ago', badge:'Seco e fresco', badgeClass:'text-sky-700 bg-sky-100', icon:'ac_unit', iconClass:'text-sky-400', temp:'14 – 23°C', chuva:'Baixa', chuvaClass:'text-green-600', chuvaNivel:0, texto:'Inverno seco. Leve um casaco leve pras noites mais frias.' },
+                    { meses:'Set · Dez', badge:'Transição', badgeClass:'text-teal-700 bg-teal-100', icon:'partly_cloudy_day', iconClass:'text-teal-400 cloud-drift', temp:'19 – 28°C', chuva:'Moderada', chuvaClass:'text-teal-600', chuvaNivel:1, texto:'Primavera chegando — as chuvas voltam aos poucos no fim do período.' },
+                ],
+            },
+            sul: {
+                subtitulo: '~18°C média · inverno frio, verão quente',
+                estacoes: [
+                    { meses:'Jan · Fev', badge:'Verão', badgeClass:'text-amber-700 bg-amber-100', icon:'wb_sunny', iconClass:'text-amber-400 sun-spin', temp:'22 – 30°C', chuva:'Moderada', chuvaClass:'text-teal-600', chuvaNivel:1, texto:'Dias longos de sol, com pancadas ocasionais no fim da tarde.' },
+                    { meses:'Mar · Jun', badge:'Outono', badgeClass:'text-orange-700 bg-orange-100', icon:'eco', iconClass:'text-orange-400', temp:'15 – 24°C', chuva:'Moderada', chuvaClass:'text-teal-600', chuvaNivel:1, texto:'Temperaturas caindo aos poucos. Leve um casaco pras noites.' },
+                    { meses:'Jul · Ago', badge:'Frio', badgeClass:'text-sky-700 bg-sky-100', icon:'ac_unit', iconClass:'text-sky-500', temp:'8 – 17°C', chuva:'Moderada', chuvaClass:'text-teal-600', chuvaNivel:1, texto:'Inverno de verdade — pode até ter geada nas regiões mais altas. Leve roupas de frio.' },
+                    { meses:'Set · Dez', badge:'Primavera', badgeClass:'text-teal-700 bg-teal-100', icon:'partly_cloudy_day', iconClass:'text-teal-400 cloud-drift', temp:'14 – 25°C', chuva:'Moderada', chuvaClass:'text-teal-600', chuvaNivel:1, texto:'Tempo instável: o clima muda rápido. Leve guarda-chuva e um casaco.' },
+                ],
+            },
+            generico: {
+                subtitulo: '~24°C média',
+                estacoes: [
+                    { meses:'Jan · Fev', badge:'Verão', badgeClass:'text-amber-700 bg-amber-100', icon:'wb_sunny', iconClass:'text-amber-400 sun-spin', temp:'24 – 31°C', chuva:'Moderada', chuvaClass:'text-teal-600', chuvaNivel:1, texto:'Período mais quente do ano. Leve protetor solar e roupas leves.' },
+                    { meses:'Mar · Jun', badge:'Transição', badgeClass:'text-teal-700 bg-teal-100', icon:'partly_cloudy_day', iconClass:'text-teal-400 cloud-drift', temp:'20 – 27°C', chuva:'Moderada', chuvaClass:'text-teal-600', chuvaNivel:1, texto:'Temperaturas amenas. Bom período pra passeios ao ar livre.' },
+                    { meses:'Jul · Ago', badge:'Inverno', badgeClass:'text-sky-700 bg-sky-100', icon:'ac_unit', iconClass:'text-sky-400', temp:'16 – 24°C', chuva:'Baixa', chuvaClass:'text-green-600', chuvaNivel:0, texto:'Período mais seco e fresco do ano. Leve um casaco leve.' },
+                    { meses:'Set · Dez', badge:'Transição', badgeClass:'text-teal-700 bg-teal-100', icon:'partly_cloudy_day', iconClass:'text-teal-400 cloud-drift', temp:'21 – 29°C', chuva:'Moderada', chuvaClass:'text-teal-600', chuvaNivel:1, texto:'O calor volta gradualmente, com chuvas ocasionais.' },
+                ],
+            },
+        };
+        var STATE_TO_REGION = {
+            MA:'nordeste', PI:'nordeste', CE:'nordeste', RN:'nordeste', PB:'nordeste', PE:'nordeste', AL:'nordeste', SE:'nordeste', BA:'nordeste',
+            AC:'norte', AP:'norte', AM:'norte', PA:'norte', RO:'norte', RR:'norte', TO:'norte',
+            MT:'centro_oeste', MS:'centro_oeste', GO:'centro_oeste', DF:'centro_oeste',
+            MG:'sudeste', ES:'sudeste', RJ:'sudeste', SP:'sudeste',
+            PR:'sul', SC:'sul', RS:'sul',
+        };
+
+        function renderClima(c, host) {
+            var section = document.getElementById('clima-section');
+            var grid    = document.getElementById('clima-grid');
+            if (!section || !grid) return;
+
+            var regiao = CLIMA_REGIOES[STATE_TO_REGION[c.state]] || CLIMA_REGIOES.generico;
+            var cidade = c.city || (host && host.property_name) || 'sua região';
+
+            var tituloEl = document.getElementById('clima-titulo');
+            if (tituloEl) tituloEl.textContent = 'Clima em ' + cidade;
+
+            var subtituloEl = document.getElementById('clima-subtitulo');
+            if (subtituloEl) {
+                var local = c.city ? (c.city + (c.state ? ' · ' + c.state : '')) : '';
+                subtituloEl.textContent = (local ? local + ' · ' : '') + regiao.subtitulo;
+            }
+
+            var mes = new Date().getMonth();
+            var indiceAtivo = mes <= 1 ? 0 : mes <= 5 ? 1 : mes <= 7 ? 2 : 3;
+
+            grid.innerHTML = regiao.estacoes.map(function(e, i) {
+                // chuvaNivel controla quantas gotinhas decorativas de chuva aparecem
+                // no card (0 = nenhuma, até 3 = chuva forte) -- geradas aqui em vez
+                // de fixas no HTML, pra dar pra variar por região/estação.
+                var qtdGotas = e.chuvaNivel === 3 ? 10 : e.chuvaNivel === 2 ? 6 : e.chuvaNivel === 1 ? 4 : 0;
+                var gotas = '';
+                for (var g = 0; g < qtdGotas; g++) {
+                    var esquerda = Math.round((g + 0.5) * (100 / qtdGotas));
+                    var duracao  = e.chuvaNivel === 3 ? (0.5 + (g % 4) * 0.04) : (1.1 + (g % 3) * 0.1);
+                    var atraso   = (g % 5) * 0.18;
+                    gotas += '<span class="rdrop" style="left:' + esquerda + '%;height:' + (20 + (g % 4) * 2) + 'px;'
+                        + 'background:linear-gradient(to bottom,rgba(30,64,175,0.12),#1d4ed8);'
+                        + 'animation-duration:' + duracao.toFixed(2) + 's;animation-delay:' + atraso.toFixed(2) + 's"></span>';
+                }
+                var overlayChuva = qtdGotas > 0
+                    ? '<div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;">' + gotas + '<\/div>'
+                    : '';
+                var ehAgora   = i === indiceAtivo;
+                var ringClass = ehAgora ? ' ring-2 ring-primary ring-offset-2' : '';
+                var badgeAgora = ehAgora
+                    ? '<span class="text-[10px] font-bold text-white bg-primary px-2 py-0.5 rounded-full uppercase tracking-wider w-fit">Agora<\/span>'
+                    : '';
+
+                return '<div class="bg-white dark:bg-card-dark rounded-2xl p-6 border border-primary/10 shadow-sm flex flex-col gap-3 transition-all duration-300 relative overflow-hidden' + ringClass + '">'
+                    + overlayChuva
+                    + '<div style="position:relative;z-index:1;display:flex;flex-direction:column;gap:0.75rem;">'
+                    + '<div class="flex items-center justify-between flex-wrap gap-1">'
+                    + '<span class="font-serif text-base font-bold text-text-dark dark:text-text-light">' + e.meses + '<\/span>'
+                    + '<span class="text-[10px] font-bold ' + e.badgeClass + ' px-2 py-0.5 rounded-full uppercase tracking-wider">' + e.badge + '<\/span>'
+                    + badgeAgora
+                    + '<\/div>'
+                    + '<span class="material-icons-outlined text-6xl ' + e.iconClass + ' self-center">' + e.icon + '<\/span>'
+                    + '<div class="space-y-1.5 text-sm">'
+                    + '<div class="flex items-center justify-between"><span class="opacity-60">Temperatura<\/span><span class="font-bold text-primary">' + e.temp + '<\/span><\/div>'
+                    + '<div class="flex items-center justify-between"><span class="opacity-60">Chuva<\/span><span class="font-bold ' + e.chuvaClass + '">' + e.chuva + '<\/span><\/div>'
+                    + '<\/div>'
+                    + '<p class="text-xs opacity-60 leading-relaxed border-t border-primary/10 pt-3">' + e.texto + '<\/p>'
+                    + '<\/div>'
+                    + '<\/div>';
+            }).join('');
+        }
+
         async function loadDynamic() {
             var host, c;
 
@@ -362,6 +473,7 @@
                         + '<\/div>';
                 }).join('');
             }
+            renderClima(c, host);
             _renderListPanel('panel-comer',       c.restaurantes);
             _renderListPanel('panel-mercado',      c.mercados);
             _renderListPanel('panel-farmacia',     c.farmacias);
